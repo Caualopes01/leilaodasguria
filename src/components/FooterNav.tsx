@@ -65,9 +65,15 @@ export default function FooterNav() {
           localStorage.setItem('leilao_notif_count', (currentCount + 1).toString())
           syncNotif()
 
+          // formatação de dados do popup
+          const fimEmDate = new Date(novoProduto.fim_em);
+          const dataFim = fimEmDate.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+          const horaFim = fimEmDate.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+          const valor = new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(novoProduto.valor_inicial);
+
           // Pop-up visual customizado de 10seg
           toast.custom((t) => (
-            <div className="bg-white rounded-2xl shadow-2xl border border-rosa-100 p-4 w-[340px] max-w-[90vw] flex flex-col gap-3 mx-auto">
+            <div className="bg-white rounded-2xl shadow-2xl border border-green-100 p-4 w-[340px] max-w-[90vw] flex flex-col gap-3 mx-auto">
               <div className="flex items-start gap-3">
                 <div className="w-16 h-16 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-100">
                   {novoProduto.imagens && novoProduto.imagens[0] ? (
@@ -75,11 +81,16 @@ export default function FooterNav() {
                   ) : <div className="w-full h-full flex items-center justify-center text-xl">🛍️</div>}
                 </div>
                 <div className="flex-1">
-                  <div className="flex items-center gap-1.5 mb-1 text-rosa-600 font-black text-[10px] uppercase tracking-wider">
-                    <span className="w-2 h-2 rounded-full bg-rosa-600 animate-pulse"></span>
+                  <div className="flex items-center gap-1.5 mb-0.5 text-green-600 font-black text-[10px] uppercase tracking-wider">
+                    <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
                     Novo Leilão
                   </div>
-                  <h4 className="font-bold text-gray-900 text-sm line-clamp-2 leading-tight">{novoProduto.titulo}</h4>
+                  <h4 className="font-bold text-gray-900 text-sm line-clamp-1 leading-tight">{novoProduto.titulo}</h4>
+                  <div className="flex items-center gap-1.5 mt-1.5 text-[11px] text-gray-500 font-medium">
+                     <span className="bg-green-50 text-green-700 px-1.5 py-0.5 rounded font-bold">{valor}</span>
+                     <span>•</span>
+                     <span>Fim: {dataFim} às {horaFim}</span>
+                  </div>
                 </div>
               </div>
               <button
@@ -87,7 +98,7 @@ export default function FooterNav() {
                   toast.dismiss(t)
                   router.push(`/leilao/${novoProduto.slug}`)
                 }}
-                className="w-full py-2.5 bg-rosa-600 hover:bg-rosa-700 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
+                className="w-full py-2.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
               >
                 <ShoppingBag className="w-4 h-4" /> Ver Leilão
               </button>
