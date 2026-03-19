@@ -68,9 +68,10 @@ function ProdutoCard({ produto }: { produto: Produto }) {
                 {formatCurrency(produto.valor_atual || produto.valor_inicial)}
               </p>
             </div>
-            <div className="flex items-center gap-1 bg-rosa-600 text-white text-xs font-bold px-3 py-1.5 rounded-xl">
-              <Gavel className="w-3 h-3" />
-              Dar Lance
+            <div className="flex items-center justify-center bg-rosa-600 text-white font-bold h-8 px-3 rounded-xl shadow-sm">
+              <Gavel className="w-3.5 h-3.5 mr-1" />
+              <span className="hidden sm:inline text-xs">Dar Lance</span>
+              <span className="sm:hidden text-lg leading-none mb-0.5">+</span>
             </div>
           </div>
         </div>
