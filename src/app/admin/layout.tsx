@@ -70,7 +70,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-100 z-50
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
-        lg:translate-x-0 lg:static lg:block
+        lg:translate-x-0 lg:relative lg:block
       `}>
         {/* Logo */}
         <div className="p-6 border-b border-rosa-100">
