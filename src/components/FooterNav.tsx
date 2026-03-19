@@ -1,7 +1,7 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ShoppingBag, Bell } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
@@ -9,6 +9,7 @@ import { toast } from 'sonner'
 
 export default function FooterNav() {
   const pathname = usePathname()
+  const router = useRouter()
   const [notifCount, setNotifCount] = useState(0)
 
   useEffect(() => {
@@ -49,6 +50,49 @@ export default function FooterNav() {
               description: `Um lance de R$ ${novoLance.valor.toLocaleString('pt-br', {minimumFractionDigits: 2})} foi registrado em um leilão que você participa.`
             })
           }
+        }
+      })
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'produtos',
+      }, (payload) => {
+        const novoProduto = payload.new as any
+        // Confirma se o produto não entrou pausado
+        if (novoProduto.ativo && novoProduto.status !== 'encerrado') {
+          // Conta na bolinha (Notification)
+          const currentCount = parseInt(localStorage.getItem('leilao_notif_count') || '0', 10)
+          localStorage.setItem('leilao_notif_count', (currentCount + 1).toString())
+          syncNotif()
+
+          // Pop-up visual customizado de 10seg
+          toast.custom((t) => (
+            <div className="bg-white rounded-2xl shadow-2xl border border-rosa-100 p-4 w-[340px] max-w-[90vw] flex flex-col gap-3 mx-auto">
+              <div className="flex items-start gap-3">
+                <div className="w-16 h-16 rounded-xl bg-gray-50 overflow-hidden flex-shrink-0 border border-gray-100">
+                  {novoProduto.imagens && novoProduto.imagens[0] ? (
+                    <img src={novoProduto.imagens[0]} alt="" className="w-full h-full object-cover" />
+                  ) : <div className="w-full h-full flex items-center justify-center text-xl">🛍️</div>}
+                </div>
+                <div className="flex-1">
+                  <div className="flex items-center gap-1.5 mb-1 text-rosa-600 font-black text-[10px] uppercase tracking-wider">
+                    <span className="w-2 h-2 rounded-full bg-rosa-600 animate-pulse"></span>
+                    Novo Leilão
+                  </div>
+                  <h4 className="font-bold text-gray-900 text-sm line-clamp-2 leading-tight">{novoProduto.titulo}</h4>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  toast.dismiss(t)
+                  router.push(`/leilao/${novoProduto.slug}`)
+                }}
+                className="w-full py-2.5 bg-rosa-600 hover:bg-rosa-700 text-white font-bold rounded-xl text-sm transition-colors flex items-center justify-center gap-2"
+              >
+                <ShoppingBag className="w-4 h-4" /> Ver Leilão
+              </button>
+            </div>
+          ), { duration: 10000 })
         }
       })
       .subscribe()
