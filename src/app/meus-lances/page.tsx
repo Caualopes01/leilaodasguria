@@ -102,6 +102,11 @@ export default function MeusLancesPage() {
       return
     }
 
+    // IMPORTANTE: restaura o nome da pessoa na sessão caso ela não tenha mais para auto-preenchimento futuro
+    if (meusLances[0]?.nome) {
+      localStorage.setItem('leilao_user_nome', meusLances[0].nome)
+    }
+
     // Agrupa por produto
     const produtosMap = new Map<string, { produto: Produto; lances: LanceWithProduto[]; meuLance: LanceWithProduto | null }>()
 
