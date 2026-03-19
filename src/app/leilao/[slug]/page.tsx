@@ -321,25 +321,25 @@ export default function LeilaoPage() {
         </div>
       )}
 
-      {/* CTA - logo abaixo da imagem */}
-      {!isEnded && !isNotStarted && (
-        <div className="px-4 pt-4">
-          <button
-            onClick={openModal}
-            className="w-full bg-rosa-600 active:bg-rosa-700 text-white font-bold py-4 rounded-2xl text-lg flex items-center justify-center gap-2 shadow-lg shadow-rosa-200 transition-all active:scale-[0.98]"
-          >
-            <Gavel className="w-5 h-5" />
-            Dar Lance
-          </button>
-        </div>
-      )}
-
+      {/* Produto info e CTA */}
       <div className="px-4 py-5 space-y-5">
-        {/* Produto info */}
         <div>
           <h1 className="font-display text-2xl font-bold text-gray-900 leading-tight">{produto.titulo}</h1>
           {produto.descricao && (
             <p className="text-gray-500 text-sm mt-2 leading-relaxed">{produto.descricao}</p>
+          )}
+          
+          {/* CTA - logo abaixo da descrição */}
+          {!isEnded && !isNotStarted && (
+            <div className="mt-5">
+              <button
+                onClick={openModal}
+                className="w-full bg-rosa-600 active:bg-rosa-700 text-white font-bold py-4 rounded-xl text-lg flex items-center justify-center gap-2 shadow-md shadow-rosa-200/50 transition-all active:scale-[0.98]"
+              >
+                <Gavel className="w-5 h-5" />
+                Dar Lance
+              </button>
+            </div>
           )}
         </div>
 

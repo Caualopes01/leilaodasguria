@@ -18,9 +18,6 @@ export default function DashboardPage() {
   // Detalhes do Lance / Vencedor
   const [selectedLance, setSelectedLance] = useState<any | null>(null)
   
-  // Histórico de lances de um produto específico
-  const [viewingHistory, setViewingHistory] = useState<Produto & { lances?: any[] } | null>(null)
-  
   const supabase = createClient()
 
   useEffect(() => {
@@ -237,21 +234,24 @@ export default function DashboardPage() {
                   <p className="text-sm text-gray-500">Lance atual: <span className="text-green-600 font-bold">{formatCurrency(p.valor_atual)}</span></p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => {
-                      if (!(p as any).lances || (p as any).lances.length === 0) return
-                      setViewingHistory(p as any)
+                  <Link
+                    href={`/admin/produtos/${p.id}/lances`}
+                    className={`flex items-center justify-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl border transition-colors ${
+                      (p as any).lances?.length 
+                        ? 'border-rosa-200 text-rosa-700 hover:bg-rosa-50 hover:border-rosa-300' 
+                        : 'border-gray-200 text-gray-500 bg-gray-50 cursor-not-allowed opacity-70'
+                    }`}
+                    onClick={(e) => {
+                      if (!(p as any).lances?.length) e.preventDefault()
                     }}
-                    disabled={!(p as any).lances || (p as any).lances.length === 0}
-                    className="flex items-center justify-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl border transition-colors border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:hover:bg-transparent"
                   >
                     <ListOrdered className="w-3.5 h-3.5" />
                     Lances ({(p as any).lances?.length || 0})
-                  </button>
+                  </Link>
                   <Link
                     href={`/leilao/${p.slug}`}
                     target="_blank"
-                    className="flex items-center justify-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-rosa-50 text-rosa-600 hover:bg-rosa-100 transition-colors"
+                    className="flex items-center justify-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-gray-50 text-gray-600 hover:bg-gray-100 transition-colors"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
                     Página
@@ -259,61 +259,6 @@ export default function DashboardPage() {
                 </div>
               </div>
             ))}
-          </div>
-        </div>
-      )}
-
-      {/* Modal Histórico de Lances do Produto */}
-      {viewingHistory && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center p-4">
-          <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setViewingHistory(null)} />
-          <div className="relative bg-white rounded-2xl w-full max-w-md p-6 shadow-xl animate-fade-in max-h-[90vh] flex flex-col">
-            <div className="flex items-start justify-between mb-2">
-              <div>
-                <h3 className="font-display font-bold text-lg text-gray-900 leading-tight">Histórico de Lances</h3>
-                <p className="text-gray-500 text-sm mt-1">{viewingHistory.titulo}</p>
-              </div>
-              <button onClick={() => setViewingHistory(null)} className="p-1.5 rounded-full hover:bg-gray-100 text-gray-400">
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-            
-            <div className="flex-1 overflow-y-auto mt-4 pr-1 -mr-1 space-y-2">
-              {!viewingHistory.lances || viewingHistory.lances.length === 0 ? (
-                <div className="py-10 text-center text-gray-400 text-sm">
-                  Nenhum lance recebido ainda.
-                </div>
-              ) : (
-                [...viewingHistory.lances]
-                  .sort((a, b) => b.valor - a.valor)
-                  .map((lance, idx) => (
-                  <div 
-                    key={lance.id}
-                    onClick={() => {
-                      setViewingHistory(null)
-                      setSelectedLance({ ...lance, produto: viewingHistory })
-                    }}
-                    className={`flex items-center justify-between p-3 rounded-xl border cursor-pointer hover:bg-gray-50 transition-colors relative overflow-hidden ${idx === 0 ? 'border-green-200 bg-green-50 shadow-sm' : 'border-gray-100'}`}
-                  >
-                    {idx === 0 && <div className="absolute left-0 top-0 bottom-0 w-1 bg-green-500" />}
-                    <div className="flex items-center gap-3">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold ${idx === 0 ? 'bg-green-200 text-green-700' : 'bg-gray-100 text-gray-600'}`}>
-                        {idx + 1}º
-                      </div>
-                      <div>
-                        <p className={`text-sm font-semibold truncate max-w-[140px] sm:max-w-[180px] ${idx === 0 ? 'text-gray-900' : 'text-gray-700'}`}>{lance.nome}</p>
-                        <p className="text-xs text-gray-400">{new Date(lance.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}</p>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <span className={`text-sm font-bold block ${idx === 0 ? 'text-green-600' : 'text-gray-600'}`}>
-                        {formatCurrency(lance.valor)}
-                      </span>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
           </div>
         </div>
       )}
