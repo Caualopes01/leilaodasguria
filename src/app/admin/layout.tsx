@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import {
-  Heart, LayoutDashboard, Package, LogOut, Menu, X, ChevronRight
+  Heart, LayoutDashboard, Package, LogOut, Menu, X, ChevronRight, Store, ExternalLink
 } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -109,6 +109,20 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               </Link>
             )
           })}
+          
+          {/* Link para Loja Pública */}
+          <div className="pt-4 mt-2 border-t border-gray-100">
+            <Link
+              href="/leiloes"
+              target="_blank"
+              onClick={() => setSidebarOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-rosa-600 hover:bg-rosa-50 transition-all border border-rosa-100 bg-rosa-50/50"
+            >
+              <Store className="w-5 h-5" />
+              Ver Loja Pública
+              <ExternalLink className="w-4 h-4 ml-auto opacity-50" />
+            </Link>
+          </div>
         </nav>
 
         {/* User info */}

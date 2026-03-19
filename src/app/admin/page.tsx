@@ -30,7 +30,7 @@ export default function DashboardPage() {
   async function loadData() {
     const [{ data: prods }, { data: lances }] = await Promise.all([
       // Pega produtos e adiciona o max(lance) como valor atual para garantir sync
-      supabase.from('produtos').select('*, lances(valor)').order('criado_em', { ascending: false }),
+      supabase.from('produtos').select('*, lances(*)').order('criado_em', { ascending: false }),
       supabase.from('lances').select('*, produto:produtos(*)').order('criado_em', { ascending: false }).limit(10),
     ])
     
@@ -238,8 +238,12 @@ export default function DashboardPage() {
                 </div>
                 <div className="flex items-center gap-2">
                   <button
-                    onClick={() => setViewingHistory(p)}
-                    className="flex items-center gap-1 text-xs text-gray-500 hover:text-gray-800 font-medium px-2 py-1.5 rounded-lg hover:bg-gray-100 transition-colors"
+                    onClick={() => {
+                      if (!(p as any).lances || (p as any).lances.length === 0) return
+                      setViewingHistory(p as any)
+                    }}
+                    disabled={!(p as any).lances || (p as any).lances.length === 0}
+                    className="flex items-center justify-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl border transition-colors border-gray-200 text-gray-600 hover:bg-gray-50 hover:border-gray-300 disabled:opacity-40 disabled:hover:bg-transparent"
                   >
                     <ListOrdered className="w-3.5 h-3.5" />
                     Lances ({(p as any).lances?.length || 0})
@@ -247,10 +251,10 @@ export default function DashboardPage() {
                   <Link
                     href={`/leilao/${p.slug}`}
                     target="_blank"
-                    className="flex items-center gap-1 text-xs text-rosa-600 hover:text-rosa-700 font-medium px-2 py-1.5 rounded-lg hover:bg-rosa-100 transition-colors"
+                    className="flex items-center justify-center gap-1 text-xs font-semibold px-3 py-2 rounded-xl bg-rosa-50 text-rosa-600 hover:bg-rosa-100 transition-colors"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
-                    Ver no site
+                    Página
                   </Link>
                 </div>
               </div>
