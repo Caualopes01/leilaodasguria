@@ -68,6 +68,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Sidebar */}
       <aside className={`
         fixed top-0 left-0 h-full w-64 bg-white border-r border-gray-100 z-50
+        flex flex-col
         transform transition-transform duration-300 ease-in-out
         ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}
         lg:translate-x-0 lg:relative lg:block
@@ -111,7 +112,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         </nav>
 
         {/* User info */}
-        <div className="absolute bottom-0 left-0 right-0 p-4 border-t border-gray-100">
+        <div className="mt-auto p-4 border-t border-gray-100">
           <div className="flex items-center gap-3 mb-3">
             <div className="w-8 h-8 rounded-full bg-rosa-100 flex items-center justify-center text-rosa-600 text-xs font-bold">
               {user?.email?.charAt(0).toUpperCase()}
