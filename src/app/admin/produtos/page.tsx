@@ -31,9 +31,15 @@ export default function ProdutosPage() {
   async function loadProdutos() {
     const { data } = await supabase
       .from('produtos')
-      .select('*')
+      .select('*, lances(valor)')
       .order('criado_em', { ascending: false })
-    setProdutos(data || [])
+      
+    const prodsComLanceValido = (data || []).map(p => {
+      const maxL = p.lances && p.lances.length > 0 ? Math.max(...p.lances.map((l: any) => l.valor)) : p.valor_atual
+      return { ...p, valor_atual: Math.max(p.valor_atual || 0, maxL) }
+    })
+    
+    setProdutos(prodsComLanceValido)
     setLoading(false)
   }
 

@@ -92,10 +92,16 @@ export default function MarketplacePage() {
   async function loadProdutos() {
     const { data } = await supabase
       .from('produtos')
-      .select('*')
+      .select('*, lances(valor)')
       .eq('status', 'ativo')
       .order('fim_em', { ascending: true })
-    setProdutos(data || [])
+      
+    const prodsComLanceValido = (data || []).map(p => {
+      const maxL = p.lances && p.lances.length > 0 ? Math.max(...p.lances.map((l: any) => l.valor)) : p.valor_atual
+      return { ...p, valor_atual: Math.max(p.valor_atual || 0, maxL) }
+    })
+    
+    setProdutos(prodsComLanceValido)
     setLoading(false)
   }
 
