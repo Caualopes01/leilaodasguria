@@ -6,13 +6,18 @@ import { createClient, Produto, Lance } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
 import {
   Package, TrendingUp, Clock, Trophy,
-  ArrowRight, Plus, ExternalLink
+  ArrowRight, Plus, ExternalLink, X, Phone, User
 } from 'lucide-react'
+import { formatWhatsApp } from '@/lib/utils'
 
 export default function DashboardPage() {
   const [produtos, setProdutos] = useState<Produto[]>([])
   const [lancesRecentes, setLancesRecentes] = useState<(Lance & { produto: Produto })[]>([])
   const [loading, setLoading] = useState(true)
+  
+  // Detalhes do Lance / Vencedor
+  const [selectedLance, setSelectedLance] = useState<any | null>(null)
+  
   const supabase = createClient()
 
   useEffect(() => {
@@ -160,8 +165,12 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-3">
               {vencedores.map(v => (
-                <div key={v.id} className="flex items-center gap-3 p-3 rounded-xl bg-rosa-50">
-                  <div className="w-8 h-8 rounded-full bg-rosa-100 flex items-center justify-center text-rosa-600 text-sm font-bold">
+                <div 
+                  key={v.id} 
+                  onClick={() => setSelectedLance(v)}
+                  className="flex items-center gap-3 p-3 rounded-xl bg-rosa-50 cursor-pointer hover:bg-rosa-100 transition-colors"
+                >
+                  <div className="w-8 h-8 rounded-full bg-rosa-200 flex items-center justify-center text-rosa-700 text-sm font-bold">
                     {v.nome.charAt(0).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -188,7 +197,11 @@ export default function DashboardPage() {
           ) : (
             <div className="space-y-3">
               {lancesRecentes.slice(0, 6).map(lance => (
-                <div key={lance.id} className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors">
+                <div 
+                  key={lance.id} 
+                  onClick={() => setSelectedLance(lance)}
+                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100"
+                >
                   <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 text-sm font-bold">
                     {lance.nome.charAt(0).toUpperCase()}
                   </div>
@@ -230,6 +243,66 @@ export default function DashboardPage() {
                 </Link>
               </div>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Modal de Detalhes do Usuário */}
+      {selectedLance && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setSelectedLance(null)} />
+          <div className="relative bg-white rounded-2xl w-full max-w-sm p-6 shadow-xl animate-fade-in">
+            <div className="flex items-start justify-between mb-5">
+              <h3 className="font-display font-bold text-lg text-gray-900">Detalhes do Lance</h3>
+              <button onClick={() => setSelectedLance(null)} className="p-1.5 rounded-full hover:bg-gray-100 text-gray-400">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-gray-700 font-bold shadow-sm border border-gray-200">
+                  {selectedLance.nome.charAt(0).toUpperCase()}
+                </div>
+                <div>
+                  <p className="font-semibold text-gray-900 text-sm">{selectedLance.nome}</p>
+                  <p className="text-xs text-gray-500">Cliente via WhatsApp</p>
+                </div>
+              </div>
+
+              <div className="space-y-3 px-1">
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Produto do lance</p>
+                  <p className="text-sm font-medium text-gray-800">{selectedLance.produto?.titulo}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Valor ofertado</p>
+                  <p className="text-lg font-bold text-green-600">{formatCurrency(selectedLance.valor)}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Contato WhatsApp</p>
+                  <p className="flex items-center gap-2 text-sm font-bold text-gray-800">
+                    <Phone className="w-4 h-4 text-green-600" />
+                    {selectedLance.whatsapp ? formatWhatsApp(selectedLance.whatsapp) : 'Não informado'}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 mb-1">Data / Hora</p>
+                  <p className="text-sm text-gray-700">
+                    {new Date(selectedLance.criado_em).toLocaleString('pt-BR')}
+                  </p>
+                </div>
+              </div>
+
+              <a 
+                href={`https://wa.me/55${selectedLance.whatsapp?.replace(/\D/g, '')}?text=${encodeURIComponent(`Olá ${selectedLance.nome.split(' ')[0]}, tudo bem? Falamos do portal Leilão das Gurias sobre o produto "${selectedLance.produto?.titulo}".`)}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebd5b] text-white font-bold py-3 rounded-xl transition-colors mt-2"
+              >
+                Chamar no WhatsApp
+              </a>
+            </div>
           </div>
         </div>
       )}
