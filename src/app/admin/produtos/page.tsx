@@ -115,7 +115,9 @@ export default function ProdutosPage() {
       ) : (
         <div className="grid gap-4">
           {filtered.map(produto => {
-            const status = STATUS_LABELS[produto.status]
+            // Se estiver switchado como ativo mas ainda não encerrou, ignora se o supabase marcou aguardando (erro antigo de data no upload)
+            const resolvedStatus = (produto.ativo && produto.status !== 'encerrado') ? 'ativo' : produto.status
+            const status = STATUS_LABELS[resolvedStatus]
             const StatusIcon = status.icon
             return (
               <div key={produto.id} className="bg-white rounded-2xl border border-gray-100 p-4 flex gap-4 hover:shadow-sm transition-all">
