@@ -82,3 +82,18 @@ html {
 * {
   -webkit-tap-highlight-color: rgba(240, 0, 90, 0.1);
 }
+
+/* Animação sino de notificações */
+@keyframes shake-bell {
+  0%, 20% { transform: rotate(0deg); }
+  25% { transform: rotate(15deg); }
+  30% { transform: rotate(-12deg); }
+  35% { transform: rotate(10deg); }
+  40% { transform: rotate(-8deg); }
+  45% { transform: rotate(5deg); }
+  50%, 100% { transform: rotate(0deg); }
+}
+.animate-shake-bell {
+  animation: shake-bell 2s ease-in-out infinite;
+  transform-origin: top center;
+}

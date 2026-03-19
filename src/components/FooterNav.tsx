@@ -53,10 +53,10 @@ export default function FooterNav() {
               tab.active ? 'text-rosa-600' : 'text-gray-400 hover:text-gray-600'
             }`}
           >
-            <div className="relative">
+            <div className={`relative ${tab.label === 'Meus Lances' && tab.badge ? 'animate-shake-bell' : ''}`}>
               <Icon className="w-5 h-5" />
               {tab.badge && (
-                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-rosa-600 rounded-full text-white text-[10px] font-bold flex items-center justify-center leading-none">
+                <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-rosa-600 rounded-full text-white text-[10px] font-bold flex items-center justify-center leading-none shadow-sm shadow-rosa-300">
                   {tab.badge > 9 ? '9+' : tab.badge}
                 </span>
               )}
