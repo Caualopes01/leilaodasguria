@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="64" height="64" fill="none">
+  <!-- Coração Baseado em rosa (igual ao logo de Leilão das Gurias) -->
+  <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" fill="#f0005a" stroke="#f0005a" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  
+  <!-- Fundo escuro leve pro martelo sobressair -->
+  <g transform="translate(1, 1)">
+    <!-- Cabo do Martelo -->
+    <path d="m14 13-6.5 6.5a1.5 1.5 0 0 1-2.12-2.12l6.5-6.5" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Corpo do Martelo -->
+    <path d="m11 16-3-3m8-3-3-3m-6 2 2-2a2.828 2.828 0 0 1 4 4l-2 2" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    <!-- Cabeça do martelo -->
+    <path d="m18 13-3-3m3 3 2-2a2.828 2.828 0 0 0-4-4l-2 2" fill="#f5f5f5" stroke="#f5f5f5" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  </g>
+  
+  <!-- Gavel (Martelo da Justiça) no tom Madeira do ícone da lucide -->
+  <path d="m8 22 4-4" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m14 13-6.5 6.5a1.5 1.5 0 0 1-2.12-2.12l6.5-6.5" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m11 16-3-3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m18 13-3-3" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m15 10-2-2a2.828 2.828 0 0 1 4-4l2 2a2.828 2.828 0 0 1-4 4z" fill="#eab308" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="m20 15-2-2a2.828 2.828 0 0 0-4 4l2 2a2.828 2.828 0 0 0 4-4z" fill="#eab308" stroke="#ffffff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>

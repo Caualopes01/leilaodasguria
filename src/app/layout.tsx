@@ -18,6 +18,9 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: 'Leilão das Gurias',
   description: 'Leilão online - Dê seu lance e garanta o seu!',
+  icons: {
+    icon: '/favicon.svg',
+  },
   openGraph: {
     title: 'Leilão das Gurias',
     description: 'Leilão online - Dê seu lance e garanta o seu!',
