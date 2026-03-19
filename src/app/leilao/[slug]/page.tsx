@@ -126,24 +126,7 @@ export default function LeilaoPage() {
         setProduto(prev => prev ? { ...prev, valor_atual: newLance.valor } : prev)
         const minVal = newLance.valor + (produto.incremento_minimo || 1)
         setValorLance(minVal.toFixed(2))
-
-        // Verifica se eu fui a pessoa superada para gerar notificação
-        const savedWhats = localStorage.getItem('leilao_user_whats')
-        if (savedWhats && newLance.whatsapp !== savedWhats) {
-          // Confere se eu era o líder antes
-          setLances(currentLances => {
-            const currentLeader = currentLances[0]
-            if (currentLeader && currentLeader.whatsapp === savedWhats) {
-              const count = parseInt(localStorage.getItem('leilao_notif_count') || '0', 10)
-              localStorage.setItem('leilao_notif_count', (count + 1).toString())
-              window.dispatchEvent(new Event('leilao_notif_update'))
-              toast('⚠️ Seu lance foi superado!', {
-                description: `${newLance.nome.split(' ')[0]} deu um lance de ${formatCurrency(newLance.valor)}`
-              })
-            }
-            return currentLances
-          })
-        }
+        // O aviso de "Superado" agora é controlado de forma global pelo componente FooterNav
       })
       .subscribe()
 
@@ -174,6 +157,14 @@ export default function LeilaoPage() {
       toast.error('Erro ao registrar lance')
       setSubmitting(false)
       return
+    }
+
+    // Atualiza o monitoramento live global (eu agora acompanhado este produto)
+    const participoStr = localStorage.getItem('leilao_produtos_ids')
+    const participando = participoStr ? JSON.parse(participoStr) : []
+    if (!participando.includes(produto.id)) {
+      participando.push(produto.id)
+      localStorage.setItem('leilao_produtos_ids', JSON.stringify(participando))
     }
 
     // Salva no localStorage para as próximas vezes e para sincronizar o Footer

@@ -4,6 +4,8 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useState } from 'react'
 import { ShoppingBag, Bell } from 'lucide-react'
+import { createClient } from '@/lib/supabase'
+import { toast } from 'sonner'
 
 export default function FooterNav() {
   const pathname = usePathname()
@@ -15,13 +17,46 @@ export default function FooterNav() {
       setNotifCount(count)
     }
     syncNotif()
-    // Sincroniza quando volta para a aba
+
     window.addEventListener('focus', syncNotif)
-    // Escuta evento customizado disparado pela página do leilão
     window.addEventListener('leilao_notif_update', syncNotif)
+
+    // Escutador Global (para as badges ativarem onde quer que o user esteja)
+    const supabase = createClient()
+    const channel = supabase
+      .channel('public-notificacoes')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'lances',
+      }, (payload) => {
+        const novoLance = payload.new as any
+        const myWhats = localStorage.getItem('leilao_user_whats')
+        
+        // Se há whatsapp logado e NÃO fui eu que dei este lance alertado
+        if (myWhats && novoLance.whatsapp !== myWhats) {
+          // Checa se o lance está num produto que eu acompanho
+          const participoStr = localStorage.getItem('leilao_produtos_ids')
+          const participando = participoStr ? JSON.parse(participoStr) : []
+          
+          if (participando.includes(novoLance.produto_id)) {
+            // Fui ultrapassado / Lote movimentou!
+            const currentCount = parseInt(localStorage.getItem('leilao_notif_count') || '0', 10)
+            localStorage.setItem('leilao_notif_count', (currentCount + 1).toString())
+            syncNotif() // atualiza aba imediatamente
+            
+            toast('⚠️ Lote Movimentado!', {
+              description: `Um lance de R$ ${novoLance.valor.toLocaleString('pt-br', {minimumFractionDigits: 2})} foi registrado em um leilão que você participa.`
+            })
+          }
+        }
+      })
+      .subscribe()
+
     return () => {
       window.removeEventListener('focus', syncNotif)
       window.removeEventListener('leilao_notif_update', syncNotif)
+      supabase.removeChannel(channel)
     }
   }, [])
 

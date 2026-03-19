@@ -130,6 +130,10 @@ export default function MeusLancesPage() {
     }
 
     setGrupos(Array.from(produtosMap.values()))
+    
+    // Atualiza cache de quais produtos eu participo
+    localStorage.setItem('leilao_produtos_ids', JSON.stringify(Array.from(produtosMap.keys())))
+    
     setLoading(false)
   }
 
