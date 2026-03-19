@@ -301,7 +301,7 @@ export default function LeilaoPage() {
             ) : (
               <span className="bg-green-500/90 text-white text-xs font-semibold px-3 py-1 rounded-full flex items-center gap-1">
                 <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-                Ao vivo
+                Ativo
               </span>
             )}
           </div>

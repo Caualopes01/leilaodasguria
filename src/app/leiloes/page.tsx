@@ -49,7 +49,7 @@ function ProdutoCard({ produto }: { produto: Produto }) {
           <div className="absolute top-2 left-2">
             <span className="bg-green-500/90 text-white text-xs font-semibold px-2.5 py-1 rounded-full flex items-center gap-1">
               <span className="w-1.5 h-1.5 bg-white rounded-full animate-pulse" />
-              Ao vivo
+              Ativo
             </span>
           </div>
           {/* Timer badge */}
