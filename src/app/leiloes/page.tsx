@@ -99,10 +99,11 @@ export default function MarketplacePage() {
     setLoading(false)
   }
 
-  // Realtime: atualiza valor_atual ao vivo
+  // Realtime: atualiza valor_atual ao vivo escutando LANCES em vez de produtos (mais rápido e à prova de falhas do trigger)
   useEffect(() => {
-    const channel = supabase
-      .channel('marketplace-lances')
+    // Escuta updates nos produtos caso o admin edite info
+    const channelProdutos = supabase
+      .channel('marketplace-produtos')
       .on('postgres_changes', {
         event: 'UPDATE',
         schema: 'public',
@@ -113,7 +114,31 @@ export default function MarketplacePage() {
         )
       })
       .subscribe()
-    return () => { supabase.removeChannel(channel) }
+
+    // Escuta novos lances inseridos
+    const channelLances = supabase
+      .channel('marketplace-lances')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'lances',
+      }, (payload) => {
+        const novoLance = payload.new as any
+        setProdutos(prev =>
+          prev.map(p => {
+            if (p.id === novoLance.produto_id) {
+              return { ...p, valor_atual: Math.max(p.valor_atual || 0, novoLance.valor) }
+            }
+            return p
+          })
+        )
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channelProdutos)
+      supabase.removeChannel(channelLances)
+    }
   }, [])
 
   const filtered = produtos.filter(p =>

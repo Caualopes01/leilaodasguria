@@ -58,6 +58,31 @@ export default function MeusLancesPage() {
       setUserWhats(saved)
       loadMeusLances(saved)
     }
+
+    // Realtime: escuta novos lances para atualizar o status "Ganhando" -> "Superado" ao vivo
+    const channelLances = supabase
+      .channel('meus-lances-updates')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'lances',
+      }, (payload) => {
+        const novoLance = payload.new as LanceWithProduto
+        setGrupos(prev => prev.map(g => {
+          if (g.produto.id === novoLance.produto_id) {
+            // Adiciona o novo lance à lista de lances conhecidos do produto 
+            // para que a função getStatus recalcule corretamente
+            return {
+              ...g,
+              lances: [novoLance, ...g.lances].sort((a, b) => b.valor - a.valor)
+            }
+          }
+          return g
+        }))
+      })
+      .subscribe()
+
+    return () => { supabase.removeChannel(channelLances) }
   }, [])
 
   async function loadMeusLances(whats: string) {

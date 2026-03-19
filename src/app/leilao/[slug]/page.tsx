@@ -10,6 +10,7 @@ import {
   CheckCircle, X, Phone, User
 } from 'lucide-react'
 import { toast } from 'sonner'
+import FooterNav from '@/components/FooterNav'
 
 function useCountdown(targetDate: string) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 })
@@ -90,11 +91,21 @@ export default function LeilaoPage() {
       .eq('produto_id', prod.id)
       .order('valor', { ascending: false })
 
-    setLances(lancesData || [])
+    // Garante que o valor atual no client é o maior que temos (resolve lags de trigger do DB)
+    const lancesList = lancesData || []
+    setLances(lancesList)
+    
+    const maxLance = lancesList.length > 0 ? Math.max(...lancesList.map(l => l.valor)) : 0
+    const valorReal = Math.max(prod.valor_atual || 0, maxLance)
+    
+    if (valorReal > (prod.valor_atual || 0)) {
+      setProduto({ ...prod, valor_atual: valorReal })
+    }
+
     setLoading(false)
 
     // Sugerir valor mínimo
-    const minVal = (prod.valor_atual || prod.valor_inicial) + (prod.incremento_minimo || 1)
+    const minVal = (valorReal || prod.valor_inicial) + (prod.incremento_minimo || 1)
     setValorLance(minVal.toFixed(2))
   }
 
@@ -115,6 +126,24 @@ export default function LeilaoPage() {
         setProduto(prev => prev ? { ...prev, valor_atual: newLance.valor } : prev)
         const minVal = newLance.valor + (produto.incremento_minimo || 1)
         setValorLance(minVal.toFixed(2))
+
+        // Verifica se eu fui a pessoa superada para gerar notificação
+        const savedWhats = localStorage.getItem('leilao_user_whats')
+        if (savedWhats && newLance.whatsapp !== savedWhats) {
+          // Confere se eu era o líder antes
+          setLances(currentLances => {
+            const currentLeader = currentLances[0]
+            if (currentLeader && currentLeader.whatsapp === savedWhats) {
+              const count = parseInt(localStorage.getItem('leilao_notif_count') || '0', 10)
+              localStorage.setItem('leilao_notif_count', (count + 1).toString())
+              window.dispatchEvent(new Event('leilao_notif_update'))
+              toast('⚠️ Seu lance foi superado!', {
+                description: `${newLance.nome.split(' ')[0]} deu um lance de ${formatCurrency(newLance.valor)}`
+              })
+            }
+            return currentLances
+          })
+        }
       })
       .subscribe()
 
@@ -147,6 +176,10 @@ export default function LeilaoPage() {
       return
     }
 
+    // Salva no localStorage para as próximas vezes e para sincronizar o Footer
+    localStorage.setItem('leilao_user_whats', cleanPhone)
+    localStorage.setItem('leilao_user_nome', nome.trim())
+
     setSuccess(true)
     setSubmitting(false)
     setTimeout(() => {
@@ -167,6 +200,12 @@ export default function LeilaoPage() {
     if (!produto) return
     const minVal = (produto.valor_atual || produto.valor_inicial) + produto.incremento_minimo
     setValorLance(minVal.toFixed(2))
+    // Tenta puxar do cache local
+    const savedNome = localStorage.getItem('leilao_user_nome')
+    const savedWhats = localStorage.getItem('leilao_user_whats')
+    if (savedNome) setNome(savedNome)
+    if (savedWhats) setWhatsapp(formatPhone(savedWhats))
+    
     setSuccess(false)
     setShowModal(true)
   }
@@ -205,7 +244,7 @@ export default function LeilaoPage() {
   const lanceAtual = lances[0]
 
   return (
-    <div className="min-h-screen bg-white max-w-lg mx-auto">
+    <div className="min-h-screen bg-white max-w-lg mx-auto pb-24">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-rosa-100 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -489,14 +528,14 @@ export default function LeilaoPage() {
                   )}
                 </button>
 
-                <p className="text-xs text-gray-400 text-center">
-                  Seu WhatsApp será usado apenas para contato caso ganhe o leilão.
-                </p>
               </div>
             )}
           </div>
         </div>
       )}
+      
+      {/* Footer Nav injetado com z-index abaixo do modal */}
+      <FooterNav />
     </div>
   )
 }

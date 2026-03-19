@@ -21,10 +21,18 @@ export default function DashboardPage() {
 
   async function loadData() {
     const [{ data: prods }, { data: lances }] = await Promise.all([
-      supabase.from('produtos').select('*').order('criado_em', { ascending: false }),
+      // Pega produtos e adiciona o max(lance) como valor atual para garantir sync
+      supabase.from('produtos').select('*, lances(valor)').order('criado_em', { ascending: false }),
       supabase.from('lances').select('*, produto:produtos(*)').order('criado_em', { ascending: false }).limit(10),
     ])
-    setProdutos(prods || [])
+    
+    // Calcula o maior valor real entre os lances já registrados (solução à prova de triggers atrasados)
+    const prodsComLanceValido = (prods || []).map(p => {
+      const maxL = p.lances && p.lances.length > 0 ? Math.max(...p.lances.map((l: any) => l.valor)) : p.valor_atual
+      return { ...p, valor_atual: Math.max(p.valor_atual || 0, maxL) }
+    })
+    
+    setProdutos(prodsComLanceValido)
     setLancesRecentes((lances as any) || [])
     setLoading(false)
   }
@@ -56,6 +64,45 @@ export default function DashboardPage() {
     }
     setVencedores(results)
   }
+
+  // Realtime updates
+  useEffect(() => {
+    // Escuta novos lances - atualiza o "Lance Atual" de qualqur produto no admin e coloca nos Lances Recentes
+    const channelLances = supabase
+      .channel('admin-lances')
+      .on('postgres_changes', {
+        event: 'INSERT',
+        schema: 'public',
+        table: 'lances',
+      }, async (payload) => {
+        const novoLance = payload.new as any
+        
+        // Buscar dados do produto associado para popular Lances Recentes
+        const { data: pData } = await supabase.from('produtos').select('*').eq('id', novoLance.produto_id).single()
+        
+        if (pData) {
+          setLancesRecentes(prev => {
+            const nl = { ...novoLance, produto: pData }
+            return [nl, ...prev].slice(0, 10)
+          })
+        }
+
+        // Atualiza valor_atual nos cards de Leilões Ativos
+        setProdutos(prev =>
+          prev.map(p => {
+            if (p.id === novoLance.produto_id) {
+              return { ...p, valor_atual: Math.max(p.valor_atual || 0, novoLance.valor) }
+            }
+            return p
+          })
+        )
+      })
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(channelLances)
+    }
+  }, [])
 
   if (loading) {
     return (
