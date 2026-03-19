@@ -19,14 +19,14 @@ export default function LoginPage() {
     try {
       const { error } = await supabase.auth.signInWithPassword({ email, password })
       if (error) {
-        toast.error('Email ou senha incorretos')
+        toast.error('Email ou senha incorretos: ' + error.message)
+        setLoading(false)
         return
       }
-      router.push('/admin')
-      router.refresh()
-    } catch {
+      // Recarga completa para garantir que o middleware detecta a sessão
+      window.location.href = '/admin'
+    } catch (err) {
       toast.error('Erro ao fazer login')
-    } finally {
       setLoading(false)
     }
   }
