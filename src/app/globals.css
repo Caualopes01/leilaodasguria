@@ -1,0 +1,84 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --rosa-primary: #f0005a;
+  --rosa-light: #ffe0ec;
+  --rosa-soft: #fff0f5;
+  --gray-light: #f8f8f8;
+  --gray-border: #e8e8e8;
+}
+
+* {
+  box-sizing: border-box;
+  padding: 0;
+  margin: 0;
+}
+
+html,
+body {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background: #fff;
+  color: #1a1a1a;
+}
+
+/* Scrollbar suave */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f8f8f8;
+}
+::-webkit-scrollbar-thumb {
+  background: #ffc2d8;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #f0005a;
+}
+
+/* Swiper customização */
+.swiper-pagination-bullet {
+  background: #ffc2d8 !important;
+  opacity: 1 !important;
+  width: 8px !important;
+  height: 8px !important;
+}
+.swiper-pagination-bullet-active {
+  background: #f0005a !important;
+  width: 24px !important;
+  border-radius: 4px !important;
+  transition: width 0.3s ease !important;
+}
+
+/* Input focus rosa */
+input:focus, textarea:focus, select:focus {
+  outline: none;
+  border-color: #f0005a !important;
+  box-shadow: 0 0 0 3px rgba(240, 0, 90, 0.1) !important;
+}
+
+/* Animação timer crítico */
+@keyframes timer-blink {
+  0%, 100% { color: #f0005a; }
+  50% { color: #ff5593; }
+}
+.timer-critical {
+  animation: timer-blink 1s ease-in-out infinite;
+}
+
+/* Smooth scroll */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Mobile tap highlight */
+* {
+  -webkit-tap-highlight-color: rgba(240, 0, 90, 0.1);
+}
