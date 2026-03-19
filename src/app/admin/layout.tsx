@@ -21,7 +21,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [])
 
   async function checkAuth() {
-    const { data: { user } } = await supabase.auth.getUser()
+    const { data: { session } } = await supabase.auth.getSession()
+    const user = session?.user ?? null
     if (!user && pathname !== '/admin/login') {
       router.push('/admin/login')
       return
