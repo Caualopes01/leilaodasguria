@@ -93,9 +93,16 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
     const now = new Date()
     const inicioDate = new Date(inicioEm)
     const fimDate = new Date(fimEm)
+    
+    // Regra direta: se o toggle da interface não estiver Ativo, desativa. Se estiver Ativo e já expirou, Encerrado. Senão, Ativo/Ao vivo!
     let status: Produto['status'] = 'aguardando'
-    if (now >= inicioDate && now < fimDate) status = 'ativo'
-    else if (now >= fimDate) status = 'encerrado'
+    if (!ativo) {
+      status = 'aguardando'
+    } else if (now >= fimDate) {
+      status = 'encerrado'
+    } else {
+      status = 'ativo'
+    }
 
     const payload = {
       titulo: titulo.trim(),
@@ -126,6 +133,7 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
     }
 
     toast.success(isEditing ? 'Produto atualizado!' : 'Produto criado!')
+    router.refresh()
     router.push('/admin/produtos')
   }
 
