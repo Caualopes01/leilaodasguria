@@ -134,58 +134,60 @@ export default function ProdutosPage() {
                   )}
                 </div>
 
-                {/* Info */}
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-start justify-between gap-2 mb-1">
-                    <h3 className="font-semibold text-gray-800 truncate">{produto.titulo}</h3>
-                    <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${status.color}`}>
-                      <StatusIcon className="w-3 h-3" />
-                      {status.label}
-                    </span>
+                {/* Info e Ações */}
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <div>
+                    <div className="flex items-start justify-between gap-2 mb-1">
+                      <h3 className="font-semibold text-gray-800 truncate">{produto.titulo}</h3>
+                      <span className={`flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium flex-shrink-0 ${status.color}`}>
+                        <StatusIcon className="w-3 h-3" />
+                        {status.label}
+                      </span>
+                    </div>
+                    <p className="text-sm text-gray-500 mb-2 line-clamp-1">{produto.descricao}</p>
+                    <div className="flex items-center gap-4 text-xs text-gray-500 mb-3">
+                      <span>Inicial: <strong className="text-gray-700">{formatCurrency(produto.valor_inicial)}</strong></span>
+                      <span>Atual: <strong className="text-rosa-600">{formatCurrency(produto.valor_atual)}</strong></span>
+                    </div>
                   </div>
-                  <p className="text-sm text-gray-500 mb-2 line-clamp-1">{produto.descricao}</p>
-                  <div className="flex items-center gap-4 text-xs text-gray-500">
-                    <span>Inicial: <strong className="text-gray-700">{formatCurrency(produto.valor_inicial)}</strong></span>
-                    <span>Atual: <strong className="text-rosa-600">{formatCurrency(produto.valor_atual)}</strong></span>
-                  </div>
-                </div>
 
-                {/* Actions */}
-                <div className="flex flex-col gap-2 flex-shrink-0">
-                  <button
-                    onClick={() => copyLink(produto.slug)}
-                    className="p-2 rounded-lg hover:bg-rosa-50 text-gray-500 hover:text-rosa-600 transition-colors"
-                    title="Copiar link"
-                  >
-                    <Copy className="w-4 h-4" />
-                  </button>
-                  <Link
-                    href={`/leilao/${produto.slug}`}
-                    target="_blank"
-                    className="p-2 rounded-lg hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-colors"
-                    title="Ver leilão"
-                  >
-                    <ExternalLink className="w-4 h-4" />
-                  </Link>
-                  <Link
-                    href={`/admin/produtos/${produto.id}`}
-                    className="p-2 rounded-lg hover:bg-yellow-50 text-gray-500 hover:text-yellow-600 transition-colors"
-                    title="Editar"
-                  >
-                    <Edit className="w-4 h-4" />
-                  </Link>
-                  <button
-                    onClick={() => deleteProduto(produto.id, produto.imagens)}
-                    disabled={deleting === produto.id}
-                    className="p-2 rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors disabled:opacity-50"
-                    title="Apagar"
-                  >
-                    {deleting === produto.id ? (
-                      <div className="w-4 h-4 border border-red-300 border-t-red-600 rounded-full animate-spin" />
-                    ) : (
-                      <Trash2 className="w-4 h-4" />
-                    )}
-                  </button>
+                  {/* Actions */}
+                  <div className="flex items-center justify-end gap-1 pt-3 border-t border-gray-50 mt-auto">
+                    <button
+                      onClick={() => copyLink(produto.slug)}
+                      className="p-2 rounded-lg hover:bg-rosa-50 text-gray-500 hover:text-rosa-600 transition-colors"
+                      title="Copiar link"
+                    >
+                      <Copy className="w-4 h-4" />
+                    </button>
+                    <Link
+                      href={`/leilao/${produto.slug}`}
+                      target="_blank"
+                      className="p-2 rounded-lg hover:bg-blue-50 text-gray-500 hover:text-blue-600 transition-colors"
+                      title="Ver leilão"
+                    >
+                      <ExternalLink className="w-4 h-4" />
+                    </Link>
+                    <Link
+                      href={`/admin/produtos/${produto.id}`}
+                      className="p-2 rounded-lg hover:bg-yellow-50 text-gray-500 hover:text-yellow-600 transition-colors"
+                      title="Editar"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </Link>
+                    <button
+                      onClick={() => deleteProduto(produto.id, produto.imagens)}
+                      disabled={deleting === produto.id}
+                      className="p-2 rounded-lg hover:bg-red-50 text-gray-500 hover:text-red-600 transition-colors disabled:opacity-50"
+                      title="Apagar"
+                    >
+                      {deleting === produto.id ? (
+                        <div className="w-4 h-4 border border-red-300 border-t-red-600 rounded-full animate-spin" />
+                      ) : (
+                        <Trash2 className="w-4 h-4" />
+                      )}
+                    </button>
+                  </div>
                 </div>
               </div>
             )
