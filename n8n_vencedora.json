@@ -4,67 +4,102 @@
     {
       "parameters": {
         "rule": {
-          "interval": [ { "field": "minutes" } ]
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
         }
       },
-      "name": "Schedule",
+      "name": "Schedule1",
       "type": "n8n-nodes-base.scheduleTrigger",
       "typeVersion": 1,
-      "position": [100, 300]
+      "position": [
+        -672,
+        992
+      ],
+      "id": "6915c451-82cf-4600-bc6c-af1b1ef73f44"
     },
     {
       "parameters": {
-        "url": "=SUPABASE_URL_AQUI/rest/v1/produtos?status=eq.ativo&fim_em=lte.now()",
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?status=eq.ativo&fim_em=lte.now()",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "SUPABASE_KEY_AQUI" },
-            { "name": "Authorization", "value": "Bearer SUPABASE_KEY_AQUI" }
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            }
           ]
         },
         "options": {}
       },
-      "name": "Buscar Expirados",
+      "name": "Buscar Expirados1",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [300, 300]
+      "position": [
+        -464,
+        992
+      ],
+      "id": "7212d1b2-1fa9-466d-8d81-938f00516338"
     },
     {
       "parameters": {
         "conditions": {
           "boolean": [
             {
-              "value1": "={{$json.length > 0}}",
+              "value1": "={{ $json.id != undefined }}",
               "value2": true
             }
           ]
         }
       },
-      "name": "Tem Leilões?",
+      "name": "Tem Leilões?1",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [500, 300]
+      "position": [
+        -272,
+        992
+      ],
+      "id": "f988afed-cf00-4708-9995-23f6f6d1988b"
     },
     {
       "parameters": {
         "batchSize": 1,
         "options": {}
       },
-      "name": "Split In Batches",
+      "name": "Split In Batches1",
       "type": "n8n-nodes-base.splitInBatches",
       "typeVersion": 1,
-      "position": [700, 200]
+      "position": [
+        -64,
+        896
+      ],
+      "id": "2aebd904-5706-420f-8c90-1185f79851bf"
     },
     {
       "parameters": {
         "method": "PATCH",
-        "url": "=SUPABASE_URL_AQUI/rest/v1/produtos?id=eq.{{$json.id}}",
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?id=eq.{{$json.id}}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "SUPABASE_KEY_AQUI" },
-            { "name": "Authorization", "value": "Bearer SUPABASE_KEY_AQUI" },
-            { "name": "Prefer", "value": "return=minimal" }
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
           ]
         },
         "sendBody": true,
@@ -72,108 +107,186 @@
         "jsonBody": "{\"status\": \"encerrado\"}",
         "options": {}
       },
-      "name": "Mudar Status",
+      "name": "Mudar Status1",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [900, 200]
+      "position": [
+        144,
+        896
+      ],
+      "id": "69c66166-adb3-447c-b4da-5596300933c1"
     },
     {
       "parameters": {
-        "url": "=SUPABASE_URL_AQUI/rest/v1/lances?produto_id=eq.{{$('Split In Batches').item.json.id}}&order=valor.desc&limit=1",
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/lances?produto_id=eq.{{$('Split In Batches1').item.json.id}}&order=valor.desc&limit=1",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "SUPABASE_KEY_AQUI" },
-            { "name": "Authorization", "value": "Bearer SUPABASE_KEY_AQUI" }
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            }
           ]
         },
         "options": {}
       },
-      "name": "Buscar Maior Lance",
+      "name": "Buscar Maior Lance1",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [1100, 200]
+      "position": [
+        336,
+        896
+      ],
+      "id": "ab1b9a1a-2a9b-4619-923c-cb1be74a4de4"
     },
     {
       "parameters": {
         "conditions": {
           "boolean": [
             {
-              "value1": "={{$json.length > 0}}",
+              "value1": "={{ $json.id != undefined }}",
               "value2": true
             }
           ]
         }
       },
-      "name": "Teve Lance?",
+      "name": "Teve Lance?1",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
-      "position": [1300, 200]
+      "position": [
+        544,
+        896
+      ],
+      "id": "bd282cce-80cc-4990-b633-90b01ecd6434"
     },
     {
       "parameters": {
         "method": "POST",
-        "url": "EVOLUTION_URL_AQUI/message/sendText/EVOLUTION_INSTANCE_AQUI",
+        "url": "https://evolutionapi.autosulai.com.br/message/sendText/amanda_gc",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "EVOLUTION_KEY_AQUI" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "apikey",
+              "value": "9F27C3716F67-421B-B5CF-75DB2D187808"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $json[0].whatsapp.startsWith('55') || $json[0].whatsapp.startsWith('598') ? $json[0].whatsapp : '55' + $json[0].whatsapp }}\",\n  \"text\": \"{{ (() => { const isUy = $json[0].whatsapp.startsWith('598'); const t = $('Split In Batches').item.json.titulo; const v = $json[0].valor; return isUy ? `¡¡Felicidades!! 🎉 ¡Fuiste la gran ganadora de la subasta!\\n\\n¡Has ganado el producto *${t}* por el increíble precio de *R$ ${v}*! 💖\\n\\nAhora tienes 24h para realizar el pago y asegurar tu artículo por este precio.\\n\\nAceptamos efectivo, tarjeta (al retirar) o PIX.\\n🔑 Clave PIX: 22.658.621.0001-08\\n\\nSi pagas por PIX, por favor envíanos el comprobante por aquí.\\n\\n📍 Retiro: Av 07 de Setembro, 894, Sala 02 (tienda blanca) - Gurias Chiques.` : `Parabéééns!! 🎉 Você foi a grande vencedora do leilão!\\n\\nVocê arrematou o produto *${t}* pelo valor incrível de *R$ ${v}*! 💖\\n\\nAgora você tem 24h para efetuar o pagamento e garantir a sua peça por esse precinho.\\n\\nAceitamos dinheiro, cartão (na retirada) ou PIX.\\n🔑 Chave PIX: 22.658.621.0001-08\\n\\nSe pagar por PIX, por gentileza nos envie o comprovante por aqui.\\n\\n📍 Retirada: Av 07 de Setembro, 894, Sala 02 (loja branca) - Gurias Chiques.`; })() }}\"\n}",
+        "jsonBody": "={{ { number: $json.whatsapp.startsWith('55') || $json.whatsapp.startsWith('598') ? $json.whatsapp : '55' + $json.whatsapp, text: (() => { const isUy = $json.whatsapp.startsWith('598'); const t = $('Split In Batches1').item.json.titulo; const v = $json.valor; return isUy ? `¡¡Felicidades!! 🎉 ¡Fuiste la gran ganadora de la subasta!\\n\\n¡Has ganado el producto *${t}* por el increíble precio de *R$ ${v}*! 💖\\n\\nAhora tienes 24h para realizar el pago y asegurar tu artículo por este precio.\\n\\nAceptamos efectivo, tarjeta (al retirar) o PIX.\\n🔑 Clave PIX: 22.658.621.0001-08\\n\\nSi pagas por PIX, por favor envíanos el comprobante por aquí.\\n\\n📍 Retiro: Av 07 de Setembro, 894, Sala 02 (tienda blanca) - Gurias Chiques.` : `Parabéééns!! 🎉 Você foi a grande vencedora do leilão!\\n\\nVocê arrematou o produto *${t}* pelo valor incrível de *R$ ${v}*! 💖\\n\\nAgora você tem 24h para efetuar o pagamento e garantir a sua peça por esse precinho.\\n\\nAceitamos dinheiro, cartão (na retirada) ou PIX.\\n🔑 Chave PIX: 22.658.621.0001-08\\n\\nSe pagar por PIX, por gentileza nos envie o comprovante por aqui.\\n\\n📍 Retirada: Av 07 de Setembro, 894, Sala 02 (loja branca) - Gurias Chiques.`; })() } }}",
         "options": {}
       },
-      "name": "Enviar WhatsApp",
+      "name": "Enviar WhatsApp2",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [1500, 100]
+      "position": [
+        736,
+        864
+      ],
+      "id": "cb01ac1b-5106-49e1-88be-f73b4dbdfb85"
     }
   ],
   "connections": {
-    "Schedule": {
-      "main": [
-        [ { "node": "Buscar Expirados", "type": "main", "index": 0 } ]
-      ]
-    },
-    "Buscar Expirados": {
-      "main": [
-        [ { "node": "Tem Leilões?", "type": "main", "index": 0 } ]
-      ]
-    },
-    "Tem Leilões?": {
-      "main": [
-        [ { "node": "Split In Batches", "type": "main", "index": 0 } ]
-      ]
-    },
-    "Split In Batches": {
-      "main": [
-        [ { "node": "Mudar Status", "type": "main", "index": 0 } ]
-      ]
-    },
-    "Mudar Status": {
-      "main": [
-        [ { "node": "Buscar Maior Lance", "type": "main", "index": 0 } ]
-      ]
-    },
-    "Buscar Maior Lance": {
-      "main": [
-        [ { "node": "Teve Lance?", "type": "main", "index": 0 } ]
-      ]
-    },
-    "Teve Lance?": {
+    "Schedule1": {
       "main": [
         [
-          { "node": "Enviar WhatsApp", "type": "main", "index": 0 },
-          { "node": "Split In Batches", "type": "main", "index": 0 }
+          {
+            "node": "Buscar Expirados1",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
-    "Enviar WhatsApp": {
+    "Buscar Expirados1": {
       "main": [
-        [ { "node": "Split In Batches", "type": "main", "index": 0 } ]
+        [
+          {
+            "node": "Tem Leilões?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Leilões?1": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches1": {
+      "main": [
+        [
+          {
+            "node": "Mudar Status1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mudar Status1": {
+      "main": [
+        [
+          {
+            "node": "Buscar Maior Lance1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Maior Lance1": {
+      "main": [
+        [
+          {
+            "node": "Teve Lance?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Teve Lance?1": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp2": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   }

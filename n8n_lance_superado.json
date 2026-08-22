@@ -33,23 +33,23 @@
     {
       "parameters": {
         "conditions": {
-          "string": [
+          "boolean": [
             {
-              "value1": "={{$json[0].whatsapp}}",
-              "operation": "notEqual",
-              "value2": "={{$json[1].whatsapp}}"
+              "value1": "={{ $input.all().length > 1 && $input.all()[0].json.whatsapp != $input.all()[1].json.whatsapp }}",
+              "value2": true
             }
           ]
         }
       },
       "name": "Foi Superado por Outro?",
       "type": "n8n-nodes-base.if",
+      "executeOnce": true,
       "typeVersion": 1,
       "position": [500, 300]
     },
     {
       "parameters": {
-        "url": "=SUPABASE_URL_AQUI/rest/v1/produtos?id=eq.{{$json[1].produto_id}}",
+        "url": "=SUPABASE_URL_AQUI/rest/v1/produtos?id=eq.{{$json.produto_id}}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
@@ -77,7 +77,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"{{ $('Buscar Lances').item.json[1].whatsapp.startsWith('55') || $('Buscar Lances').item.json[1].whatsapp.startsWith('598') ? $('Buscar Lances').item.json[1].whatsapp : '55' + $('Buscar Lances').item.json[1].whatsapp }}\",\n  \"text\": \"{{ (() => { const isUy = $('Buscar Lances').item.json[1].whatsapp.startsWith('598'); const vA = $('Buscar Lances').item.json[1].valor; const vN = $('Buscar Lances').item.json[0].valor; const t = $json[0].titulo; const s = $json[0].slug; return isUy ? `¡Uy, parece que alguien te está desafiando hoy! 🫣\\n\\n¡Tu oferta de R$ ${vA} en el producto *${t}* acaba de ser superada por una oferta de R$ ${vN}!\\n\\nCorre para no perder el artículo:\\nhttps://seusite.com.br/leilao/${s}` : `Iiihh parece que alguém está te desafiando hoje! 🫣\\n\\nO seu lance de R$ ${vA} no produto *${t}* acabou de ser superado por um lance de R$ ${vN}!\\n\\nCorra para não perder a peça:\\nhttps://seusite.com.br/leilao/${s}`; })() }}\"\n}",
+        "jsonBody": "={{ { number: $('Buscar Lances').all()[1].json.whatsapp.startsWith('55') || $('Buscar Lances').all()[1].json.whatsapp.startsWith('598') ? $('Buscar Lances').all()[1].json.whatsapp : '55' + $('Buscar Lances').all()[1].json.whatsapp, text: (() => { const isUy = $('Buscar Lances').all()[1].json.whatsapp.startsWith('598'); const vA = $('Buscar Lances').all()[1].json.valor; const vN = $('Buscar Lances').all()[0].json.valor; const t = $json.titulo; const s = $json.slug; return isUy ? `¡Uy, parece que alguien te está desafiando hoy! 🫣\\n\\n¡Tu oferta de R$ ${vA} en el producto *${t}* acaba de ser superada por una oferta de R$ ${vN}!\\n\\nCorre para no perder el artículo:\\nhttps://seusite.com.br/leilao/${s}` : `Iiihh parece que alguém está te desafiando hoje! 🫣\\n\\nO seu lance de R$ ${vA} no produto *${t}* acabou de ser superado por um lance de R$ ${vN}!\\n\\nCorra para não perder a peça:\\nhttps://seusite.com.br/leilao/${s}`; })() } }}",
         "options": {}
       },
       "name": "Enviar WhatsApp",
