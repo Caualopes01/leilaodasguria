@@ -47,11 +47,6 @@ export default function MeusLancesPage() {
   const [loading, setLoading] = useState(false)
   const supabase = createClient()
 
-  // Zera notificações ao abrir
-  useEffect(() => {
-    localStorage.setItem('leilao_notif_count', '0')
-    window.dispatchEvent(new Event('leilao_notif_update'))
-  }, [])
 
   useEffect(() => {
     const saved = localStorage.getItem('leilao_user_whats')
