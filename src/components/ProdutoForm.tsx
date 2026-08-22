@@ -66,7 +66,14 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
-    accept: { 'image/*': ['.jpg', '.jpeg', '.png', '.webp', '.gif'] },
+    accept: {
+      'image/*': [],
+      'image/jpeg': ['.jpg', '.jpeg'],
+      'image/png': ['.png'],
+      'image/webp': ['.webp'],
+      'image/gif': ['.gif'],
+      'image/heic': ['.heic']
+    },
     maxFiles: 10,
     disabled: uploading,
   })
