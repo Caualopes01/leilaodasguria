@@ -1,0 +1,111 @@
+{
+  "name": "Lance Superado (WhatsApp)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lance_novo",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook Supabase",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "url": "=SUPABASE_URL_AQUI/rest/v1/lances?produto_id=eq.{{$json.body.record.produto_id}}&order=valor.desc&limit=2",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "SUPABASE_KEY_AQUI" },
+            { "name": "Authorization", "value": "Bearer SUPABASE_KEY_AQUI" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Lances",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json[0].whatsapp}}",
+              "operation": "notEqual",
+              "value2": "={{$json[1].whatsapp}}"
+            }
+          ]
+        }
+      },
+      "name": "Foi Superado por Outro?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "url": "=SUPABASE_URL_AQUI/rest/v1/produtos?id=eq.{{$json[1].produto_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "SUPABASE_KEY_AQUI" },
+            { "name": "Authorization", "value": "Bearer SUPABASE_KEY_AQUI" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Produto",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [700, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "EVOLUTION_URL_AQUI/message/sendText/EVOLUTION_INSTANCE_AQUI",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "EVOLUTION_KEY_AQUI" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"55{{$('Buscar Lances').item.json[1].whatsapp}}\",\n  \"text\": \"Iiihh parece que alguém está te desafiando hoje! \uD83E\uDEE3\\n\\nO seu lance de R$ {{$('Buscar Lances').item.json[1].valor}} no produto *{{$json[0].titulo}}* acabou de ser superado por um lance de R$ {{$('Buscar Lances').item.json[0].valor}}!\\n\\nCorra para não perder a peça:\\nhttps://seusite.com.br/leilao/{{$json[0].slug}}\"\n}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [900, 200]
+    }
+  ],
+  "connections": {
+    "Webhook Supabase": {
+      "main": [
+        [ { "node": "Buscar Lances", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Buscar Lances": {
+      "main": [
+        [ { "node": "Foi Superado por Outro?", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Foi Superado por Outro?": {
+      "main": [
+        [ { "node": "Buscar Produto", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Buscar Produto": {
+      "main": [
+        [ { "node": "Enviar WhatsApp", "type": "main", "index": 0 } ]
+      ]
+    }
+  }
+}

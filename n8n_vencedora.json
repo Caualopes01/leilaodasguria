@@ -1,0 +1,180 @@
+{
+  "name": "Vencedora do Leilão (WhatsApp)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [ { "field": "minutes" } ]
+        }
+      },
+      "name": "Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "url": "=SUPABASE_URL_AQUI/rest/v1/produtos?status=eq.ativo&fim_em=lte.now()",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "SUPABASE_KEY_AQUI" },
+            { "name": "Authorization", "value": "Bearer SUPABASE_KEY_AQUI" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Expirados",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.length > 0}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Tem Leilões?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [500, 300]
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [700, 200]
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=SUPABASE_URL_AQUI/rest/v1/produtos?id=eq.{{$json.id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "SUPABASE_KEY_AQUI" },
+            { "name": "Authorization", "value": "Bearer SUPABASE_KEY_AQUI" },
+            { "name": "Prefer", "value": "return=minimal" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"status\": \"encerrado\"}",
+        "options": {}
+      },
+      "name": "Mudar Status",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [900, 200]
+    },
+    {
+      "parameters": {
+        "url": "=SUPABASE_URL_AQUI/rest/v1/lances?produto_id=eq.{{$('Split In Batches').item.json.id}}&order=valor.desc&limit=1",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "SUPABASE_KEY_AQUI" },
+            { "name": "Authorization", "value": "Bearer SUPABASE_KEY_AQUI" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Maior Lance",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1100, 200]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$json.length > 0}}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Teve Lance?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [1300, 200]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "EVOLUTION_URL_AQUI/message/sendText/EVOLUTION_INSTANCE_AQUI",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "EVOLUTION_KEY_AQUI" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"number\": \"55{{$json[0].whatsapp}}\",\n  \"text\": \"Parabéééns!! 🎉 Você foi a grande vencedora do leilão!\\n\\nVocê arrematou o produto *{{$('Split In Batches').item.json.titulo}}* pelo valor incrível de *R$ {{$json[0].valor}}*! 💖\\n\\nAgora você tem 24h para efetuar o pagamento e garantir a sua peça por esse precinho.\\n\\nAceitamos dinheiro, cartão (na retirada) ou PIX.\\n🔑 Chave PIX: 22.658.621.0001-08\\n\\nSe pagar por PIX, por gentileza nos envie o comprovante por aqui.\\n\\n📍 Retirada: Av 07 de Setembro, 894, Sala 02 (loja branca) - Gurias Chiques.\"\n}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [1500, 100]
+    }
+  ],
+  "connections": {
+    "Schedule": {
+      "main": [
+        [ { "node": "Buscar Expirados", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Buscar Expirados": {
+      "main": [
+        [ { "node": "Tem Leilões?", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Tem Leilões?": {
+      "main": [
+        [ { "node": "Split In Batches", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [ { "node": "Mudar Status", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Mudar Status": {
+      "main": [
+        [ { "node": "Buscar Maior Lance", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Buscar Maior Lance": {
+      "main": [
+        [ { "node": "Teve Lance?", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Teve Lance?": {
+      "main": [
+        [
+          { "node": "Enviar WhatsApp", "type": "main", "index": 0 },
+          { "node": "Split In Batches", "type": "main", "index": 0 }
+        ]
+      ]
+    },
+    "Enviar WhatsApp": {
+      "main": [
+        [ { "node": "Split In Batches", "type": "main", "index": 0 } ]
+      ]
+    }
+  }
+}
