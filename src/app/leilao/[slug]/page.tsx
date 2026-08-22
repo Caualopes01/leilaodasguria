@@ -67,6 +67,34 @@ export default function LeilaoPage() {
   const [submitting, setSubmitting] = useState(false)
   const [success, setSuccess] = useState(false)
 
+  // Touch/Swipe state
+  const [touchStart, setTouchStart] = useState<number | null>(null)
+  const [touchEnd, setTouchEnd] = useState<number | null>(null)
+  const minSwipeDistance = 50
+
+  const onTouchStart = (e: React.TouchEvent) => {
+    setTouchEnd(null)
+    setTouchStart(e.targetTouches[0].clientX)
+  }
+
+  const onTouchMove = (e: React.TouchEvent) => {
+    setTouchEnd(e.targetTouches[0].clientX)
+  }
+
+  const onTouchEndHandler = () => {
+    if (!touchStart || !touchEnd) return
+    const distance = touchStart - touchEnd
+    const isLeftSwipe = distance > minSwipeDistance
+    const isRightSwipe = distance < -minSwipeDistance
+
+    if (isLeftSwipe && produto?.imagens) {
+      setImgIndex(i => Math.min(produto.imagens!.length - 1, i + 1))
+    }
+    if (isRightSwipe && produto?.imagens) {
+      setImgIndex(i => Math.max(0, i - 1))
+    }
+  }
+
   const timeLeft = useCountdown(produto?.fim_em || new Date().toISOString())
   const isCritical = timeLeft.total > 0 && timeLeft.total < 60000 // < 1 minuto
   const isEnded = produto ? new Date(produto.fim_em) <= new Date() || produto.status === 'encerrado' : false
@@ -245,7 +273,12 @@ export default function LeilaoPage() {
 
       {/* Image carousel */}
       {produto.imagens && produto.imagens.length > 0 ? (
-        <div className="relative aspect-square bg-gray-50 overflow-hidden">
+        <div 
+          className="relative aspect-square bg-gray-50 overflow-hidden select-none"
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEndHandler}
+        >
           <img
             src={produto.imagens[imgIndex]}
             alt={produto.titulo}

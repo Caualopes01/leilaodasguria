@@ -103,7 +103,10 @@ export default function FooterNav() {
                 <ShoppingBag className="w-4 h-4" /> Ver Leilão
               </button>
             </div>
-          ), { duration: 10000 })
+          ), { 
+            duration: 10000,
+            style: { background: 'transparent', border: 'none', boxShadow: 'none', padding: 0 }
+          })
         }
       })
       .subscribe()
