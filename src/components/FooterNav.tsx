@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { ShoppingBag, Bell } from 'lucide-react'
+import { ShoppingBag, Bell, Gavel } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { toast } from 'sonner'
 
@@ -130,6 +130,12 @@ export default function FooterNav() {
       label: 'Meus Lances',
       icon: Bell,
       active: pathname === '/meus-lances',
+    },
+    {
+      href: '/novidades',
+      label: 'Novidades',
+      icon: Gavel,
+      active: pathname === '/novidades',
       badge: notifCount > 0 ? notifCount : null,
     },
   ]
@@ -146,7 +152,7 @@ export default function FooterNav() {
               tab.active ? 'text-rosa-600' : 'text-gray-400 hover:text-gray-600'
             }`}
           >
-            <div className={`relative ${tab.label === 'Meus Lances' && tab.badge ? 'animate-shake-bell' : ''}`}>
+            <div className={`relative ${tab.label === 'Novidades' && tab.badge ? 'animate-shake-bell' : ''}`}>
               <Icon className="w-5 h-5" />
               {tab.badge && (
                 <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-rosa-600 rounded-full text-white text-[10px] font-bold flex items-center justify-center leading-none shadow-sm shadow-rosa-300">
