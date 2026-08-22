@@ -180,8 +180,6 @@ export default function LeilaoPage() {
     }, 2500)
   }
 
-  }
-
   function openModal() {
     if (!produto) return
     const minVal = (produto.valor_atual || produto.valor_inicial) + produto.incremento_minimo
