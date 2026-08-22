@@ -15,6 +15,13 @@ import {
 import { toast } from 'sonner'
 import Link from 'next/link'
 
+function getLocalISOString(dateString: string) {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  date.setMinutes(date.getMinutes() - date.getTimezoneOffset())
+  return date.toISOString().slice(0, 16)
+}
+
 interface ProdutoFormProps {
   produto?: Produto
 }
@@ -29,10 +36,10 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
   const [valorInicial, setValorInicial] = useState(produto?.valor_inicial?.toString() || '')
   const [incremento, setIncremento] = useState(produto?.incremento_minimo?.toString() || '1')
   const [inicioEm, setInicioEm] = useState(
-    produto?.inicio_em ? new Date(produto.inicio_em).toISOString().slice(0, 16) : ''
+    produto?.inicio_em ? getLocalISOString(produto.inicio_em) : ''
   )
   const [fimEm, setFimEm] = useState(
-    produto?.fim_em ? new Date(produto.fim_em).toISOString().slice(0, 16) : ''
+    produto?.fim_em ? getLocalISOString(produto.fim_em) : ''
   )
   const [ativo, setAtivo] = useState(produto?.ativo ?? true)
   const [imagens, setImagens] = useState<string[]>(produto?.imagens || [])
