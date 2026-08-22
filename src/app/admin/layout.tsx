@@ -5,7 +5,7 @@ import { useRouter, usePathname } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import {
-  Heart, LayoutDashboard, Package, LogOut, Menu, X, ChevronRight, Store, ExternalLink
+  Heart, LayoutDashboard, Package, LogOut, Menu, X, ChevronRight, Store, ExternalLink, Gavel
 } from 'lucide-react'
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -53,6 +53,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const navItems = [
     { href: '/admin', icon: LayoutDashboard, label: 'Dashboard' },
     { href: '/admin/produtos', icon: Package, label: 'Produtos' },
+    { href: '/admin/lances', icon: Gavel, label: 'Lances' },
   ]
 
   return (
