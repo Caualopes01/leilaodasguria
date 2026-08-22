@@ -52,11 +52,16 @@ function ProdutoCardCompacto({ produto }: { produto: Produto }) {
           </div>
         </div>
         {/* Info */}
-        <div className="p-2">
-          <h3 className="font-semibold text-gray-900 text-[10px] line-clamp-1 leading-tight">{produto.titulo}</h3>
-          <p className="font-display font-bold text-orange-600 text-xs mt-0.5">
-            {formatCurrency(produto.valor_atual || produto.valor_inicial)}
-          </p>
+        <div className="p-2 flex items-center justify-between gap-1">
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-gray-900 text-[10px] line-clamp-1 leading-tight">{produto.titulo}</h3>
+            <p className="font-display font-bold text-orange-600 text-[11px] mt-0.5 leading-none">
+              {formatCurrency(produto.valor_atual || produto.valor_inicial)}
+            </p>
+          </div>
+          <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-1.5 rounded-lg flex-shrink-0 shadow-sm flex items-center justify-center">
+            <Gavel className="w-3 h-3" />
+          </div>
         </div>
       </div>
     </Link>
