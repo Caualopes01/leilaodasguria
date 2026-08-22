@@ -19,7 +19,7 @@ export const metadata: Metadata = {
   title: 'Leilão das Gurias',
   description: 'Leilão online - Dê seu lance e garanta o seu!',
   icons: {
-    icon: '/favicon.svg',
+    icon: '/favicon.jpg',
   },
   openGraph: {
     title: 'Leilão das Gurias',
