@@ -119,14 +119,14 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-8 animate-fade-in">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display text-2xl lg:text-3xl font-bold text-gray-800">Dashboard</h1>
           <p className="text-gray-500 text-sm mt-1">Visão geral dos seus leilões</p>
         </div>
         <Link
           href="/admin/produtos/novo"
-          className="flex items-center gap-2 bg-rosa-600 hover:bg-rosa-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm shadow-rosa-200"
+          className="flex items-center justify-center gap-2 bg-rosa-600 hover:bg-rosa-700 text-white px-4 py-2.5 rounded-xl text-sm font-semibold transition-all shadow-sm shadow-rosa-200 shrink-0"
         >
           <Plus className="w-4 h-4" />
           Novo Produto
