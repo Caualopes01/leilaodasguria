@@ -235,7 +235,7 @@ export default function LeilaoPage() {
   const lanceAtual = lances[0]
 
   return (
-    <div className="min-h-screen bg-white max-w-lg mx-auto pb-24">
+    <div className="min-h-screen bg-white max-w-lg mx-auto pb-24 overflow-x-hidden">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-rosa-100 px-4 py-3 flex items-center justify-between">
         <div className="flex items-center gap-2">
@@ -315,7 +315,7 @@ export default function LeilaoPage() {
       {/* Produto info e CTA */}
       <div className="px-4 py-5 space-y-5">
         <div>
-          <h1 className="font-display text-2xl font-bold text-gray-900 leading-tight">{produto.titulo}</h1>
+          <h1 className="font-display text-2xl font-bold text-gray-900 leading-tight break-words">{produto.titulo}</h1>
           {produto.descricao && (
             <p className="text-gray-500 text-sm mt-2 leading-relaxed">{produto.descricao}</p>
           )}
@@ -363,7 +363,7 @@ export default function LeilaoPage() {
             <p className={`text-xs font-medium mb-3 ${isCritical ? 'text-red-500' : 'text-gray-500'}`}>
               {isCritical ? '⚡ Últimos segundos!' : 'Encerra em'}
             </p>
-            <div className={`flex items-center justify-center gap-4 ${isCritical ? 'timer-critical' : 'text-gray-800'}`}>
+            <div className={`flex items-center justify-center gap-2 sm:gap-4 ${isCritical ? 'timer-critical' : 'text-gray-800'}`}>
               {timeLeft.days > 0 && <TimerBlock value={timeLeft.days} label="dias" />}
               {(timeLeft.days > 0 || timeLeft.hours > 0) && (
                 <>

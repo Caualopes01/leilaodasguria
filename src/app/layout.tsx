@@ -35,7 +35,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR">
-      <body className={`${playfair.variable} ${dmSans.variable} font-body antialiased`}>
+      <body className={`${playfair.variable} ${dmSans.variable} font-body antialiased overflow-x-hidden`}>
         {children}
         <Toaster
           position="top-center"
