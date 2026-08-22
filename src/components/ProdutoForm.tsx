@@ -1,15 +1,16 @@
 'use client'
 
-import { useState, useCallback } from 'react'
+import { useState, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDropzone } from 'react-dropzone'
-import Cropper, { Area } from 'react-easy-crop'
+import ReactCrop, { type Crop, type PixelCrop } from 'react-image-crop'
+import 'react-image-crop/dist/ReactCrop.css'
 import { createClient, Produto } from '@/lib/supabase'
 import { slugify } from '@/lib/utils'
 import getCroppedImg from '@/lib/cropImage'
 import {
-  Upload, X, GripVertical, ArrowLeft, Save,
-  Image as ImageIcon, Loader2, ChevronLeft, ChevronRight, Check
+  Upload, X, ArrowLeft, Save,
+  Loader2, ChevronLeft, ChevronRight, Check, Scissors
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -40,88 +41,40 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
   const [previewIndex, setPreviewIndex] = useState(0)
 
   // Crop states
-  const [fileQueue, setFileQueue] = useState<File[]>([])
-  const [currentFileIndex, setCurrentFileIndex] = useState(0)
-  const [crop, setCrop] = useState({ x: 0, y: 0 })
-  const [zoom, setZoom] = useState(1)
-  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
-  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null)
   const [isCropping, setIsCropping] = useState(false)
+  const [cropImageUrl, setCropImageUrl] = useState<string | null>(null)
+  const [cropImageOriginalUrl, setCropImageOriginalUrl] = useState<string | null>(null)
+  const [crop, setCrop] = useState<Crop>()
+  const [completedCrop, setCompletedCrop] = useState<PixelCrop | null>(null)
+  const [processingCrop, setProcessingCrop] = useState(false)
+  const imgRef = useRef<HTMLImageElement>(null)
 
-  const onDrop = useCallback((acceptedFiles: File[]) => {
-    const validFiles = acceptedFiles.filter(f => {
-      if (f.size > 5 * 1024 * 1024) {
-        toast.error(`${f.name} é muito grande (máx 5MB)`)
-        return false
+  const onDrop = useCallback(async (acceptedFiles: File[]) => {
+    setUploading(true)
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) { toast.error('Não autorizado'); setUploading(false); return }
+
+    for (const file of acceptedFiles) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error(`${file.name} é muito grande (máx 5MB)`)
+        continue
       }
-      return true
-    })
-    
-    if (validFiles.length > 0) {
-      setFileQueue(validFiles)
-      setCurrentFileIndex(0)
-      setCurrentImageUrl(URL.createObjectURL(validFiles[0]))
-      setCrop({ x: 0, y: 0 })
-      setZoom(1)
-      setIsCropping(true)
-    }
-  }, [])
-
-  const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
-    setCroppedAreaPixels(croppedAreaPixels)
-  }, [])
-
-  const handleNextCrop = async () => {
-    if (!currentImageUrl || !croppedAreaPixels) return
-
-    setUploading(true) // Block UI while processing crop & upload
-
-    try {
-      const croppedFile = await getCroppedImg(currentImageUrl, croppedAreaPixels)
-      if (!croppedFile) throw new Error('Falha ao cortar imagem')
-
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) throw new Error('Não autorizado')
-
-      const ext = croppedFile.name.split('.').pop()
+      const ext = file.name.split('.').pop()
       const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      
-      const { error } = await supabase.storage.from('produtos').upload(path, croppedFile, {
+      const { error } = await supabase.storage.from('produtos').upload(path, file, {
         cacheControl: '3600',
         upsert: false
       })
-      if (error) throw error
-
+      if (error) {
+        toast.error(`Erro ao fazer upload de ${file.name}`)
+        continue
+      }
       const { data: { publicUrl } } = supabase.storage.from('produtos').getPublicUrl(path)
       setImagens(prev => [...prev, publicUrl])
-      toast.success(`Imagem ${currentFileIndex + 1}/${fileQueue.length} cortada e enviada!`)
-
-    } catch (err: any) {
-      toast.error(`Erro: ${err.message}`)
     }
-
     setUploading(false)
-
-    // Move to next file in queue or close cropper
-    if (currentFileIndex < fileQueue.length - 1) {
-      const nextIndex = currentFileIndex + 1
-      setCurrentFileIndex(nextIndex)
-      setCurrentImageUrl(URL.createObjectURL(fileQueue[nextIndex]))
-      setCrop({ x: 0, y: 0 })
-      setZoom(1)
-    } else {
-      setIsCropping(false)
-      setFileQueue([])
-      setCurrentImageUrl(null)
-    }
-  }
-
-  const cancelCropQueue = () => {
-    setIsCropping(false)
-    setFileQueue([])
-    setCurrentImageUrl(null)
-    toast.info('Envio de imagens cancelado')
-  }
+    toast.success('Imagem(ns) enviada(s)!')
+  }, [supabase])
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -146,6 +99,83 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
     if (previewIndex >= imagens.length - 1) setPreviewIndex(Math.max(0, imagens.length - 2))
   }
 
+  // CROP LOGIC
+  async function startCrop(url: string) {
+    setProcessingCrop(true)
+    try {
+      // Baixar a imagem para um blob local evita problemas de CORS no Canvas
+      const res = await fetch(url)
+      const blob = await res.blob()
+      const objectUrl = URL.createObjectURL(blob)
+      
+      setCropImageOriginalUrl(url)
+      setCropImageUrl(objectUrl)
+      setCrop(undefined)
+      setCompletedCrop(null)
+      setIsCropping(true)
+    } catch (error) {
+      toast.error('Erro ao carregar imagem para edição.')
+    }
+    setProcessingCrop(false)
+  }
+
+  function cancelCrop() {
+    setIsCropping(false)
+    if (cropImageUrl) URL.revokeObjectURL(cropImageUrl)
+    setCropImageUrl(null)
+    setCropImageOriginalUrl(null)
+  }
+
+  async function handleSaveCrop() {
+    if (!completedCrop || !cropImageUrl || !cropImageOriginalUrl || !imgRef.current) return
+    
+    setProcessingCrop(true)
+    try {
+      const scaleX = imgRef.current.naturalWidth / imgRef.current.width
+      const scaleY = imgRef.current.naturalHeight / imgRef.current.height
+
+      const actualCrop = {
+        x: completedCrop.x * scaleX,
+        y: completedCrop.y * scaleY,
+        width: completedCrop.width * scaleX,
+        height: completedCrop.height * scaleY,
+      }
+
+      const croppedFile = await getCroppedImg(cropImageUrl, actualCrop)
+      if (!croppedFile) throw new Error('Falha ao cortar imagem')
+
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Não autorizado')
+
+      // Upload nova imagem cortada
+      const ext = croppedFile.name.split('.').pop()
+      const newPath = `${user.id}/${Date.now()}-cropped-${Math.random().toString(36).slice(2)}.${ext}`
+      
+      const { error: uploadError } = await supabase.storage.from('produtos').upload(newPath, croppedFile, {
+        cacheControl: '3600',
+        upsert: false
+      })
+      if (uploadError) throw uploadError
+
+      const { data: { publicUrl: newUrl } } = supabase.storage.from('produtos').getPublicUrl(newPath)
+      
+      // Atualizar no estado (substituindo a antiga pela nova no mesmo index)
+      setImagens(prev => prev.map(url => url === cropImageOriginalUrl ? newUrl : url))
+
+      // Apagar a imagem original pesada do Storage
+      const oldPath = cropImageOriginalUrl.split('/storage/v1/object/public/produtos/')[1]
+      if (oldPath) {
+        await supabase.storage.from('produtos').remove([oldPath])
+      }
+
+      toast.success('Recorte salvo com sucesso!')
+      cancelCrop() // fecha modal
+    } catch (err: any) {
+      toast.error(`Erro ao salvar recorte: ${err.message}`)
+    }
+    setProcessingCrop(false)
+  }
+
   async function handleSave() {
     if (!titulo.trim()) { toast.error('Informe o título'); return }
     if (!valorInicial || isNaN(Number(valorInicial))) { toast.error('Informe o valor inicial'); return }
@@ -160,7 +190,6 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
     const inicioDate = new Date(inicioEm)
     const fimDate = new Date(fimEm)
     
-    // Regra direta: se o toggle da interface não estiver Ativo, desativa. Se estiver Ativo e já expirou, Encerrado. Senão, Ativo/Ao vivo!
     let status: Produto['status'] = 'aguardando'
     if (!ativo) {
       status = 'aguardando'
@@ -266,11 +295,28 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
                 >
                   <img src={img} alt="" className="w-full h-full object-cover" />
                 </button>
+                
+                {/* Remove button */}
                 <button
                   onClick={() => removeImagem(img)}
-                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity z-10"
+                  title="Apagar"
                 >
                   <X className="w-3 h-3" />
+                </button>
+
+                {/* Edit/Crop button */}
+                <button
+                  onClick={() => startCrop(img)}
+                  disabled={processingCrop}
+                  className="absolute -bottom-1.5 -right-1.5 w-6 h-6 bg-blue-500 hover:bg-blue-600 text-white rounded-full flex items-center justify-center shadow transition-all z-10"
+                  title="Cortar imagem"
+                >
+                  {processingCrop && cropImageOriginalUrl === img ? (
+                    <Loader2 className="w-3 h-3 animate-spin" />
+                  ) : (
+                    <Scissors className="w-3 h-3" />
+                  )}
                 </button>
               </div>
             ))}
@@ -290,7 +336,7 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
           {uploading ? (
             <div className="flex flex-col items-center gap-2">
               <Loader2 className="w-8 h-8 text-rosa-400 animate-spin" />
-              <p className="text-sm text-gray-500">Enviando...</p>
+              <p className="text-sm text-gray-500">Enviando imagens...</p>
             </div>
           ) : (
             <div className="flex flex-col items-center gap-2">
@@ -424,71 +470,56 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
       </div>
 
       {/* Modal de Crop */}
-      {isCropping && currentImageUrl && (
+      {isCropping && cropImageUrl && (
         <div className="fixed inset-0 z-50 flex flex-col bg-black/95 animate-fade-in touch-none">
-          {/* Header Mobile-friendly */}
+          {/* Header */}
           <div className="flex items-center justify-between p-4 bg-black/50 text-white z-10 backdrop-blur-md border-b border-white/10">
             <button 
-              onClick={cancelCropQueue}
+              onClick={cancelCrop}
               className="p-2 rounded-full hover:bg-white/10 transition-colors"
             >
               <X className="w-6 h-6" />
             </button>
-            <div className="text-center">
-              <p className="font-semibold">Recortar Imagem</p>
-              <p className="text-xs text-gray-400">
-                {fileQueue.length > 1 ? `Foto ${currentFileIndex + 1} de ${fileQueue.length}` : 'Ajuste o enquadramento livremente'}
-              </p>
-            </div>
+            <p className="font-semibold">Ajustar Recorte livre</p>
             <button 
-              onClick={handleNextCrop}
-              disabled={uploading}
+              onClick={handleSaveCrop}
+              disabled={processingCrop || !completedCrop?.width || !completedCrop?.height}
               className="p-2 rounded-full bg-rosa-600 hover:bg-rosa-700 text-white transition-colors disabled:opacity-50"
             >
-              {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-6 h-6" />}
+              {processingCrop ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-6 h-6" />}
             </button>
           </div>
           
           {/* Cropper Container */}
-          <div className="flex-1 relative">
-            <Cropper
-              image={currentImageUrl}
-              crop={crop}
-              zoom={zoom}
-              aspect={undefined} // free ratio
-              onCropChange={setCrop}
-              onCropComplete={onCropComplete}
-              onZoomChange={setZoom}
-              classes={{
-                containerClassName: 'bg-black',
-              }}
-            />
+          <div className="flex-1 flex items-center justify-center overflow-auto p-4">
+            <ReactCrop 
+              crop={crop} 
+              onChange={c => setCrop(c)}
+              onComplete={(c) => setCompletedCrop(c)}
+              className="max-h-full max-w-full"
+            >
+              <img 
+                ref={imgRef}
+                src={cropImageUrl} 
+                className="max-h-[70vh] w-auto mx-auto object-contain"
+                alt="Crop preview" 
+              />
+            </ReactCrop>
           </div>
           
-          {/* Footer Controls (optional zoom slider for desktop, touch is default on mobile) */}
-          <div className="p-6 bg-black text-white z-10 flex flex-col gap-4 pb-safe">
-            <p className="text-center text-sm text-gray-400 mb-2">
-              Faça o movimento de pinça para dar zoom ou arraste para mover.
+          <div className="p-6 bg-black text-white z-10 text-center pb-safe">
+            <p className="text-sm text-gray-400 mb-4">
+              Arraste as alças azuis nas bordas da imagem para ajustar o tamanho do corte.
             </p>
-            <input
-              type="range"
-              value={zoom}
-              min={1}
-              max={3}
-              step={0.1}
-              aria-labelledby="Zoom"
-              onChange={(e) => setZoom(Number(e.target.value))}
-              className="w-full max-w-sm mx-auto accent-rosa-500"
-            />
             <button
-              onClick={handleNextCrop}
-              disabled={uploading}
-              className="w-full max-w-sm mx-auto py-3.5 bg-rosa-600 hover:bg-rosa-700 disabled:opacity-50 text-white rounded-xl font-bold flex items-center justify-center gap-2 mt-2 shadow-lg shadow-rosa-900/50"
+              onClick={handleSaveCrop}
+              disabled={processingCrop || !completedCrop?.width || !completedCrop?.height}
+              className="w-full max-w-sm mx-auto py-3.5 bg-rosa-600 hover:bg-rosa-700 disabled:opacity-50 text-white rounded-xl font-bold flex items-center justify-center gap-2 shadow-lg shadow-rosa-900/50"
             >
-              {uploading ? (
-                <><Loader2 className="w-5 h-5 animate-spin" /> Processando...</>
+              {processingCrop ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> Salvando...</>
               ) : (
-                <>{fileQueue.length > 1 && currentFileIndex < fileQueue.length - 1 ? 'Próxima Foto' : 'Salvar Recorte'}</>
+                <>Confirmar Recorte</>
               )}
             </button>
           </div>
