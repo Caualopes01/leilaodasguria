@@ -5,6 +5,7 @@ import { createClient, Produto, Lance } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
 import { Bell, Heart, TrendingUp, Trophy, Clock, AlertCircle, CheckCircle, Phone } from 'lucide-react'
 import FooterNav from '@/components/FooterNav'
+import PhoneInput from '@/components/PhoneInput'
 
 type LanceWithProduto = Lance & { produto: Produto }
 
@@ -145,12 +146,6 @@ export default function MeusLancesPage() {
     loadMeusLances(clean)
   }
 
-  function formatPhone(value: string) {
-    const nums = value.replace(/\D/g, '').slice(0, 11)
-    if (nums.length <= 2) return nums
-    if (nums.length <= 7) return `(${nums.slice(0, 2)}) ${nums.slice(2)}`
-    return `(${nums.slice(0, 2)}) ${nums.slice(2, 7)}-${nums.slice(7)}`
-  }
 
   return (
     <div className="min-h-screen bg-gray-50 max-w-lg mx-auto pb-24">
@@ -175,15 +170,7 @@ export default function MeusLancesPage() {
               Digite seu WhatsApp para ver seus lances e acompanhar os resultados
             </p>
             <div className="relative mb-4">
-              <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <input
-                type="tel"
-                inputMode="numeric"
-                value={inputWhats}
-                onChange={e => setInputWhats(formatPhone(e.target.value))}
-                placeholder="(51) 99999-9999"
-                className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm"
-              />
+              <PhoneInput value={inputWhats} onChange={setInputWhats} />
             </div>
             <button
               onClick={handleConfirmWhats}

@@ -8,7 +8,7 @@ import {
   Package, TrendingUp, Clock, Trophy,
   ArrowRight, Plus, ExternalLink, X, Phone, User, ListOrdered
 } from 'lucide-react'
-import { formatWhatsApp } from '@/lib/utils'
+import { formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
 
 export default function DashboardPage() {
   const [produtos, setProdutos] = useState<Produto[]>([])
@@ -311,7 +311,7 @@ export default function DashboardPage() {
               </div>
 
               <a 
-                href={`https://wa.me/55${selectedLance.whatsapp?.replace(/\D/g, '')}?text=${encodeURIComponent(`Olá ${selectedLance.nome.split(' ')[0]}, tudo bem? Falamos do portal Leilão das Gurias sobre o produto "${selectedLance.produto?.titulo}".`)}`}
+                href={getWhatsAppLink(selectedLance.whatsapp || '', `Olá ${selectedLance.nome.split(' ')[0]}, tudo bem? Falamos do portal Leilão das Gurias sobre o produto "${selectedLance.produto?.titulo}".`)}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#1ebd5b] text-white font-bold py-3 rounded-xl transition-colors mt-2"

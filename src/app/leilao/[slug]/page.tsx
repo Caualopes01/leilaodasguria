@@ -11,6 +11,7 @@ import {
 } from 'lucide-react'
 import { toast } from 'sonner'
 import FooterNav from '@/components/FooterNav'
+import PhoneInput from '@/components/PhoneInput'
 
 function useCountdown(targetDate: string) {
   const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 })
@@ -179,12 +180,6 @@ export default function LeilaoPage() {
     }, 2500)
   }
 
-  function formatPhone(value: string) {
-    const nums = value.replace(/\D/g, '').slice(0, 11)
-    if (nums.length <= 2) return nums
-    if (nums.length <= 7) return `(${nums.slice(0, 2)}) ${nums.slice(2)}`
-    if (nums.length <= 11) return `(${nums.slice(0, 2)}) ${nums.slice(2, 7)}-${nums.slice(7)}`
-    return value
   }
 
   function openModal() {
@@ -195,7 +190,7 @@ export default function LeilaoPage() {
     const savedNome = localStorage.getItem('leilao_user_nome')
     const savedWhats = localStorage.getItem('leilao_user_whats')
     if (savedNome) setNome(savedNome)
-    if (savedWhats) setWhatsapp(formatPhone(savedWhats))
+    if (savedWhats) setWhatsapp(savedWhats)
     
     setSuccess(false)
     setShowModal(true)
@@ -477,19 +472,7 @@ export default function LeilaoPage() {
                   />
                 </div>
 
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
-                    <Phone className="w-4 h-4 text-gray-400" /> WhatsApp *
-                  </label>
-                  <input
-                    type="tel"
-                    inputMode="numeric"
-                    value={whatsapp}
-                    onChange={e => setWhatsapp(formatPhone(e.target.value))}
-                    placeholder="(51) 99999-9999"
-                    className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm"
-                  />
-                </div>
+                <PhoneInput value={whatsapp} onChange={setWhatsapp} />
 
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1.5">Valor do lance (R$) *</label>

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import { ArrowLeft, ExternalLink, Trophy, History, Package, Loader2, Trash2 } from 'lucide-react'
-import { formatCurrency, formatWhatsApp } from '@/lib/utils'
+import { formatCurrency, formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
 import { toast } from 'sonner'
 
 export default function HistoricoLancesPage({ params }: { params: { id: string } }) {
@@ -194,7 +194,7 @@ export default function HistoricoLancesPage({ params }: { params: { id: string }
                               {lance.nome}
                             </p>
                             <a 
-                              href={`https://wa.me/${lance.whatsapp.replace(/\D/g, '')}`} 
+                              href={getWhatsAppLink(lance.whatsapp || '', '')} 
                               target="_blank" 
                               rel="noreferrer"
                               className="text-sm text-rosa-600 hover:text-rosa-700 hover:underline font-medium break-all"

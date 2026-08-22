@@ -77,7 +77,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={\n  \"number\": \"55{{$('Buscar Lances').item.json[1].whatsapp}}\",\n  \"text\": \"Iiihh parece que alguém está te desafiando hoje! \uD83E\uDEE3\\n\\nO seu lance de R$ {{$('Buscar Lances').item.json[1].valor}} no produto *{{$json[0].titulo}}* acabou de ser superado por um lance de R$ {{$('Buscar Lances').item.json[0].valor}}!\\n\\nCorra para não perder a peça:\\nhttps://seusite.com.br/leilao/{{$json[0].slug}}\"\n}",
+        "jsonBody": "={\n  \"number\": \"{{ $('Buscar Lances').item.json[1].whatsapp.startsWith('55') || $('Buscar Lances').item.json[1].whatsapp.startsWith('598') ? $('Buscar Lances').item.json[1].whatsapp : '55' + $('Buscar Lances').item.json[1].whatsapp }}\",\n  \"text\": \"{{ (() => { const isUy = $('Buscar Lances').item.json[1].whatsapp.startsWith('598'); const vA = $('Buscar Lances').item.json[1].valor; const vN = $('Buscar Lances').item.json[0].valor; const t = $json[0].titulo; const s = $json[0].slug; return isUy ? `¡Uy, parece que alguien te está desafiando hoy! 🫣\\n\\n¡Tu oferta de R$ ${vA} en el producto *${t}* acaba de ser superada por una oferta de R$ ${vN}!\\n\\nCorre para no perder el artículo:\\nhttps://seusite.com.br/leilao/${s}` : `Iiihh parece que alguém está te desafiando hoje! 🫣\\n\\nO seu lance de R$ ${vA} no produto *${t}* acabou de ser superado por um lance de R$ ${vN}!\\n\\nCorra para não perder a peça:\\nhttps://seusite.com.br/leilao/${s}`; })() }}\"\n}",
         "options": {}
       },
       "name": "Enviar WhatsApp",
