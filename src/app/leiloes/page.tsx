@@ -27,6 +27,42 @@ function useCountdownShort(targetDate: string) {
   return label
 }
 
+function ProdutoCardCompacto({ produto }: { produto: Produto }) {
+  const timer = useCountdownShort(produto.fim_em)
+  const isCritical = new Date(produto.fim_em).getTime() - Date.now() < 300000
+
+  return (
+    <Link href={`/leilao/${produto.slug}`} className="block">
+      <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-orange-200/60 shadow-sm overflow-hidden hover:shadow-md transition-all relative">
+        {/* Imagem */}
+        <div className="relative aspect-square bg-orange-50 overflow-hidden">
+          {produto.imagens && produto.imagens.length > 0 ? (
+            <img
+              src={produto.imagens[0]}
+              alt={produto.titulo}
+              className="w-full h-full object-cover"
+            />
+          ) : (
+            <div className="w-full h-full flex items-center justify-center text-xl">🛍️</div>
+          )}
+          {/* Timer badge */}
+          <div className={`absolute bottom-1 right-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold flex items-center gap-0.5 ${isCritical ? 'bg-red-500 text-white' : 'bg-black/60 text-white'}`}>
+            <Clock className="w-2.5 h-2.5" />
+            {timer}
+          </div>
+        </div>
+        {/* Info */}
+        <div className="p-2">
+          <h3 className="font-semibold text-gray-900 text-[10px] line-clamp-1 leading-tight">{produto.titulo}</h3>
+          <p className="font-display font-bold text-orange-600 text-xs mt-0.5">
+            {formatCurrency(produto.valor_atual || produto.valor_inicial)}
+          </p>
+        </div>
+      </div>
+    </Link>
+  )
+}
+
 function ProdutoCard({ produto }: { produto: Produto }) {
   const timer = useCountdownShort(produto.fim_em)
   const isCritical = new Date(produto.fim_em).getTime() - Date.now() < 300000
@@ -95,12 +131,15 @@ export default function MarketplacePage() {
       .from('produtos')
       .select('*, lances(valor)')
       .eq('status', 'ativo')
-      .order('fim_em', { ascending: true })
       
-    const prodsComLanceValido = (data || []).map(p => {
-      const maxL = p.lances && p.lances.length > 0 ? Math.max(...p.lances.map((l: any) => l.valor)) : p.valor_atual
-      return { ...p, valor_atual: Math.max(p.valor_atual || 0, maxL) }
+    let prodsComLanceValido = (data || []).map(p => {
+      const lancesArray = p.lances || []
+      const maxL = lancesArray.length > 0 ? Math.max(...lancesArray.map((l: any) => l.valor)) : p.valor_atual
+      return { ...p, valor_atual: Math.max(p.valor_atual || 0, maxL), total_lances: lancesArray.length }
     })
+    
+    // Ordena do mais disputado (mais lances) ao menos disputado
+    prodsComLanceValido.sort((a, b) => (b.total_lances || 0) - (a.total_lances || 0))
     
     setProdutos(prodsComLanceValido)
     setLoading(false)
@@ -191,12 +230,35 @@ export default function MarketplacePage() {
           </div>
         ) : (
           <>
-            <p className="text-xs text-gray-400 mb-3">
-              {filtered.length} leilão{filtered.length !== 1 ? 'ões' : ''} ativo{filtered.length !== 1 ? 's' : ''}
-            </p>
-            <div className="grid grid-cols-2 gap-3">
-              {filtered.map(p => <ProdutoCard key={p.id} produto={p} />)}
-            </div>
+            {filtered.length > 0 && (
+              <div className="mb-6 relative rounded-2xl p-4 overflow-hidden shadow-sm border border-orange-200/50">
+                {/* Background glow and sparks */}
+                <div className="absolute inset-0 bg-gradient-to-br from-orange-50 via-red-50/50 to-orange-100 opacity-90" />
+                <div className="absolute -top-10 -right-10 w-40 h-40 bg-orange-400/20 rounded-full blur-3xl animate-pulse" />
+                <div className="absolute -bottom-10 -left-10 w-32 h-32 bg-red-400/15 rounded-full blur-2xl" />
+                
+                <div className="relative z-10">
+                  <h2 className="font-display font-bold text-orange-600 text-sm mb-3 flex items-center gap-1.5">
+                    <span className="text-lg inline-block origin-bottom animate-[bounce_2s_infinite]">🔥</span>
+                    Top {Math.min(3, filtered.length)} mais disputadas
+                  </h2>
+                  <div className="grid grid-cols-3 gap-2">
+                    {filtered.slice(0, 3).map(p => <ProdutoCardCompacto key={p.id} produto={p} />)}
+                  </div>
+                </div>
+              </div>
+            )}
+            
+            {filtered.length > 3 && (
+              <>
+                <p className="text-xs text-gray-400 mb-3 font-medium uppercase tracking-wider">
+                  Mais leilões ativos
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  {filtered.slice(3).map(p => <ProdutoCard key={p.id} produto={p} />)}
+                </div>
+              </>
+            )}
           </>
         )}
       </div>
