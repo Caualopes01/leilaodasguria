@@ -110,7 +110,7 @@ export default function LancesAdminPage() {
             const resolvedStatus = (produto.ativo && produto.status !== 'encerrado') ? 'ativo' : produto.status
             const status = STATUS_LABELS[resolvedStatus]
             const StatusIcon = status.icon
-            const lancesCount = produto.lances?.length || 0
+            const lancesCount = (produto as any).lances?.length || 0
 
             return (
               <Link 
