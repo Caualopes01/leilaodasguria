@@ -7,8 +7,9 @@ import { formatCurrency, formatWhatsApp } from '@/lib/utils'
 import {
   Heart, Clock, ChevronLeft, ChevronRight,
   Gavel, TrendingUp, Share2, AlertCircle,
-  CheckCircle, X, Phone, User
+  CheckCircle, X, Phone, User, ArrowLeft
 } from 'lucide-react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 import FooterNav from '@/components/FooterNav'
 import PhoneInput from '@/components/PhoneInput'
@@ -259,15 +260,20 @@ export default function LeilaoPage() {
     <div className="min-h-screen bg-white max-w-lg mx-auto pb-24 overflow-x-hidden">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-rosa-100 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <Heart className="w-5 h-5 text-rosa-500" fill="currentColor" />
-          <span className="font-display font-bold text-rosa-600 text-sm">Leilão das Gurias</span>
+        <div className="flex items-center gap-3">
+          <Link href="/leiloes" className="p-2 -ml-2 rounded-full hover:bg-rosa-50 text-gray-500 transition-colors">
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+          <div className="flex items-center gap-1.5">
+            <Heart className="w-4 h-4 text-rosa-500" fill="currentColor" />
+            <span className="font-display font-bold text-rosa-600 text-sm">Leilão das Gurias</span>
+          </div>
         </div>
         <button
           onClick={shareProduct}
-          className="p-2 rounded-full hover:bg-rosa-50 text-gray-500"
+          className="p-2 -mr-2 rounded-full hover:bg-rosa-50 text-gray-500 transition-colors"
         >
-          <Share2 className="w-4 h-4" />
+          <Share2 className="w-5 h-5" />
         </button>
       </div>
 
