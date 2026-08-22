@@ -3,11 +3,13 @@
 import { useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import { useDropzone } from 'react-dropzone'
+import Cropper, { Area } from 'react-easy-crop'
 import { createClient, Produto } from '@/lib/supabase'
 import { slugify } from '@/lib/utils'
+import getCroppedImg from '@/lib/cropImage'
 import {
   Upload, X, GripVertical, ArrowLeft, Save,
-  Image as ImageIcon, Loader2, ChevronLeft, ChevronRight
+  Image as ImageIcon, Loader2, ChevronLeft, ChevronRight, Check
 } from 'lucide-react'
 import { toast } from 'sonner'
 import Link from 'next/link'
@@ -37,32 +39,89 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
   const [saving, setSaving] = useState(false)
   const [previewIndex, setPreviewIndex] = useState(0)
 
-  const onDrop = useCallback(async (acceptedFiles: File[]) => {
-    setUploading(true)
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) { toast.error('Não autorizado'); setUploading(false); return }
+  // Crop states
+  const [fileQueue, setFileQueue] = useState<File[]>([])
+  const [currentFileIndex, setCurrentFileIndex] = useState(0)
+  const [crop, setCrop] = useState({ x: 0, y: 0 })
+  const [zoom, setZoom] = useState(1)
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>(null)
+  const [currentImageUrl, setCurrentImageUrl] = useState<string | null>(null)
+  const [isCropping, setIsCropping] = useState(false)
 
-    for (const file of acceptedFiles) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error(`${file.name} é muito grande (máx 5MB)`)
-        continue
+  const onDrop = useCallback((acceptedFiles: File[]) => {
+    const validFiles = acceptedFiles.filter(f => {
+      if (f.size > 5 * 1024 * 1024) {
+        toast.error(`${f.name} é muito grande (máx 5MB)`)
+        return false
       }
-      const ext = file.name.split('.').pop()
+      return true
+    })
+    
+    if (validFiles.length > 0) {
+      setFileQueue(validFiles)
+      setCurrentFileIndex(0)
+      setCurrentImageUrl(URL.createObjectURL(validFiles[0]))
+      setCrop({ x: 0, y: 0 })
+      setZoom(1)
+      setIsCropping(true)
+    }
+  }, [])
+
+  const onCropComplete = useCallback((croppedArea: Area, croppedAreaPixels: Area) => {
+    setCroppedAreaPixels(croppedAreaPixels)
+  }, [])
+
+  const handleNextCrop = async () => {
+    if (!currentImageUrl || !croppedAreaPixels) return
+
+    setUploading(true) // Block UI while processing crop & upload
+
+    try {
+      const croppedFile = await getCroppedImg(currentImageUrl, croppedAreaPixels)
+      if (!croppedFile) throw new Error('Falha ao cortar imagem')
+
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) throw new Error('Não autorizado')
+
+      const ext = croppedFile.name.split('.').pop()
       const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      const { error } = await supabase.storage.from('produtos').upload(path, file, {
+      
+      const { error } = await supabase.storage.from('produtos').upload(path, croppedFile, {
         cacheControl: '3600',
         upsert: false
       })
-      if (error) {
-        toast.error(`Erro ao fazer upload de ${file.name}`)
-        continue
-      }
+      if (error) throw error
+
       const { data: { publicUrl } } = supabase.storage.from('produtos').getPublicUrl(path)
       setImagens(prev => [...prev, publicUrl])
+      toast.success(`Imagem ${currentFileIndex + 1}/${fileQueue.length} cortada e enviada!`)
+
+    } catch (err: any) {
+      toast.error(`Erro: ${err.message}`)
     }
+
     setUploading(false)
-    toast.success('Imagem(ns) enviada(s)!')
-  }, [supabase])
+
+    // Move to next file in queue or close cropper
+    if (currentFileIndex < fileQueue.length - 1) {
+      const nextIndex = currentFileIndex + 1
+      setCurrentFileIndex(nextIndex)
+      setCurrentImageUrl(URL.createObjectURL(fileQueue[nextIndex]))
+      setCrop({ x: 0, y: 0 })
+      setZoom(1)
+    } else {
+      setIsCropping(false)
+      setFileQueue([])
+      setCurrentImageUrl(null)
+    }
+  }
+
+  const cancelCropQueue = () => {
+    setIsCropping(false)
+    setFileQueue([])
+    setCurrentImageUrl(null)
+    toast.info('Envio de imagens cancelado')
+  }
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
@@ -363,6 +422,78 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
           )}
         </button>
       </div>
+
+      {/* Modal de Crop */}
+      {isCropping && currentImageUrl && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-black/95 animate-fade-in touch-none">
+          {/* Header Mobile-friendly */}
+          <div className="flex items-center justify-between p-4 bg-black/50 text-white z-10 backdrop-blur-md border-b border-white/10">
+            <button 
+              onClick={cancelCropQueue}
+              className="p-2 rounded-full hover:bg-white/10 transition-colors"
+            >
+              <X className="w-6 h-6" />
+            </button>
+            <div className="text-center">
+              <p className="font-semibold">Recortar Imagem</p>
+              <p className="text-xs text-gray-400">
+                {fileQueue.length > 1 ? `Foto ${currentFileIndex + 1} de ${fileQueue.length}` : 'Ajuste o enquadramento livremente'}
+              </p>
+            </div>
+            <button 
+              onClick={handleNextCrop}
+              disabled={uploading}
+              className="p-2 rounded-full bg-rosa-600 hover:bg-rosa-700 text-white transition-colors disabled:opacity-50"
+            >
+              {uploading ? <Loader2 className="w-5 h-5 animate-spin" /> : <Check className="w-6 h-6" />}
+            </button>
+          </div>
+          
+          {/* Cropper Container */}
+          <div className="flex-1 relative">
+            <Cropper
+              image={currentImageUrl}
+              crop={crop}
+              zoom={zoom}
+              aspect={undefined} // free ratio
+              onCropChange={setCrop}
+              onCropComplete={onCropComplete}
+              onZoomChange={setZoom}
+              classes={{
+                containerClassName: 'bg-black',
+              }}
+            />
+          </div>
+          
+          {/* Footer Controls (optional zoom slider for desktop, touch is default on mobile) */}
+          <div className="p-6 bg-black text-white z-10 flex flex-col gap-4 pb-safe">
+            <p className="text-center text-sm text-gray-400 mb-2">
+              Faça o movimento de pinça para dar zoom ou arraste para mover.
+            </p>
+            <input
+              type="range"
+              value={zoom}
+              min={1}
+              max={3}
+              step={0.1}
+              aria-labelledby="Zoom"
+              onChange={(e) => setZoom(Number(e.target.value))}
+              className="w-full max-w-sm mx-auto accent-rosa-500"
+            />
+            <button
+              onClick={handleNextCrop}
+              disabled={uploading}
+              className="w-full max-w-sm mx-auto py-3.5 bg-rosa-600 hover:bg-rosa-700 disabled:opacity-50 text-white rounded-xl font-bold flex items-center justify-center gap-2 mt-2 shadow-lg shadow-rosa-900/50"
+            >
+              {uploading ? (
+                <><Loader2 className="w-5 h-5 animate-spin" /> Processando...</>
+              ) : (
+                <>{fileQueue.length > 1 && currentFileIndex < fileQueue.length - 1 ? 'Próxima Foto' : 'Salvar Recorte'}</>
+              )}
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
