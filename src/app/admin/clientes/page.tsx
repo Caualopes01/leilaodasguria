@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react'
 import { createClient } from '@/lib/supabase'
 import { formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
 import { Users, MessageCircle, ArrowUpRight, Search, Edit2, X } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import PhoneInput from '@/components/PhoneInput'
 
 type Cliente = {
@@ -21,6 +22,7 @@ export default function ClientesPage() {
   const [editPhone, setEditPhone] = useState('')
   const [isUpdating, setIsUpdating] = useState(false)
   const supabase = createClient()
+  const router = useRouter()
 
   useEffect(() => {
     loadClientes()
@@ -68,11 +70,10 @@ export default function ClientesPage() {
     if (!editingCliente || !editPhone) return
     setIsUpdating(true)
     
-    // Precisamos encontrar todos os lances desta pessoa, ignorando a formatação (ex: () - ou espaços)
     const cleanOld = editingCliente.whatsapp.replace(/\D/g, '')
     
-    // Busca todos os lances para filtrar
     const { data: allLances } = await supabase.from('lances').select('id, whatsapp')
+    let updated = false
     
     if (allLances) {
       const idsToUpdate = allLances
@@ -80,7 +81,6 @@ export default function ClientesPage() {
         .map(l => l.id)
         
       if (idsToUpdate.length > 0) {
-        // Atualiza todos os IDs encontrados
         const { error } = await supabase
           .from('lances')
           .update({ whatsapp: editPhone })
@@ -89,13 +89,23 @@ export default function ClientesPage() {
         if (error) {
           alert('Erro ao atualizar telefone.')
           console.error(error)
+        } else {
+          updated = true
         }
       }
+    }
+    
+    // Fallback: se por algum motivo obscuro não atualizou pela lista, tenta o modo exato
+    if (!updated) {
+       await supabase.from('lances').update({ whatsapp: editPhone }).eq('whatsapp', editingCliente.whatsapp)
     }
 
     setIsUpdating(false)
     setEditingCliente(null)
-    loadClientes() // recarrega a lista
+    
+    // Força recarregar
+    loadClientes()
+    router.refresh()
   }
 
   const filtered = clientes.filter(c => 
