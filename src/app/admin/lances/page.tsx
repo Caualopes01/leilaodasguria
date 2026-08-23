@@ -173,6 +173,22 @@ export default function LancesAdminPage() {
           })}
         </div>
       )}
+
+      {/* Projeção de Faturamento */}
+      {!loading && filtered.length > 0 && (
+        <div className="mt-8 bg-gradient-to-r from-rosa-600 to-rosa-500 rounded-2xl p-6 text-white flex flex-col sm:flex-row items-center justify-between gap-4 shadow-lg shadow-rosa-200 border border-rosa-400">
+          <div>
+            <h2 className="font-display text-xl font-bold flex items-center gap-2">
+              <Gavel className="w-5 h-5 text-rosa-200" />
+              Projeção de Faturamento
+            </h2>
+            <p className="text-rosa-100 text-sm mt-1 font-medium">Soma do maior lance de cada produto listado acima.</p>
+          </div>
+          <div className="text-3xl font-display font-bold bg-white/20 px-6 py-3 rounded-xl backdrop-blur-sm border border-white/20 shadow-inner tracking-tight">
+            {formatCurrency(filtered.reduce((acc, p) => acc + (p.valor_atual || 0), 0))}
+          </div>
+        </div>
+      )}
     </div>
   )
 }
