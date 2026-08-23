@@ -68,19 +68,32 @@ export default function ClientesPage() {
     if (!editingCliente || !editPhone) return
     setIsUpdating(true)
     
-    // Atualiza todos os lances que tinham o whatsapp exato deste cliente
-    const { error } = await supabase
-      .from('lances')
-      .update({ whatsapp: editPhone })
-      .eq('whatsapp', editingCliente.whatsapp)
+    // Precisamos encontrar todos os lances desta pessoa, ignorando a formatação (ex: () - ou espaços)
+    const cleanOld = editingCliente.whatsapp.replace(/\D/g, '')
+    
+    // Busca todos os lances para filtrar
+    const { data: allLances } = await supabase.from('lances').select('id, whatsapp')
+    
+    if (allLances) {
+      const idsToUpdate = allLances
+        .filter(l => l.whatsapp && l.whatsapp.replace(/\D/g, '') === cleanOld)
+        .map(l => l.id)
+        
+      if (idsToUpdate.length > 0) {
+        // Atualiza todos os IDs encontrados
+        const { error } = await supabase
+          .from('lances')
+          .update({ whatsapp: editPhone })
+          .in('id', idsToUpdate)
 
-    setIsUpdating(false)
-    if (error) {
-      alert('Erro ao atualizar telefone.')
-      console.error(error)
-      return
+        if (error) {
+          alert('Erro ao atualizar telefone.')
+          console.error(error)
+        }
+      }
     }
 
+    setIsUpdating(false)
     setEditingCliente(null)
     loadClientes() // recarrega a lista
   }
