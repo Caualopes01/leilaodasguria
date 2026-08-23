@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient, Produto } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
-import { Heart, Clock, TrendingUp, Gavel, Search, Crown } from 'lucide-react'
+import { Heart, Clock, TrendingUp, Gavel, Search, Crown, ChevronDown, ChevronUp } from 'lucide-react'
 import FooterNav from '@/components/FooterNav'
 
 function useCountdownShort(targetDate: string) {
@@ -30,6 +30,12 @@ function useCountdownShort(targetDate: string) {
 function ProdutoCardCompacto({ produto }: { produto: Produto }) {
   const timer = useCountdownShort(produto.fim_em)
   const isCritical = new Date(produto.fim_em).getTime() - Date.now() < 300000
+  
+  const today = new Date()
+  const endDate = new Date(produto.fim_em)
+  const isEndsToday = endDate.getDate() === today.getDate() && 
+                      endDate.getMonth() === today.getMonth() && 
+                      endDate.getFullYear() === today.getFullYear()
 
   return (
     <Link href={`/leilao/${produto.slug}`} className="block">
@@ -47,7 +53,7 @@ function ProdutoCardCompacto({ produto }: { produto: Produto }) {
           )}
           {/* Timer badge */}
           <div className={`absolute bottom-1 right-1 rounded-full px-1.5 py-0.5 text-[9px] font-bold flex items-center gap-0.5 ${isCritical ? 'bg-red-500 text-white' : 'bg-black/60 text-white'}`}>
-            <Clock className="w-2.5 h-2.5" />
+            <Clock className={`w-2.5 h-2.5 ${!isCritical && isEndsToday ? 'text-red-500 animate-pulse' : ''}`} />
             {timer}
           </div>
           {/* Tag Vencedor */}
@@ -79,6 +85,12 @@ function ProdutoCard({ produto }: { produto: Produto }) {
   const timer = useCountdownShort(produto.fim_em)
   const isCritical = new Date(produto.fim_em).getTime() - Date.now() < 300000
 
+  const today = new Date()
+  const endDate = new Date(produto.fim_em)
+  const isEndsToday = endDate.getDate() === today.getDate() && 
+                      endDate.getMonth() === today.getMonth() && 
+                      endDate.getFullYear() === today.getFullYear()
+
   return (
     <Link href={`/leilao/${produto.slug}`} className="block">
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md hover:border-rosa-200 transition-all active:scale-[0.98]">
@@ -102,7 +114,7 @@ function ProdutoCard({ produto }: { produto: Produto }) {
           </div>
           {/* Timer badge */}
           <div className={`absolute bottom-2 right-2 rounded-full px-2.5 py-1 text-xs font-semibold flex items-center gap-1 ${isCritical ? 'bg-red-500 text-white' : 'bg-black/50 text-white'}`}>
-            <Clock className="w-3 h-3" />
+            <Clock className={`w-3 h-3 ${!isCritical && isEndsToday ? 'text-red-500 animate-pulse' : ''}`} />
             {timer}
           </div>
           {/* Tag Vencedor */}
@@ -139,6 +151,7 @@ export default function MarketplacePage() {
   const [produtos, setProdutos] = useState<Produto[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [isTodayExpanded, setIsTodayExpanded] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -315,23 +328,34 @@ export default function MarketplacePage() {
               </div>
             )}
 
-            {/* Vencem Hoje - Carrossel */}
+            {/* Vencem Hoje - Carrossel Expandível */}
             {endingToday.length > 0 && (
-              <div className="mb-6 relative rounded-2xl py-4 overflow-hidden shadow-sm border border-red-200/50 bg-red-50/30">
-                <div className="px-4 mb-3">
-                  <h2 className="font-display font-bold text-red-600 text-sm flex items-center gap-1.5">
-                    <Clock className="w-4 h-4 text-red-500 animate-pulse" />
-                    Finalizam Hoje
-                  </h2>
-                  <p className="text-xs text-red-400 mt-0.5">Corra! O tempo está acabando.</p>
-                </div>
-                <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 px-4 pb-2 hide-scrollbar">
-                  {endingToday.map(p => (
-                    <div key={p.id} className="w-[120px] shrink-0 snap-start">
-                      <ProdutoCardCompacto produto={p} />
-                    </div>
-                  ))}
-                </div>
+              <div className="mb-6 relative rounded-2xl overflow-hidden shadow-sm border border-red-100 bg-gradient-to-r from-red-50 to-orange-50">
+                <button 
+                  onClick={() => setIsTodayExpanded(!isTodayExpanded)}
+                  className="w-full px-4 py-3 flex items-center justify-between text-left"
+                >
+                  <div>
+                    <h2 className="font-display font-bold text-red-600 text-sm flex items-center gap-1.5">
+                      <Clock className="w-4 h-4 text-red-500 animate-pulse" />
+                      Finalizam Hoje!
+                    </h2>
+                    <p className="text-xs text-red-400 mt-0.5">Leilões que estão perto de finalizar.</p>
+                  </div>
+                  <div className="w-8 h-8 rounded-full bg-red-100 flex items-center justify-center text-red-500">
+                    {isTodayExpanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                  </div>
+                </button>
+                
+                {isTodayExpanded && (
+                  <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 px-4 pb-4 hide-scrollbar border-t border-red-100/50 pt-3">
+                    {endingToday.map(p => (
+                      <div key={p.id} className="w-[120px] shrink-0 snap-start">
+                        <ProdutoCardCompacto produto={p} />
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             )}
             
