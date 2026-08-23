@@ -201,6 +201,13 @@ export default function LeilaoPage() {
       return
     }
 
+    const agora = new Date()
+    if (new Date(produto.fim_em) <= agora || produto.status === 'encerrado') {
+      toast.error('Este leilão já foi encerrado!')
+      setShowModal(false)
+      return
+    }
+
     setSubmitting(true)
     
     // Verifica o último lance no banco para evitar problema de empate (pessoas com a tela desatualizada)
@@ -465,10 +472,23 @@ export default function LeilaoPage() {
         )}
 
         {isEnded && lanceAtual && (
-          <div className="bg-rosa-50 border border-rosa-100 rounded-2xl p-4 text-center">
-            <p className="text-rosa-600 font-display font-bold text-lg">🎉 Ganhador(a)!</p>
-            <p className="font-bold text-gray-800 mt-1">{lanceAtual.nome}</p>
-            <p className="text-rosa-600 font-bold text-xl">{formatCurrency(lanceAtual.valor)}</p>
+          <div className="bg-rosa-50 border border-rosa-200 rounded-2xl p-6 text-center shadow-sm animate-fade-in relative overflow-hidden">
+            <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-rosa-300 via-rosa-500 to-rosa-300" />
+            <div className="inline-flex items-center justify-center w-16 h-16 bg-white border-2 border-rosa-100 text-rosa-500 rounded-full mb-3 shadow-sm">
+              <span className="text-3xl">🏆</span>
+            </div>
+            <h2 className="text-rosa-600 font-display font-bold text-2xl mb-1">
+              Parabéns, {lanceAtual.nome}! 🎉
+            </h2>
+            <p className="text-gray-700 text-sm mb-4 px-2">
+              Você arrematou este produto incrível com o lance de <span className="font-bold text-rosa-600 text-lg">{formatCurrency(lanceAtual.valor)}</span>.
+            </p>
+            <div className="bg-white/80 backdrop-blur-sm rounded-xl p-3 border border-rosa-100/50 flex items-center justify-center gap-2">
+              <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+              <p className="text-xs text-gray-600 font-medium">
+                O Time GC já entrou em contato com a vencedora.
+              </p>
+            </div>
           </div>
         )}
 
