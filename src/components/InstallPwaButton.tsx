@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { createPortal } from 'react-dom'
 import { Download, Share, PlusSquare, X } from 'lucide-react'
 
 export default function InstallPwaButton() {
@@ -61,7 +62,7 @@ export default function InstallPwaButton() {
       </button>
 
       {/* iOS Instructions Modal */}
-      {showIOSPrompt && (
+      {showIOSPrompt && typeof document !== 'undefined' && createPortal(
         <div 
           className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center p-0 sm:p-4"
           onClick={() => setShowIOSPrompt(false)}
@@ -111,7 +112,8 @@ export default function InstallPwaButton() {
               Entendi, Fechar
             </button>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   )
