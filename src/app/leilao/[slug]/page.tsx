@@ -202,6 +202,24 @@ export default function LeilaoPage() {
     }
 
     setSubmitting(true)
+    
+    // Verifica o último lance no banco para evitar problema de empate (pessoas com a tela desatualizada)
+    const { data: latestBids } = await supabase
+      .from('lances')
+      .select('valor')
+      .eq('produto_id', produto.id)
+      .order('valor', { ascending: false })
+      .limit(1)
+
+    if (latestBids && latestBids.length > 0) {
+      const currentMax = latestBids[0].valor
+      const currentMinVal = currentMax + produto.incremento_minimo
+      if (val < currentMinVal) {
+        toast.error(`Lance já superado! O mínimo agora é ${formatCurrency(currentMinVal)}`)
+        setSubmitting(false)
+        return
+      }
+    }
     const { error } = await supabase.from('lances').insert({
       produto_id: produto.id,
       nome: nome.trim(),
