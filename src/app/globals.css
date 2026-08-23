@@ -97,3 +97,12 @@ html {
   animation: shake-bell 2s ease-in-out infinite;
   transform-origin: top center;
 }
+
+/* Utilitários Extras */
+.hide-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}

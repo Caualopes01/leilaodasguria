@@ -247,6 +247,16 @@ export default function MarketplacePage() {
     p.titulo.toLowerCase().includes(search.toLowerCase())
   )
 
+  const today = new Date()
+  const endingToday = filtered.filter(p => {
+    const endDate = new Date(p.fim_em)
+    return (
+      endDate.getDate() === today.getDate() &&
+      endDate.getMonth() === today.getMonth() &&
+      endDate.getFullYear() === today.getFullYear()
+    )
+  })
+
   return (
     <div className="min-h-screen bg-gray-50 max-w-lg mx-auto pb-24">
       {/* Header */}
@@ -301,6 +311,26 @@ export default function MarketplacePage() {
                   <div className="grid grid-cols-3 gap-2">
                     {filtered.slice(0, 3).map(p => <ProdutoCardCompacto key={p.id} produto={p} />)}
                   </div>
+                </div>
+              </div>
+            )}
+
+            {/* Vencem Hoje - Carrossel */}
+            {endingToday.length > 0 && (
+              <div className="mb-6 relative rounded-2xl py-4 overflow-hidden shadow-sm border border-red-200/50 bg-red-50/30">
+                <div className="px-4 mb-3">
+                  <h2 className="font-display font-bold text-red-600 text-sm flex items-center gap-1.5">
+                    <Clock className="w-4 h-4 text-red-500 animate-pulse" />
+                    Finalizam Hoje
+                  </h2>
+                  <p className="text-xs text-red-400 mt-0.5">Corra! O tempo está acabando.</p>
+                </div>
+                <div className="flex overflow-x-auto snap-x snap-mandatory gap-3 px-4 pb-2 hide-scrollbar">
+                  {endingToday.map(p => (
+                    <div key={p.id} className="w-[120px] shrink-0 snap-start">
+                      <ProdutoCardCompacto produto={p} />
+                    </div>
+                  ))}
                 </div>
               </div>
             )}
