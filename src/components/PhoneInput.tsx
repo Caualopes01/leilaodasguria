@@ -67,21 +67,22 @@ export default function PhoneInput({ value, onChange }: PhoneInputProps) {
       <label className="block text-sm font-medium text-gray-700 mb-1.5 flex items-center gap-1.5">
         <Phone className="w-4 h-4 text-gray-400" /> WhatsApp *
       </label>
-      <div className="flex w-full items-stretch relative">
-        <div className="relative flex-shrink-0">
-          <select
-            className="h-full pl-3 pr-8 py-3 bg-gray-50 border border-gray-200 border-r-0 rounded-l-xl text-sm appearance-none outline-none focus:ring-2 focus:ring-rosa-500/20 focus:border-rosa-500 transition-all cursor-pointer"
-            value={country}
-            onChange={e => handleCountryChange(e.target.value as 'BR' | 'UY')}
+      <div className="flex w-full items-stretch bg-white border border-gray-200 rounded-xl focus-within:ring-2 focus-within:ring-rosa-500/20 focus-within:border-rosa-500 transition-all overflow-hidden">
+        <div className="flex items-center bg-gray-50/80 p-1 border-r border-gray-200">
+          <button
+            type="button"
+            onClick={() => handleCountryChange('BR')}
+            className={`flex items-center justify-center px-2.5 py-2 text-xs font-semibold rounded-lg transition-all ${country === 'BR' ? 'bg-white shadow-sm text-gray-900 border border-gray-200/60' : 'text-gray-500 hover:text-gray-700 border border-transparent'}`}
           >
-            <option value="BR">🇧🇷 +55</option>
-            <option value="UY">🇺🇾 +598</option>
-          </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-gray-500">
-            <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 9l-7 7-7-7" />
-            </svg>
-          </div>
+            🇧🇷 +55
+          </button>
+          <button
+            type="button"
+            onClick={() => handleCountryChange('UY')}
+            className={`flex items-center justify-center px-2.5 py-2 text-xs font-semibold rounded-lg transition-all ${country === 'UY' ? 'bg-white shadow-sm text-gray-900 border border-gray-200/60' : 'text-gray-500 hover:text-gray-700 border border-transparent'}`}
+          >
+            🇺🇾 +598
+          </button>
         </div>
         <input
           type="tel"
@@ -89,7 +90,7 @@ export default function PhoneInput({ value, onChange }: PhoneInputProps) {
           value={formatDisplayNumber(rawNumber)}
           onChange={e => handleNumberChange(e.target.value)}
           placeholder={country === 'BR' ? '(51) 99999-9999' : '99 123 456'}
-          className="flex-1 w-full px-4 py-3 border border-gray-200 rounded-r-xl text-sm outline-none focus:ring-2 focus:ring-rosa-500/20 focus:border-rosa-500 transition-all"
+          className="flex-1 w-full px-4 py-3 text-sm outline-none bg-transparent"
         />
       </div>
     </div>
