@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { createClient, Produto, Lance } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
 import {
-  Package, TrendingUp, Clock, Trophy,
+  Package, TrendingUp, Clock, Trophy, Crown,
   ArrowRight, Plus, ExternalLink, X, Phone, User, ListOrdered
 } from 'lucide-react'
 import { formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
@@ -196,22 +196,39 @@ export default function DashboardPage() {
             <p className="text-gray-400 text-sm text-center py-8">Nenhum lance ainda</p>
           ) : (
             <div className="space-y-3">
-              {lancesRecentes.slice(0, 6).map(lance => (
-                <div 
-                  key={lance.id} 
-                  onClick={() => setSelectedLance(lance)}
-                  className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100"
-                >
-                  <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 text-sm font-bold">
-                    {lance.nome.charAt(0).toUpperCase()}
+              {lancesRecentes.slice(0, 6).map(lance => {
+                const prod = (lance as any).produto
+                const isWinning = prod && lance.valor >= prod.valor_atual
+                const img = prod?.imagens?.[0]
+
+                return (
+                  <div 
+                    key={lance.id} 
+                    onClick={() => setSelectedLance(lance)}
+                    className="flex items-center gap-3 p-3 rounded-xl hover:bg-gray-50 transition-colors cursor-pointer border border-transparent hover:border-gray-100"
+                  >
+                    {img ? (
+                      <img src={img} alt="Produto" className="w-8 h-8 rounded-full object-cover border border-gray-200" />
+                    ) : (
+                      <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-gray-600 text-sm font-bold">
+                        {lance.nome.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm font-semibold text-gray-800 truncate">{lance.nome}</p>
+                        {isWinning && (
+                          <span className="inline-flex items-center justify-center bg-yellow-100 text-yellow-600 px-1.5 py-0.5 rounded text-[10px] uppercase font-bold" title="Ganhando">
+                            <Crown className="w-3 h-3 mr-0.5" /> Ganhando
+                          </span>
+                        )}
+                      </div>
+                      <p className="text-xs text-gray-500 truncate">{prod?.titulo}</p>
+                    </div>
+                    <span className="text-sm font-bold text-green-600">{formatCurrency(lance.valor)}</span>
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-gray-800 truncate">{lance.nome}</p>
-                    <p className="text-xs text-gray-500 truncate">{(lance as any).produto?.titulo}</p>
-                  </div>
-                  <span className="text-sm font-bold text-green-600">{formatCurrency(lance.valor)}</span>
-                </div>
-              ))}
+                )
+              })}
             </div>
           )}
         </div>
