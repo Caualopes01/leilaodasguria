@@ -5,7 +5,6 @@ export default function manifest(): MetadataRoute.Manifest {
     name: 'Leilão GC',
     short_name: 'Leilão GC',
     description: 'Leilão online - Dê seu lance e garanta o seu!',
-    start_url: '/',
     display: 'standalone',
     background_color: '#ffffff',
     theme_color: '#ffffff',
