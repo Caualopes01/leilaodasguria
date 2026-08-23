@@ -160,7 +160,33 @@ export default function LeilaoPage() {
       })
       .subscribe()
 
-    return () => { supabase.removeChannel(channel) }
+    // Analytics Ao Vivo - Tracking Presence no Produto
+    let userId = localStorage.getItem('leilao_uid')
+    if (!userId) {
+      userId = Math.random().toString(36).substring(2, 10)
+      localStorage.setItem('leilao_uid', userId)
+    }
+
+    const presenceChannel = supabase.channel('presence-room', {
+      config: { presence: { key: userId } }
+    })
+
+    presenceChannel.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        await presenceChannel.track({
+          page: 'produto',
+          produto_id: produto.id,
+          titulo: produto.titulo,
+          timestamp: Date.now()
+        })
+      }
+    })
+
+    return () => { 
+      supabase.removeChannel(channel)
+      presenceChannel.untrack()
+      supabase.removeChannel(presenceChannel)
+    }
   }, [produto?.id])
 
   async function handleSubmitLance() {

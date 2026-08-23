@@ -145,6 +145,36 @@ export default function MarketplacePage() {
     loadProdutos()
   }, [])
 
+  // Analytics Ao Vivo - Tracking Presence na Vitrine
+  useEffect(() => {
+    let userId = localStorage.getItem('leilao_uid')
+    if (!userId) {
+      userId = Math.random().toString(36).substring(2, 10)
+      localStorage.setItem('leilao_uid', userId)
+    }
+
+    const channel = supabase.channel('presence-room', {
+      config: { presence: { key: userId } }
+    })
+
+    channel.subscribe(async (status) => {
+      if (status === 'SUBSCRIBED') {
+        await channel.track({
+          page: 'vitrine',
+          produto_id: null,
+          titulo: 'Vitrine Principal',
+          timestamp: Date.now()
+        })
+      }
+    })
+
+    return () => {
+      channel.untrack()
+      supabase.removeChannel(channel)
+    }
+  }, [])
+
+
   async function loadProdutos() {
     const { data } = await supabase
       .from('produtos')

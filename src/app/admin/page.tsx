@@ -14,6 +14,7 @@ export default function DashboardPage() {
   const [produtos, setProdutos] = useState<Produto[]>([])
   const [lancesRecentes, setLancesRecentes] = useState<(Lance & { produto: Produto })[]>([])
   const [loading, setLoading] = useState(true)
+  const [onlineUsers, setOnlineUsers] = useState<any[]>([])
   
   // Detalhes do Lance / Vencedor
   const [selectedLance, setSelectedLance] = useState<any | null>(null)
@@ -104,8 +105,20 @@ export default function DashboardPage() {
       })
       .subscribe()
 
+    // Escuta presenças online
+    const presenceChannel = supabase.channel('presence-room')
+    presenceChannel.on('presence', { event: 'sync' }, () => {
+      const state = presenceChannel.presenceState()
+      const users: any[] = []
+      for (const id in state) {
+        users.push(state[id][0])
+      }
+      setOnlineUsers(users)
+    }).subscribe()
+
     return () => {
       supabase.removeChannel(channelLances)
+      supabase.removeChannel(presenceChannel)
     }
   }, [])
 
@@ -149,6 +162,38 @@ export default function DashboardPage() {
             <p className="text-sm text-gray-500 mt-0.5">{stat.label}</p>
           </div>
         ))}
+      </div>
+
+      {/* Analytics Ao Vivo */}
+      <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="font-display text-lg font-bold text-gray-800 flex items-center gap-2">
+            <span className="relative flex h-3 w-3 mr-1">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+            </span>
+            Pessoas Ao Vivo Agora: {onlineUsers.length}
+          </h2>
+        </div>
+        {onlineUsers.length === 0 ? (
+          <p className="text-gray-400 text-sm text-center py-4">Ninguém online no momento.</p>
+        ) : (
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {/* Agrupar por página */}
+            {Object.entries(
+              onlineUsers.reduce((acc, user) => {
+                const key = user.page === 'vitrine' ? 'Vitrine Principal' : (user.titulo || 'Página de Produto')
+                acc[key] = (acc[key] || 0) + 1
+                return acc
+              }, {} as Record<string, number>)
+            ).sort((a, b) => b[1] - a[1]).map(([pageName, count]) => (
+              <div key={pageName} className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col justify-center items-center text-center">
+                <span className="text-2xl font-black text-gray-800">{count}</span>
+                <span className="text-xs font-semibold text-gray-500 mt-1 line-clamp-2">{pageName}</span>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
