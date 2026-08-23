@@ -52,7 +52,7 @@ function ProdutoCardCompacto({ produto }: { produto: Produto }) {
           </div>
           {/* Tag Vencedor */}
           {(produto as any).ganhador && (
-            <div className="absolute bottom-1 left-1 bg-rosa-600/90 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
+            <div className="absolute bottom-1 left-1 bg-rosa-600/90 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm animate-bounce-soft">
               <Crown className="w-2.5 h-2.5 text-yellow-300" />
               {(produto as any).ganhador.split(' ')[0]}
             </div>
@@ -107,7 +107,7 @@ function ProdutoCard({ produto }: { produto: Produto }) {
           </div>
           {/* Tag Vencedor */}
           {(produto as any).ganhador && (
-            <div className="absolute bottom-2 left-2 bg-rosa-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
+            <div className="absolute bottom-2 left-2 bg-rosa-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm animate-bounce-soft">
               <Crown className="w-3 h-3 text-yellow-300" />
               {(produto as any).ganhador.split(' ')[0]}
             </div>
