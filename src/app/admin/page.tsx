@@ -180,13 +180,13 @@ export default function DashboardPage() {
         ) : (
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {/* Agrupar por página */}
-            {Object.entries(
+            {((Object.entries(
               onlineUsers.reduce((acc, user) => {
                 const key = user.page === 'vitrine' ? 'Vitrine Principal' : (user.titulo || 'Página de Produto')
                 acc[key] = (acc[key] || 0) + 1
                 return acc
               }, {} as Record<string, number>)
-            ) as [string, number][]).sort((a, b) => b[1] - a[1]).map(([pageName, count]) => (
+            )) as [string, number][]).sort((a, b) => b[1] - a[1]).map(([pageName, count]) => (
               <div key={pageName} className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col justify-center items-center text-center">
                 <span className="text-2xl font-black text-gray-800">{count}</span>
                 <span className="text-xs font-semibold text-gray-500 mt-1 line-clamp-2">{pageName}</span>
