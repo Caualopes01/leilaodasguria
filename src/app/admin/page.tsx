@@ -6,7 +6,7 @@ import { createClient, Produto, Lance } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
 import {
   Package, TrendingUp, Clock, Trophy, Crown,
-  ArrowRight, Plus, ExternalLink, X, Phone, User, ListOrdered
+  ArrowRight, Plus, ExternalLink, X, Phone, User, ListOrdered, Gavel, Star
 } from 'lucide-react'
 import { formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
 
@@ -46,6 +46,9 @@ export default function DashboardPage() {
   const ativos = produtos.filter(p => p.status === 'ativo').length
   const encerrados = produtos.filter(p => p.status === 'encerrado')
   const aguardando = produtos.filter(p => p.status === 'aguardando').length
+
+  const totalLancesCount = produtos.reduce((acc, p) => acc + ((p as any).lances?.length || 0), 0)
+  const produtosComLancesCount = produtos.filter(p => ((p as any).lances?.length || 0) > 0).length
 
   // Ganhadores (maior lance de cada produto encerrado)
   const [vencedores, setVencedores] = useState<any[]>([])
@@ -147,10 +150,12 @@ export default function DashboardPage() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {[
           { label: 'Total', value: produtos.length, icon: Package, color: 'bg-blue-50 text-blue-600' },
           { label: 'Ativos', value: ativos, icon: TrendingUp, color: 'bg-green-50 text-green-600' },
+          { label: 'Lances Recebidos', value: totalLancesCount, icon: Gavel, color: 'bg-orange-50 text-orange-600' },
+          { label: 'Leilões Movimentados', value: produtosComLancesCount, icon: Star, color: 'bg-purple-50 text-purple-600' },
           { label: 'Aguardando', value: aguardando, icon: Clock, color: 'bg-yellow-50 text-yellow-600' },
           { label: 'Encerrados', value: encerrados.length, icon: Trophy, color: 'bg-rosa-50 text-rosa-600' },
         ].map(stat => (
