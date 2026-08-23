@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import { createClient, Produto } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
-import { Heart, Clock, TrendingUp, Gavel, Search } from 'lucide-react'
+import { Heart, Clock, TrendingUp, Gavel, Search, Crown } from 'lucide-react'
 import FooterNav from '@/components/FooterNav'
 
 function useCountdownShort(targetDate: string) {
@@ -50,6 +50,13 @@ function ProdutoCardCompacto({ produto }: { produto: Produto }) {
             <Clock className="w-2.5 h-2.5" />
             {timer}
           </div>
+          {/* Tag Vencedor */}
+          {(produto as any).ganhador && (
+            <div className="absolute bottom-1 left-1 bg-rosa-600/90 backdrop-blur-sm text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full flex items-center gap-0.5 shadow-sm">
+              <Crown className="w-2.5 h-2.5 text-yellow-300" />
+              {(produto as any).ganhador.split(' ')[0]}
+            </div>
+          )}
         </div>
         {/* Info */}
         <div className="p-2 flex items-center justify-between gap-1">
@@ -98,6 +105,13 @@ function ProdutoCard({ produto }: { produto: Produto }) {
             <Clock className="w-3 h-3" />
             {timer}
           </div>
+          {/* Tag Vencedor */}
+          {(produto as any).ganhador && (
+            <div className="absolute bottom-2 left-2 bg-rosa-600/90 backdrop-blur-sm text-white text-[10px] font-bold px-2 py-1 rounded-full flex items-center gap-1 shadow-sm">
+              <Crown className="w-3 h-3 text-yellow-300" />
+              {(produto as any).ganhador.split(' ')[0]}
+            </div>
+          )}
         </div>
         {/* Info */}
         <div className="p-3">
@@ -134,13 +148,20 @@ export default function MarketplacePage() {
   async function loadProdutos() {
     const { data } = await supabase
       .from('produtos')
-      .select('*, lances(valor)')
+      .select('*, lances(nome, valor)')
       .eq('status', 'ativo')
       
     let prodsComLanceValido = (data || []).map(p => {
       const lancesArray = p.lances || []
-      const maxL = lancesArray.length > 0 ? Math.max(...lancesArray.map((l: any) => l.valor)) : p.valor_atual
-      return { ...p, valor_atual: Math.max(p.valor_atual || 0, maxL), total_lances: lancesArray.length }
+      let maxL = p.valor_atual || 0
+      let maxNome = null
+      lancesArray.forEach((l: any) => {
+        if (l.valor >= maxL) {
+          maxL = l.valor
+          maxNome = l.nome
+        }
+      })
+      return { ...p, valor_atual: Math.max(p.valor_atual || 0, maxL), total_lances: lancesArray.length, ganhador: maxNome }
     })
     
     // Ordena do mais disputado (mais lances) ao menos disputado
@@ -178,7 +199,7 @@ export default function MarketplacePage() {
         setProdutos(prev =>
           prev.map(p => {
             if (p.id === novoLance.produto_id) {
-              return { ...p, valor_atual: Math.max(p.valor_atual || 0, novoLance.valor) }
+              return { ...p, valor_atual: Math.max(p.valor_atual || 0, novoLance.valor), ganhador: novoLance.nome }
             }
             return p
           })
