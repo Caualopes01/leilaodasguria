@@ -1,0 +1,67 @@
+{
+  "name": "Novo Lance Admin (WhatsApp)",
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "novo_lance_admin",
+        "responseMode": "onReceived",
+        "options": {}
+      },
+      "name": "Webhook Supabase",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [100, 300]
+    },
+    {
+      "parameters": {
+        "url": "=SUPABASE_URL_AQUI/rest/v1/produtos?id=eq.{{$json.body.record.produto_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "SUPABASE_KEY_AQUI" },
+            { "name": "Authorization", "value": "Bearer SUPABASE_KEY_AQUI" }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Produto",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [300, 300]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "EVOLUTION_URL_AQUI/message/sendText/EVOLUTION_INSTANCE_AQUI",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            { "name": "apikey", "value": "EVOLUTION_KEY_AQUI" },
+            { "name": "Content-Type", "value": "application/json" }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: '5555981519990', text: (() => { const record = $('Webhook Supabase').first().json.body.record; const nome = record.nome; const valor = record.valor; const titulo = $json[0]?.titulo || $json.titulo; const slug = $json[0]?.slug || $json.slug; return `🔔 *Novo Lance!*\n\n*Pessoa:* ${nome}\n*Produto:* ${titulo}\n*Valor:* R$ ${valor}\n*Link:* https://leilao-das-gurias.vercel.app/leilao/${slug}`; })() } }}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp Admin",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [500, 300]
+    }
+  ],
+  "connections": {
+    "Webhook Supabase": {
+      "main": [
+        [ { "node": "Buscar Produto", "type": "main", "index": 0 } ]
+      ]
+    },
+    "Buscar Produto": {
+      "main": [
+        [ { "node": "Enviar WhatsApp Admin", "type": "main", "index": 0 } ]
+      ]
+    }
+  }
+}
