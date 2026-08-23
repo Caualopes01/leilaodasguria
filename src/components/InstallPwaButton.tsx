@@ -62,41 +62,41 @@ export default function InstallPwaButton() {
 
       {/* iOS Instructions Modal */}
       {showIOSPrompt && (
-        <div className="fixed inset-0 z-50 flex items-end justify-center sm:items-center bg-black/40 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-2xl p-5 max-w-sm w-full relative animate-in slide-in-from-bottom-10 sm:slide-in-from-bottom-0 sm:zoom-in-95 duration-200">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-sm w-full relative animate-in zoom-in-95 duration-200 shadow-2xl border border-gray-100/50">
             <button
               onClick={() => setShowIOSPrompt(false)}
-              className="absolute top-3 right-3 p-1 text-gray-400 hover:text-gray-600 bg-gray-100 rounded-full"
+              className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-gray-600 bg-gray-100/80 hover:bg-gray-200 rounded-full transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
-            <div className="text-center mb-4">
-              <div className="w-12 h-12 bg-rosa-100 text-rosa-500 rounded-2xl flex items-center justify-center mx-auto mb-3">
+            <div className="text-center mb-5 mt-2">
+              <div className="w-14 h-14 bg-rosa-50 text-rosa-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rosa-100">
                 <Share className="w-6 h-6" />
               </div>
-              <h3 className="font-display font-bold text-lg text-gray-900 mb-1">Instalar no iPhone</h3>
-              <p className="text-sm text-gray-600 leading-relaxed">
+              <h3 className="font-display font-bold text-xl text-gray-900 mb-1.5">Instalar no iPhone</h3>
+              <p className="text-sm text-gray-600 leading-relaxed px-2">
                 Para instalar o <strong>Leilão GC</strong>, clique no ícone de compartilhar na barra do Safari.
               </p>
             </div>
             
-            <div className="bg-gray-50 rounded-xl border border-gray-100 p-4 space-y-3">
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-white shadow-sm rounded-lg flex items-center justify-center text-blue-500 shrink-0">
+            <div className="bg-gray-50/80 rounded-2xl border border-gray-100 p-4 space-y-4 mb-2">
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 bg-white shadow-sm rounded-xl flex items-center justify-center text-blue-500 shrink-0">
                   <Share className="w-4 h-4" />
                 </div>
-                <p className="text-xs text-gray-600 font-medium">1. Toque em Compartilhar na barra inferior</p>
+                <p className="text-xs text-gray-700 font-medium leading-tight">1. Toque em <strong>Compartilhar</strong> na barra inferior do Safari</p>
               </div>
-              <div className="flex items-center gap-3">
-                <div className="w-8 h-8 bg-white shadow-sm rounded-lg flex items-center justify-center text-gray-700 shrink-0">
+              <div className="flex items-center gap-3.5">
+                <div className="w-9 h-9 bg-white shadow-sm rounded-xl flex items-center justify-center text-gray-700 shrink-0">
                   <PlusSquare className="w-4 h-4" />
                 </div>
-                <p className="text-xs text-gray-600 font-medium">2. Role para baixo e escolha "Adicionar à Tela de Início"</p>
+                <p className="text-xs text-gray-700 font-medium leading-tight">2. Role para baixo e escolha <strong>"Adicionar à Tela de Início"</strong></p>
               </div>
             </div>
             
-            <div className="mt-5 relative h-8 flex justify-center animate-bounce">
-              <div className="w-0 h-0 border-l-[12px] border-r-[12px] border-t-[16px] border-l-transparent border-r-transparent border-t-rosa-500"></div>
+            <div className="mt-6 relative h-6 flex justify-center animate-bounce">
+              <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[12px] border-l-transparent border-r-transparent border-t-rosa-400"></div>
             </div>
           </div>
         </div>
