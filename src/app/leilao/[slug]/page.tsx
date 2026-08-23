@@ -136,7 +136,7 @@ export default function LeilaoPage() {
 
     // Sugerir valor mínimo
     const minVal = (valorReal || prod.valor_inicial) + (prod.incremento_minimo || 1)
-    setValorLance(minVal.toFixed(2))
+    // setValorLance(minVal.toFixed(2)) // Removido a pedido para deixar o campo vazio
   }
 
   // Realtime
@@ -155,7 +155,7 @@ export default function LeilaoPage() {
         setLances(prev => [newLance, ...prev].sort((a, b) => b.valor - a.valor))
         setProduto(prev => prev ? { ...prev, valor_atual: newLance.valor } : prev)
         const minVal = newLance.valor + (produto.incremento_minimo || 1)
-        setValorLance(minVal.toFixed(2))
+        // setValorLance(minVal.toFixed(2)) // Removido a pedido para deixar o campo vazio
         // O aviso de "Superado" agora é controlado de forma global pelo componente FooterNav
       })
       .subscribe()
@@ -212,7 +212,7 @@ export default function LeilaoPage() {
   function openModal() {
     if (!produto) return
     const minVal = (produto.valor_atual || produto.valor_inicial) + produto.incremento_minimo
-    setValorLance(minVal.toFixed(2))
+    setValorLance('') // Limpa o campo
     // Tenta puxar do cache local
     const savedNome = localStorage.getItem('leilao_user_nome')
     const savedWhats = localStorage.getItem('leilao_user_whats')
