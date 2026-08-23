@@ -18,8 +18,14 @@ const dmSans = DM_Sans({
 export const metadata: Metadata = {
   title: 'Leilão das Gurias',
   description: 'Leilão online - Dê seu lance e garanta o seu!',
+  applicationName: 'Leilão GC',
+  appleWebApp: {
+    title: 'Leilão GC',
+    statusBarStyle: 'default',
+  },
   icons: {
     icon: '/favicon.jpg',
+    apple: '/favicon.jpg',
   },
   openGraph: {
     title: 'Leilão das Gurias',

@@ -6,6 +6,7 @@ import { createClient, Produto } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
 import { Heart, Clock, TrendingUp, Gavel, Search, Crown, ChevronDown, ChevronUp } from 'lucide-react'
 import FooterNav from '@/components/FooterNav'
+import InstallPwaButton from '@/components/InstallPwaButton'
 
 function useCountdownShort(targetDate: string) {
   const [label, setLabel] = useState('')
@@ -274,9 +275,12 @@ export default function MarketplacePage() {
     <div className="min-h-screen bg-gray-50 max-w-lg mx-auto pb-24">
       {/* Header */}
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-rosa-100 px-4 py-4">
-        <div className="flex items-center gap-2 mb-3">
-          <Heart className="w-5 h-5 text-rosa-500" fill="currentColor" />
-          <span className="font-display font-bold text-rosa-600">Leilão das Gurias</span>
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center gap-2">
+            <Heart className="w-5 h-5 text-rosa-500" fill="currentColor" />
+            <span className="font-display font-bold text-rosa-600">Leilão das Gurias</span>
+          </div>
+          <InstallPwaButton />
         </div>
         {/* Busca */}
         <div className="relative">
