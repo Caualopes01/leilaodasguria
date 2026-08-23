@@ -44,7 +44,18 @@ export default function LancesAdminPage() {
     if (filtro === 'ativos' && !isAtivo) return false
     if (filtro === 'inativos' && isAtivo) return false
 
+    // Mostrar apenas produtos com lances
+    const qtdLances = (p as any).lances?.length || 0
+    if (qtdLances === 0) return false
+
     return true
+  })
+
+  // Ordenar produtos pela quantidade de lances (maior para menor)
+  filtered.sort((a, b) => {
+    const lancesA = (a as any).lances?.length || 0
+    const lancesB = (b as any).lances?.length || 0
+    return lancesB - lancesA
   })
 
   return (
