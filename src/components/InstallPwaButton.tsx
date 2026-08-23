@@ -62,15 +62,24 @@ export default function InstallPwaButton() {
 
       {/* iOS Instructions Modal */}
       {showIOSPrompt && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-          <div className="bg-white rounded-3xl p-6 max-w-sm w-full relative animate-in zoom-in-95 duration-200 shadow-2xl border border-gray-100/50">
+        <div 
+          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/60 backdrop-blur-sm sm:items-center p-0 sm:p-4"
+          onClick={() => setShowIOSPrompt(false)}
+        >
+          <div 
+            onClick={e => e.stopPropagation()}
+            className="bg-white rounded-t-[2rem] sm:rounded-3xl p-6 pt-4 w-full max-w-sm relative animate-in slide-in-from-bottom-full duration-300 shadow-2xl pb-[calc(env(safe-area-inset-bottom)+1.5rem)] sm:pb-6"
+          >
+            {/* Drag handle pill */}
+            <div className="w-12 h-1.5 bg-gray-200 rounded-full mx-auto mb-5"></div>
+            
             <button
               onClick={() => setShowIOSPrompt(false)}
               className="absolute top-4 right-4 p-1.5 text-gray-400 hover:text-gray-600 bg-gray-100/80 hover:bg-gray-200 rounded-full transition-colors"
             >
-              <X className="w-4 h-4" />
+              <X className="w-5 h-5" />
             </button>
-            <div className="text-center mb-5 mt-2">
+            <div className="text-center mb-6 mt-2">
               <div className="w-14 h-14 bg-rosa-50 text-rosa-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rosa-100">
                 <Share className="w-6 h-6" />
               </div>
@@ -80,7 +89,7 @@ export default function InstallPwaButton() {
               </p>
             </div>
             
-            <div className="bg-gray-50/80 rounded-2xl border border-gray-100 p-4 space-y-4 mb-2">
+            <div className="bg-gray-50/80 rounded-2xl border border-gray-100 p-4 space-y-4 mb-6">
               <div className="flex items-center gap-3.5">
                 <div className="w-9 h-9 bg-white shadow-sm rounded-xl flex items-center justify-center text-blue-500 shrink-0">
                   <Share className="w-4 h-4" />
@@ -95,9 +104,12 @@ export default function InstallPwaButton() {
               </div>
             </div>
             
-            <div className="mt-6 relative h-6 flex justify-center animate-bounce">
-              <div className="w-0 h-0 border-l-[10px] border-r-[10px] border-t-[12px] border-l-transparent border-r-transparent border-t-rosa-400"></div>
-            </div>
+            <button
+              onClick={() => setShowIOSPrompt(false)}
+              className="w-full py-3.5 bg-gray-900 text-white rounded-xl font-semibold text-sm hover:bg-gray-800 transition-colors"
+            >
+              Entendi, Fechar
+            </button>
           </div>
         </div>
       )}
