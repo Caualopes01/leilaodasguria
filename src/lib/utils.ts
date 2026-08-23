@@ -38,8 +38,8 @@ export function slugify(text: string): string {
     .replace(/-+/g, '-')
 }
 
-export function getWhatsAppLink(phone: string, message: string): string {
+export function getWhatsAppLink(phone: string, message?: string): string {
   const cleaned = phone.replace(/\D/g, '')
   const number = (cleaned.startsWith('55') || cleaned.startsWith('598')) ? cleaned : `55${cleaned}`
-  return `https://wa.me/${number}?text=${encodeURIComponent(message)}`
+  return `https://wa.me/${number}${message ? `?text=${encodeURIComponent(message)}` : ''}`
 }
