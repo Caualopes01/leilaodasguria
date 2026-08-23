@@ -359,13 +359,13 @@ export default function MarketplacePage() {
               </div>
             )}
             
-            {filtered.length > 3 && (
+            {filtered.length > 0 && (
               <>
                 <p className="text-xs text-gray-400 mb-3 font-medium uppercase tracking-wider">
-                  Mais leilões ativos
+                  Todos os leilões ativos
                 </p>
                 <div className="grid grid-cols-2 gap-3">
-                  {filtered.slice(3).map(p => <ProdutoCard key={p.id} produto={p} />)}
+                  {filtered.map(p => <ProdutoCard key={p.id} produto={p} />)}
                 </div>
               </>
             )}
