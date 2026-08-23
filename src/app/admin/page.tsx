@@ -198,7 +198,8 @@ export default function DashboardPage() {
             <div className="space-y-3">
               {lancesRecentes.slice(0, 6).map(lance => {
                 const prod = (lance as any).produto
-                const isWinning = prod && lance.valor >= prod.valor_atual
+                const realProd = produtos.find(p => p.id === lance.produto_id)
+                const isWinning = realProd && lance.valor >= realProd.valor_atual
                 const img = prod?.imagens?.[0]
 
                 return (
