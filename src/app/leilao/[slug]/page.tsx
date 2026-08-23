@@ -213,8 +213,8 @@ export default function LeilaoPage() {
 
     if (latestBids && latestBids.length > 0) {
       const currentMax = latestBids[0].valor
-      const currentMinVal = currentMax + produto.incremento_minimo
-      if (val < currentMinVal) {
+      const currentMinVal = currentMax + (produto.incremento_minimo || 1) // Garante pelo menos +1
+      if (val < currentMinVal || val <= currentMax) {
         toast.error(`Lance já superado! O mínimo agora é ${formatCurrency(currentMinVal)}`)
         setSubmitting(false)
         return
