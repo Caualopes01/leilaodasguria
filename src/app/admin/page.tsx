@@ -274,9 +274,14 @@ export default function DashboardPage() {
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-gray-500 truncate">{prod?.titulo}</p>
+                      <div className="flex items-center gap-1.5 mt-0.5">
+                        <p className="text-xs text-gray-500 truncate">{prod?.titulo}</p>
+                        <span className="text-[10px] text-gray-400 shrink-0">
+                          • {new Date(lance.criado_em).toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' })}
+                        </span>
+                      </div>
                     </div>
-                    <span className="text-sm font-bold text-green-600">{formatCurrency(lance.valor)}</span>
+                    <span className="text-sm font-bold text-green-600 shrink-0">{formatCurrency(lance.valor)}</span>
                   </div>
                 )
               })}
