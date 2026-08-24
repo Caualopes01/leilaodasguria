@@ -1,0 +1,174 @@
+{
+  "name": "Aviso 30 min (WhatsApp)",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 1
+            }
+          ]
+        }
+      },
+      "name": "Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -672,
+        992
+      ],
+      "id": "trigger-30min-id"
+    },
+    {
+      "parameters": {
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?status=eq.ativo&fim_em=gte.{{new Date(new Date().getTime() + 29 * 60000).toISOString()}}&fim_em=lte.{{new Date(new Date().getTime() + 30 * 60000).toISOString()}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Leilões Acabando",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -464,
+        992
+      ],
+      "id": "http-buscar-30min-id"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.id != undefined }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Tem Leilões?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -272,
+        992
+      ],
+      "id": "if-30min-id"
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        -64,
+        896
+      ],
+      "id": "split-30min-id"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolutionapi.autosulai.com.br/message/sendMedia/amanda_gc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "9F27C3716F67-421B-B5CF-75DB2D187808"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: '555584040993-1548286301@g.us', mediatype: 'image', mimetype: 'image/jpeg', media: $json.imagens[0], mentionsEveryOne: true, caption: (() => { const t = $json.titulo; const s = $json.slug; return `🚨 @todos *ATENÇÃO! FALTAM APENAS 30 MINUTOS!* 🚨\\n\\nMeninas, o leilão da peça *${t}* está quase acabando!\\n\\nSe você ainda não deu o seu lance, essa é a hora! Corra e não perca essa oportunidade incrível! 🏃‍♀️💨💖\\n\\nDê o seu lance agora mesmo: https://leilaodasguria.vercel.app/leiloes/${s}`; })() } }}",
+        "options": {}
+      },
+      "name": "Enviar Aviso Grupo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        144,
+        896
+      ],
+      "id": "enviar-aviso-grupo-id"
+    }
+  ],
+  "connections": {
+    "Schedule": {
+      "main": [
+        [
+          {
+            "node": "Buscar Leilões Acabando",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Leilões Acabando": {
+      "main": [
+        [
+          {
+            "node": "Tem Leilões?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Leilões?": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "Enviar Aviso Grupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Aviso Grupo": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  }
+}

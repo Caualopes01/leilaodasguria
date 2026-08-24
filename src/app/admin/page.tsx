@@ -61,7 +61,7 @@ export default function DashboardPage() {
 
   async function loadVencedores(ids: string[]) {
     const results = []
-    for (const id of ids.slice(0, 5)) {
+    for (const id of ids.slice(0, 20)) {
       const { data } = await supabase
         .from('lances')
         .select('*, produto:produtos(titulo, slug)')

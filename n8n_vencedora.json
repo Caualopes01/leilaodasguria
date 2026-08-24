@@ -22,7 +22,7 @@
     },
     {
       "parameters": {
-        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?status=eq.ativo&fim_em=lte.now()",
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?status=eq.ativo&fim_em=lte.{{new Date().toISOString()}}",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
