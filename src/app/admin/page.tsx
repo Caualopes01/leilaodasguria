@@ -6,7 +6,7 @@ import { createClient, Produto, Lance } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
 import {
   Package, TrendingUp, Clock, Trophy, Crown,
-  ArrowRight, Plus, ExternalLink, X, Phone, User, ListOrdered, Gavel, Star
+  ArrowRight, Plus, ExternalLink, X, Phone, User, ListOrdered, Gavel, Star, Check
 } from 'lucide-react'
 import { formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
 
@@ -44,7 +44,7 @@ export default function DashboardPage() {
   }
 
   const ativos = produtos.filter(p => p.status === 'ativo').length
-  const encerrados = produtos.filter(p => p.status === 'encerrado')
+  const encerrados = produtos.filter(p => p.status === 'encerrado' && p.ativo !== false)
   const aguardando = produtos.filter(p => p.status === 'aguardando').length
 
   const totalLancesCount = produtos.reduce((acc, p) => acc + ((p as any).lances?.length || 0), 0)
@@ -72,6 +72,18 @@ export default function DashboardPage() {
       if (data) results.push(data)
     }
     setVencedores(results)
+  }
+
+  async function marcarComoEntregue(e: React.MouseEvent, produtoId: string) {
+    e.stopPropagation()
+    if (!confirm('Deseja marcar como entregue e limpar da lista?')) return
+    
+    // Atualiza a tela imediatamente (Optimistic UI)
+    setProdutos(prev => prev.map(p => p.id === produtoId ? { ...p, ativo: false } : p))
+    setVencedores(prev => prev.filter(v => v.produto_id !== produtoId))
+    
+    // Atualiza no banco
+    await supabase.from('produtos').update({ ativo: false }).eq('id', produtoId)
   }
 
   // Realtime updates
@@ -227,7 +239,15 @@ export default function DashboardPage() {
                     <p className="text-sm font-semibold text-gray-800 truncate">{v.nome}</p>
                     <p className="text-xs text-gray-500 truncate">{v.produto?.titulo}</p>
                   </div>
-                  <span className="text-sm font-bold text-rosa-600">{formatCurrency(v.valor)}</span>
+                  <span className="text-sm font-bold text-rosa-600 mr-2">{formatCurrency(v.valor)}</span>
+                  
+                  <button
+                    onClick={(e) => marcarComoEntregue(e, v.produto_id)}
+                    className="p-1.5 bg-white border border-gray-200 rounded-lg text-gray-400 hover:text-green-600 hover:border-green-300 hover:bg-green-50 transition-colors shadow-sm"
+                    title="Marcar como entregue e limpar da lista"
+                  >
+                    <Check className="w-4 h-4" />
+                  </button>
                 </div>
               ))}
             </div>
