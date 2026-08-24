@@ -11,7 +11,10 @@
       "name": "Webhook Supabase",
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
-      "position": [100, 300]
+      "position": [
+        100,
+        300
+      ]
     },
     {
       "parameters": {
@@ -19,8 +22,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "SUPABASE_KEY_AQUI" },
-            { "name": "Authorization", "value": "Bearer SUPABASE_KEY_AQUI" }
+            {
+              "name": "apikey",
+              "value": "SUPABASE_KEY_AQUI"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer SUPABASE_KEY_AQUI"
+            }
           ]
         },
         "options": {}
@@ -28,7 +37,10 @@
       "name": "Buscar Produto",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [300, 300]
+      "position": [
+        300,
+        300
+      ]
     },
     {
       "parameters": {
@@ -37,8 +49,14 @@
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
-            { "name": "apikey", "value": "EVOLUTION_KEY_AQUI" },
-            { "name": "Content-Type", "value": "application/json" }
+            {
+              "name": "apikey",
+              "value": "EVOLUTION_KEY_AQUI"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
           ]
         },
         "sendBody": true,
@@ -49,18 +67,74 @@
       "name": "Enviar WhatsApp Admin",
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 3,
-      "position": [500, 300]
+      "position": [
+        500,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "EVOLUTION_URL_AQUI/message/sendMedia/EVOLUTION_INSTANCE_AQUI",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "EVOLUTION_KEY_AQUI"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: 'COLOQUE_AQUI_O_ID_DO_GRUPO_OU_NUMERO', mediatype: 'image', mimetype: 'image/jpeg', media: ($('Buscar Produto').first().json[0]?.imagens || $('Buscar Produto').first().json.imagens)[0], caption: (() => { const record = $('Webhook Supabase').first().json.body.record; const nome = record.nome.split(' ')[0]; const valor = record.valor; const produto = $('Buscar Produto').first().json[0] || $('Buscar Produto').first().json; const titulo = produto.titulo; const slug = produto.slug; return `🔥 *Novo lance no leilão!* 🔥\n\nA *${nome}* está ganhando o produto *${titulo}* com o lance de *R$ ${valor}*!\n\nParticipe agora: https://leilao-das-gurias.vercel.app/leilao/${slug}`; })() } }}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp Grupo (Novo Lance)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        700,
+        300
+      ]
     }
   ],
   "connections": {
     "Webhook Supabase": {
       "main": [
-        [ { "node": "Buscar Produto", "type": "main", "index": 0 } ]
+        [
+          {
+            "node": "Buscar Produto",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     },
     "Buscar Produto": {
       "main": [
-        [ { "node": "Enviar WhatsApp Admin", "type": "main", "index": 0 } ]
+        [
+          {
+            "node": "Enviar WhatsApp Admin",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp Admin": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Grupo (Novo Lance)",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   }
