@@ -193,6 +193,37 @@
         864
       ],
       "id": "cb01ac1b-5106-49e1-88be-f73b4dbdfb85"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolutionapi.autosulai.com.br/message/sendText/amanda_gc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "9F27C3716F67-421B-B5CF-75DB2D187808"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: '5555981519990', text: (() => { const lance = $('Buscar Maior Lance1').item.json; const t = $('Split In Batches1').item.json.titulo; const fim_em = $('Split In Batches1').item.json.fim_em; const v = lance.valor; const nome = lance.nome ? lance.nome : 'Guria'; const whatsapp = lance.whatsapp; const dataFormatada = new Date(fim_em).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }); return `🚨 *Leilão Encerrado com Ganhadora!*\n\n*Leilão:* ${t}\n*Ganhadora:* ${nome}\n*Contato:* ${whatsapp}\n*Valor:* R$ ${v}\n*Encerrado em:* ${dataFormatada}`; })() } }}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp Admin Vencedor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        928,
+        864
+      ],
+      "id": "admin-notify-node-id-1787584338814"
     }
   ],
   "connections": {
@@ -279,6 +310,17 @@
       ]
     },
     "Enviar WhatsApp2": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Admin Vencedor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp Admin Vencedor": {
       "main": [
         [
           {
