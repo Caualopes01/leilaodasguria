@@ -23,7 +23,7 @@
     },
     {
       "parameters": {
-        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?status=eq.ativo&fim_em=gte.{{new Date(new Date().getTime() + 29 * 60000).toISOString()}}&fim_em=lte.{{new Date(new Date().getTime() + 30 * 60000).toISOString()}}",
+        "url": "=\nhttps://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?status=eq.ativo&fim_em=gte.{{new Date(new Date().getTime() + 20 * 60000).toISOString()}}&fim_em=lte.{{new Date(new Date().getTime() + 30 * 60000).toISOString()}}\n",
         "sendHeaders": true,
         "headerParameters": {
           "parameters": [
