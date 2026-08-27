@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="/vendas/support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Deu Lance: leilões de moda no WhatsApp</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: #FBF8F9; color: #14121A; font-family: 'Plus Jakarta Sans', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+  a { color: #E8114B; text-decoration: none; }
+  a:hover { color: #B00C39; }
+  summary { list-style: none; cursor: pointer; }
+  summary::-webkit-details-marker { display: none; }
+  img { display: block; }
+  @keyframes dlFloat { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+  @keyframes dlFloatB { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(10px); } }
+  @keyframes dlPulse { 0% { box-shadow: 0 0 0 0 rgba(232,17,75,.45); } 70% { box-shadow: 0 0 0 18px rgba(232,17,75,0); } 100% { box-shadow: 0 0 0 0 rgba(232,17,75,0); } }
+  @keyframes dlMarquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+  @keyframes dlBlink { 0%, 100% { opacity: 1; } 50% { opacity: .25; } }
+  @keyframes dlRise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+</style>
+</helmet>
+
+<div style="max-width: 100%; overflow: hidden;">
+
+  <nav style="position: sticky; top: 0; z-index: 60; backdrop-filter: blur(14px); background: rgba(251,248,249,.82); border-bottom: 1px solid rgba(20,18,26,.07);">
+    <div style="max-width: 1180px; margin: 0 auto; padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 24px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="width: 30px; height: 30px; border-radius: 9px; background: #E8114B; display: grid; place-items: center; color: #fff; font-size: 15px;">♥</div>
+        <span style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 20px; letter-spacing: -.01em;">Deu Lance</span>
+      </div>
+      <div style="display: flex; align-items: center; gap: 28px; font-size: 14.5px; font-weight: 500;">
+        <a href="#como" style="color: #45414F; display: none;" data-navlink="1">Como funciona</a>
+        <a href="#recursos" style="color: #45414F; display: none;" data-navlink="1">Recursos</a>
+        <a href="#planos" style="color: #45414F; display: none;" data-navlink="1">Planos</a>
+        <a href="#planos" style="background: #E8114B; color: #fff; padding: 10px 20px; border-radius: 999px; font-weight: 700; font-size: 14px; box-shadow: 0 6px 18px rgba(232,17,75,.28);" style-hover="background: #C40E3F; color: #fff;">Assinar agora</a>
+      </div>
+    </div>
+  </nav>
+
+  <header style="position: relative; padding: 76px 24px 90px;">
+    <div style="position: absolute; inset: 0; overflow: hidden; pointer-events: none;">
+      <div style="position: absolute; top: -180px; left: 50%; width: 900px; height: 620px; transform: translateX(-50%); background: radial-gradient(ellipse at center, rgba(232,17,75,.14), rgba(232,17,75,0) 68%);"></div>
+      <div style="position: absolute; top: 240px; right: -120px; width: 420px; height: 420px; border-radius: 50%; background: radial-gradient(circle, rgba(255,167,38,.16), rgba(255,167,38,0) 70%);"></div>
+    </div>
+
+    <div style="position: relative; max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1.05fr .95fr; gap: 56px; align-items: center;" data-hero-grid="1">
+      <div>
+        <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border: 1px solid rgba(232,17,75,.18); color: #E8114B; padding: 7px 14px 7px 10px; border-radius: 999px; font-size: 13px; font-weight: 700; box-shadow: 0 4px 14px rgba(20,18,26,.05);">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #22C55E; animation: dlBlink 1.6s ease-in-out infinite;"></span>
+          Leilão ao vivo no seu grupo de WhatsApp
+        </div>
+
+        <h1 style="font-family: 'Playfair Display', serif; font-size: 62px; line-height: 1.03; letter-spacing: -.025em; margin: 22px 0 0; text-wrap: balance;">
+          Suas clientes não<br />compram. Elas<br /><em style="color: #E8114B; font-style: italic;">disputam.</em>
+        </h1>
+
+        <p style="font-size: 19px; line-height: 1.6; color: #55505F; margin: 22px 0 0; max-width: 520px; text-wrap: pretty;">
+          O Deu Lance transforma o seu estoque em leilão. Cada lance dispara mensagem no WhatsApp de quem foi superada, e ela volta pra cobrir. Você assiste o preço subir sozinho.
+        </p>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 14px; margin-top: 34px; align-items: center;">
+          <a href="#planos" style="background: #E8114B; color: #fff; padding: 17px 32px; border-radius: 999px; font-weight: 800; font-size: 16.5px; box-shadow: 0 14px 30px rgba(232,17,75,.32); animation: dlPulse 3s ease-out infinite;" style-hover="background: #C40E3F; color: #fff;">Assinar por R$ 49,90/mês</a>
+          <a href="#demo" style="color: #14121A; font-weight: 700; font-size: 15.5px; padding: 17px 8px;" style-hover="color: #E8114B;">Ver o app por dentro →</a>
+        </div>
+
+        <div style="display: flex; flex-wrap: wrap; gap: 10px 26px; margin-top: 30px; font-size: 13.5px; color: #6B6674; font-weight: 500;">
+          <span>✓ Produtos ilimitados</span>
+          <span>✓ Sem comissão por venda</span>
+          <span>✓ Cancele quando quiser</span>
+        </div>
+      </div>
+
+      <div style="display: flex; justify-content: center;">
+        <div style="position: relative; width: 330px;">
+          <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); width: 420px; height: 420px; border-radius: 50%; background: linear-gradient(140deg, #FFE3EA, #FFF3E4); filter: blur(2px); z-index: 0;"></div>
+          <div style="position: relative; z-index: 1; width: 330px; border-radius: 34px; overflow: hidden; background: #fff; border: 8px solid #14121A; box-shadow: 0 40px 70px -20px rgba(20,18,26,.35); animation: dlFloat 7s ease-in-out infinite;">
+            <img src="/vendas/uploads/pasted-1787850453201-0.png" alt="Tela de lance no app Deu Lance" style="width: 100%; height: auto;" />
+          </div>
+
+          <div style="position: absolute; top: -34px; left: -64px; z-index: 3; background: #fff; border-radius: 18px; padding: 12px 16px; box-shadow: 0 18px 40px -12px rgba(20,18,26,.28); display: flex; gap: 11px; align-items: center; max-width: 260px; animation: dlFloatB 6s ease-in-out infinite;" data-hero-card="1">
+            <div style="width: 34px; height: 34px; border-radius: 10px; background: #25D366; display: grid; place-items: center; color: #fff; font-size: 17px; flex: none;">✆</div>
+            <div>
+              <div style="font-size: 12.5px; font-weight: 800; color: #14121A;">WhatsApp</div>
+              <div style="font-size: 12.5px; color: #6B6674; line-height: 1.35;">Alguém cobriu seu lance no <strong style="color: #14121A;">Vestido tweed</strong> 😱</div>
+            </div>
+          </div>
+
+          <div style="position: absolute; bottom: -22px; right: -68px; z-index: 3; background: #14121A; color: #fff; border-radius: 18px; padding: 13px 18px; box-shadow: 0 18px 40px -12px rgba(20,18,26,.4); animation: dlFloat 8s ease-in-out infinite;" data-hero-card="1">
+            <div style="font-size: 11px; letter-spacing: .1em; text-transform: uppercase; color: rgba(255,255,255,.55); font-weight: 700;">Lance atual</div>
+            <div style="font-family: 'Playfair Display', serif; font-size: 30px; font-weight: 700; line-height: 1.1;">R$ 45,00</div>
+            <div style="font-size: 12px; color: #4ADE80; font-weight: 700;">↑ 7 lances em 2h</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <section style="background: #14121A; color: #fff; padding: 16px 0; overflow: hidden;">
+    <div style="display: flex; width: max-content; animation: dlMarquee 34s linear infinite; gap: 0;">
+      <div style="display: flex; align-items: center; gap: 44px; padding-right: 44px; font-size: 14px; font-weight: 600; color: rgba(255,255,255,.72); white-space: nowrap;">
+        <span>🔔 Lance superado → mensagem na hora</span><span style="color: #E8114B;">◆</span>
+        <span>🏆 Vencedora anunciada no grupo</span><span style="color: #E8114B;">◆</span>
+        <span>📲 Link do lance pronto pra compartilhar</span><span style="color: #E8114B;">◆</span>
+        <span>👀 Veja quem está ao vivo agora</span><span style="color: #E8114B;">◆</span>
+        <span>✨ Novidade cadastrada → todo mundo notificado</span><span style="color: #E8114B;">◆</span>
+        <span>🔔 Lance superado → mensagem na hora</span><span style="color: #E8114B;">◆</span>
+        <span>🏆 Vencedora anunciada no grupo</span><span style="color: #E8114B;">◆</span>
+        <span>📲 Link do lance pronto pra compartilhar</span><span style="color: #E8114B;">◆</span>
+        <span>👀 Veja quem está ao vivo agora</span><span style="color: #E8114B;">◆</span>
+        <span>✨ Novidade cadastrada → todo mundo notificado</span><span style="color: #E8114B;">◆</span>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 104px 24px;" data-reveal="1">
+    <div style="max-width: 1000px; margin: 0 auto; text-align: center;">
+      <div style="font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: #E8114B; font-weight: 800;">O que muda</div>
+      <h2 style="font-family: 'Playfair Display', serif; font-size: 46px; line-height: 1.1; letter-spacing: -.02em; margin: 14px 0 0; text-wrap: balance;">Vender no grupo é gritar no vazio.<br />Leiloar é ter fila.</h2>
+    </div>
+
+    <div style="max-width: 1000px; margin: 52px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 22px;" data-two="1">
+      <div style="background: #F3F1F2; border: 1px solid rgba(20,18,26,.08); border-radius: 26px; padding: 34px 32px;">
+        <div style="display: inline-flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 800; color: #7A7484; letter-spacing: .04em; text-transform: uppercase;">Grupo comum</div>
+        <div style="display: grid; gap: 16px; margin-top: 22px;">
+          <div style="display: flex; gap: 12px; align-items: flex-start; color: #55505F; font-size: 15.5px; line-height: 1.5;"><span style="color: #B0AAB8; font-weight: 800;">✕</span> Você posta a foto e reza pra alguém responder</div>
+          <div style="display: flex; gap: 12px; align-items: flex-start; color: #55505F; font-size: 15.5px; line-height: 1.5;"><span style="color: #B0AAB8; font-weight: 800;">✕</span> A peça some no meio de 200 mensagens</div>
+          <div style="display: flex; gap: 12px; align-items: flex-start; color: #55505F; font-size: 15.5px; line-height: 1.5;"><span style="color: #B0AAB8; font-weight: 800;">✕</span> Preço fixo: quem quer muito paga igual a quem quer pouco</div>
+          <div style="display: flex; gap: 12px; align-items: flex-start; color: #55505F; font-size: 15.5px; line-height: 1.5;"><span style="color: #B0AAB8; font-weight: 800;">✕</span> "Vou pensar" e a venda morre ali</div>
+          <div style="display: flex; gap: 12px; align-items: flex-start; color: #55505F; font-size: 15.5px; line-height: 1.5;"><span style="color: #B0AAB8; font-weight: 800;">✕</span> Você anota tudo no caderno</div>
+        </div>
+      </div>
+
+      <div style="background: linear-gradient(160deg, #FFF1F4, #fff 60%); border: 1px solid rgba(232,17,75,.2); border-radius: 26px; padding: 34px 32px; box-shadow: 0 30px 60px -30px rgba(232,17,75,.35);">
+        <div style="display: inline-flex; align-items: center; gap: 9px; font-size: 13px; font-weight: 800; color: #E8114B; letter-spacing: .04em; text-transform: uppercase;">Com Deu Lance</div>
+        <div style="display: grid; gap: 16px; margin-top: 22px;">
+          <div style="display: flex; gap: 12px; align-items: flex-start; color: #2C2836; font-size: 15.5px; line-height: 1.5; font-weight: 500;"><span style="color: #E8114B; font-weight: 800;">✓</span> A peça tem prazo, e prazo cria urgência</div>
+          <div style="display: flex; gap: 12px; align-items: flex-start; color: #2C2836; font-size: 15.5px; line-height: 1.5; font-weight: 500;"><span style="color: #E8114B; font-weight: 800;">✓</span> Cada lance volta pro grupo com imagem e link</div>
+          <div style="display: flex; gap: 12px; align-items: flex-start; color: #2C2836; font-size: 15.5px; line-height: 1.5; font-weight: 500;"><span style="color: #E8114B; font-weight: 800;">✓</span> Quem quer muito, paga mais: o preço encontra o teto</div>
+          <div style="display: flex; gap: 12px; align-items: flex-start; color: #2C2836; font-size: 15.5px; line-height: 1.5; font-weight: 500;"><span style="color: #E8114B; font-weight: 800;">✓</span> Foi superada? Recebe no WhatsApp e volta correndo</div>
+          <div style="display: flex; gap: 12px; align-items: flex-start; color: #2C2836; font-size: 15.5px; line-height: 1.5; font-weight: 500;"><span style="color: #E8114B; font-weight: 800;">✓</span> Painel com tudo: lances, clientes, ganhadoras</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="como" style="background: #14121A; color: #fff; padding: 106px 24px; position: relative; overflow: hidden;">
+    <div style="position: absolute; top: -140px; left: -80px; width: 500px; height: 500px; border-radius: 50%; background: radial-gradient(circle, rgba(232,17,75,.22), rgba(232,17,75,0) 68%);"></div>
+    <div style="position: relative; max-width: 1180px; margin: 0 auto;">
+      <div data-reveal="1" style="max-width: 620px;">
+        <div style="font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: #FF6B93; font-weight: 800;">Como funciona</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 46px; line-height: 1.1; letter-spacing: -.02em; margin: 14px 0 0;">Quatro passos e o leilão anda sozinho</h2>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; margin-top: 56px;" data-four="1">
+        <div data-reveal="1" style="background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 22px; padding: 28px 24px 30px;">
+          <div style="font-family: 'Playfair Display', serif; font-size: 44px; color: #E8114B; line-height: 1;">01</div>
+          <h3 style="font-size: 18px; font-weight: 800; margin: 16px 0 8px;">Cadastre a peça</h3>
+          <p style="font-size: 14.5px; line-height: 1.6; color: rgba(255,255,255,.6); margin: 0;">Foto, descrição, lance inicial e prazo. Leva menos de um minuto.</p>
+        </div>
+        <div data-reveal="1" style="background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 22px; padding: 28px 24px 30px;">
+          <div style="font-family: 'Playfair Display', serif; font-size: 44px; color: #E8114B; line-height: 1;">02</div>
+          <h3 style="font-size: 18px; font-weight: 800; margin: 16px 0 8px;">Compartilhe o link</h3>
+          <p style="font-size: 14.5px; line-height: 1.6; color: rgba(255,255,255,.6); margin: 0;">Sua loja vira um app. Cola o link no grupo, no status, na bio.</p>
+        </div>
+        <div data-reveal="1" style="background: rgba(255,255,255,.05); border: 1px solid rgba(255,255,255,.1); border-radius: 22px; padding: 28px 24px 30px;">
+          <div style="font-family: 'Playfair Display', serif; font-size: 44px; color: #E8114B; line-height: 1;">03</div>
+          <h3 style="font-size: 18px; font-weight: 800; margin: 16px 0 8px;">A disputa começa</h3>
+          <p style="font-size: 14.5px; line-height: 1.6; color: rgba(255,255,255,.6); margin: 0;">Cada lance notifica quem foi superada. Ela volta. E cobre de novo.</p>
+        </div>
+        <div data-reveal="1" style="background: rgba(232,17,75,.14); border: 1px solid rgba(232,17,75,.4); border-radius: 22px; padding: 28px 24px 30px;">
+          <div style="font-family: 'Playfair Display', serif; font-size: 44px; color: #FF6B93; line-height: 1;">04</div>
+          <h3 style="font-size: 18px; font-weight: 800; margin: 16px 0 8px;">Arrematou</h3>
+          <p style="font-size: 14.5px; line-height: 1.6; color: rgba(255,255,255,.72); margin: 0;">A vencedora recebe pagamento, endereço de retirada e prazo. Tudo automático.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 106px 24px;" data-reveal="1">
+    <div style="max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 64px; align-items: center;" data-two="1">
+      <div>
+        <div style="font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: #25D366; font-weight: 800;">Automação de WhatsApp</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 46px; line-height: 1.08; letter-spacing: -.02em; margin: 14px 0 0; text-wrap: balance;">O WhatsApp da sua loja trabalhando 24h</h2>
+        <p style="font-size: 17.5px; line-height: 1.65; color: #55505F; margin: 20px 0 0; text-wrap: pretty;">
+          Você conecta o número da loja uma vez. Depois disso o disparo é automático, pra cliente e pra você.
+        </p>
+        <div style="display: grid; gap: 14px; margin-top: 30px;">
+          <div style="display: flex; gap: 14px; align-items: flex-start; background: #fff; border: 1px solid rgba(20,18,26,.07); border-radius: 16px; padding: 16px 18px; box-shadow: 0 8px 24px -14px rgba(20,18,26,.25);">
+            <span style="font-size: 18px;">🔔</span>
+            <div><strong style="font-size: 15px;">Lance superado</strong><div style="font-size: 14px; color: #6B6674; line-height: 1.5;">A cliente é avisada na hora e volta pra cobrir.</div></div>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start; background: #fff; border: 1px solid rgba(20,18,26,.07); border-radius: 16px; padding: 16px 18px; box-shadow: 0 8px 24px -14px rgba(20,18,26,.25);">
+            <span style="font-size: 18px;">🏆</span>
+            <div><strong style="font-size: 15px;">Arremate fechado</strong><div style="font-size: 14px; color: #6B6674; line-height: 1.5;">Valor, forma de pagamento, retirada e prazo numa mensagem só.</div></div>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start; background: #fff; border: 1px solid rgba(20,18,26,.07); border-radius: 16px; padding: 16px 18px; box-shadow: 0 8px 24px -14px rgba(20,18,26,.25);">
+            <span style="font-size: 18px;">📣</span>
+            <div><strong style="font-size: 15px;">Card pro grupo</strong><div style="font-size: 14px; color: #6B6674; line-height: 1.5;">Imagem do produto + link do lance, prontos pra colar e provocar.</div></div>
+          </div>
+          <div style="display: flex; gap: 14px; align-items: flex-start; background: #fff; border: 1px solid rgba(20,18,26,.07); border-radius: 16px; padding: 16px 18px; box-shadow: 0 8px 24px -14px rgba(20,18,26,.25);">
+            <span style="font-size: 18px;">💚</span>
+            <div><strong style="font-size: 15px;">Você também é avisada</strong><div style="font-size: 14px; color: #6B6674; line-height: 1.5;">Cada lance e cada vencedora chegam no seu WhatsApp.</div></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background: linear-gradient(165deg, #0E1B14, #17251C); border-radius: 30px; padding: 26px 22px 30px; box-shadow: 0 40px 80px -34px rgba(14,27,20,.6);">
+        <div style="display: flex; align-items: center; gap: 11px; padding-bottom: 18px; border-bottom: 1px solid rgba(255,255,255,.09);">
+          <div style="width: 38px; height: 38px; border-radius: 50%; background: #E8114B; display: grid; place-items: center; color: #fff; font-size: 17px;">♥</div>
+          <div>
+            <div style="color: #fff; font-weight: 700; font-size: 15px;">Leilão das Gurias</div>
+            <div style="color: #4ADE80; font-size: 12px; font-weight: 600;">online</div>
+          </div>
+        </div>
+        <div style="display: grid; gap: 12px; margin-top: 20px;">
+          <div style="justify-self: start; max-width: 84%; background: #1F2C24; color: #E8EDE9; border-radius: 16px 16px 16px 4px; padding: 12px 15px; font-size: 14.5px; line-height: 1.5;">
+            😱 <strong>Cobriram seu lance!</strong><br />Vestido tweed está agora em <strong>R$ 45,00</strong>.<br /><span style="color: #7CE0A0;">deulance.vercel.app/vestido-tweed</span>
+            <div style="text-align: right; font-size: 10.5px; color: rgba(255,255,255,.4); margin-top: 4px;">20:14 ✓✓</div>
+          </div>
+          <div style="justify-self: start; max-width: 84%; background: #1F2C24; color: #E8EDE9; border-radius: 16px 16px 16px 4px; padding: 12px 15px; font-size: 14.5px; line-height: 1.5;">
+            🔥 <strong>Reta final!</strong> Faltam 10 minutos pro Cropped Preto encerrar.
+            <div style="text-align: right; font-size: 10.5px; color: rgba(255,255,255,.4); margin-top: 4px;">20:41 ✓✓</div>
+          </div>
+          <div style="justify-self: end; max-width: 88%; background: #14513B; color: #EAFBF1; border-radius: 16px 16px 4px 16px; padding: 12px 15px; font-size: 14.5px; line-height: 1.5;">
+            🏆 <strong>Parabéns, você arrematou!</strong><br />Vestido tweed, R$ 45,00<br />Pix: 51 99999-9999<br />Retirada: Rua das Flores, 120, até sexta, 18h
+            <div style="text-align: right; font-size: 10.5px; color: rgba(255,255,255,.45); margin-top: 4px;">21:00 ✓✓</div>
+          </div>
+        </div>
+        <div style="margin-top: 22px; text-align: center; font-size: 12px; color: rgba(255,255,255,.35);">Mensagens automáticas, enviadas pelo número da sua loja</div>
+      </div>
+    </div>
+  </section>
+
+  <section id="recursos" style="padding: 20px 24px 110px;">
+    <div style="max-width: 1180px; margin: 0 auto;">
+      <div data-reveal="1" style="max-width: 660px; margin-bottom: 50px;">
+        <div style="font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: #E8114B; font-weight: 800;">Recursos</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 46px; line-height: 1.1; letter-spacing: -.02em; margin: 14px 0 0;">Um app pra elas, um painel pra você</h2>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 22px;" data-three="1">
+        <div data-reveal="1" style="background: #fff; border: 1px solid rgba(20,18,26,.07); border-radius: 26px; padding: 28px 26px 0; overflow: hidden; box-shadow: 0 20px 50px -30px rgba(20,18,26,.4);">
+          <h3 style="font-family: 'Playfair Display', serif; font-size: 24px; margin: 0;">Vitrine que ferve</h3>
+          <p style="font-size: 14.5px; line-height: 1.6; color: #6B6674; margin: 10px 0 22px;">Top 3 mais disputadas, "finalizam hoje" e todos os leilões ativos com contagem regressiva.</p>
+          <img src="/vendas/uploads/pasted-1787850336602-0.png" alt="Vitrine de leilões ativos" style="width: 100%; height: auto; border-radius: 16px 16px 0 0; border: 1px solid rgba(20,18,26,.08); border-bottom: 0;" />
+        </div>
+        <div data-reveal="1" style="background: #fff; border: 1px solid rgba(20,18,26,.07); border-radius: 26px; padding: 28px 26px 0; overflow: hidden; box-shadow: 0 20px 50px -30px rgba(20,18,26,.4);">
+          <h3 style="font-family: 'Playfair Display', serif; font-size: 24px; margin: 0;">Meus Lances</h3>
+          <p style="font-size: 14.5px; line-height: 1.6; color: #6B6674; margin: 10px 0 22px;">Ela entra com o WhatsApp e acompanha: está ganhando, foi superada, o que já encerrou.</p>
+          <img src="/vendas/uploads/pasted-1787850370538-0.png" alt="Tela Meus Lances" style="width: 100%; height: auto; border-radius: 16px 16px 0 0; border: 1px solid rgba(20,18,26,.08); border-bottom: 0;" />
+        </div>
+        <div data-reveal="1" style="background: #fff; border: 1px solid rgba(20,18,26,.07); border-radius: 26px; padding: 28px 26px 0; overflow: hidden; box-shadow: 0 20px 50px -30px rgba(20,18,26,.4);">
+          <h3 style="font-family: 'Playfair Display', serif; font-size: 24px; margin: 0;">Aba de Novidades</h3>
+          <p style="font-size: 14.5px; line-height: 1.6; color: #6B6674; margin: 10px 0 22px;">Cadastrou peça nova, todo mundo no app recebe aviso. Estoque novo já nasce com plateia.</p>
+          <img src="/vendas/uploads/pasted-1787850360526-0.png" alt="Aba de novidades" style="width: 100%; height: auto; border-radius: 16px 16px 0 0; border: 1px solid rgba(20,18,26,.08); border-bottom: 0;" />
+        </div>
+      </div>
+
+      <div data-reveal="1" style="margin-top: 22px; background: linear-gradient(150deg, #FFF1F4, #FFF9F3); border: 1px solid rgba(232,17,75,.16); border-radius: 30px; padding: 44px 44px 0; display: grid; grid-template-columns: .8fr 1.2fr; gap: 44px; align-items: end; overflow: hidden;" data-two="1">
+        <div style="padding-bottom: 44px;">
+          <div style="display: inline-flex; align-items: center; gap: 8px; background: #fff; border-radius: 999px; padding: 6px 13px; font-size: 12.5px; font-weight: 800; color: #14121A; box-shadow: 0 4px 12px rgba(20,18,26,.07);">
+            <span style="width: 7px; height: 7px; border-radius: 50%; background: #22C55E; animation: dlBlink 1.4s ease-in-out infinite;"></span> Ao vivo agora
+          </div>
+          <h3 style="font-family: 'Playfair Display', serif; font-size: 34px; line-height: 1.12; margin: 16px 0 0;">Você vê quem está olhando e qual peça</h3>
+          <p style="font-size: 15.5px; line-height: 1.6; color: #55505F; margin: 14px 0 0;">Painel com total de peças, leilões ativos, lances recebidos, ganhadoras e quem está no app neste exato momento. É a hora certa de mandar aquele "corre que tá acabando".</p>
+        </div>
+        <div style="border-radius: 18px 0 0 0; overflow: hidden; box-shadow: -20px -20px 60px -30px rgba(20,18,26,.4);">
+          <img src="/vendas/uploads/pasted-1787850479873-0.png" alt="Painel da lojista" style="width: 100%; height: auto; border: 1px solid rgba(20,18,26,.08); border-bottom: 0; border-right: 0; border-radius: 18px 0 0 0;" />
+        </div>
+      </div>
+
+      <div data-reveal="1" style="margin-top: 22px; background: #fff; border: 1px solid rgba(20,18,26,.07); border-radius: 30px; padding: 40px 40px 0; overflow: hidden; box-shadow: 0 24px 60px -40px rgba(20,18,26,.45);">
+        <div style="max-width: 620px;">
+          <h3 style="font-family: 'Playfair Display', serif; font-size: 34px; line-height: 1.12; margin: 0;">Ganhadoras e lances, tudo registrado</h3>
+          <p style="font-size: 15.5px; line-height: 1.6; color: #55505F; margin: 12px 0 28px;">Marque quem já retirou, veja o histórico de cada disputa e nunca mais confie na memória, nem no caderno.</p>
+        </div>
+        <img src="/vendas/uploads/pasted-1787850309438-0.png" alt="Ganhadores e lances recentes" style="width: 100%; height: auto; border-radius: 16px 16px 0 0; border: 1px solid rgba(20,18,26,.08); border-bottom: 0;" />
+      </div>
+    </div>
+  </section>
+
+  <section id="demo" style="background: #14121A; color: #fff; padding: 104px 24px; position: relative; overflow: hidden;">
+    <div style="position: absolute; bottom: -180px; right: -100px; width: 560px; height: 560px; border-radius: 50%; background: radial-gradient(circle, rgba(232,17,75,.2), rgba(232,17,75,0) 68%);"></div>
+    <div style="position: relative; max-width: 1180px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;" data-two="1">
+      <div data-reveal="1">
+        <div style="font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: #FF6B93; font-weight: 800;">Demonstração</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 46px; line-height: 1.08; letter-spacing: -.02em; margin: 14px 0 0;">Passeie pelo app das suas clientes</h2>
+        <p style="font-size: 17px; line-height: 1.65; color: rgba(255,255,255,.62); margin: 18px 0 30px;">É isso que ela vê ao abrir o link. Sem baixar nada, sem cadastro, sem senha, só o WhatsApp dela.</p>
+        <div style="display: flex; flex-direction: column; gap: 10px; max-width: 380px;">
+          <button onClick="{{ pick0 }}" style="{{ tab0 }}">Explorar leilões</button>
+          <button onClick="{{ pick1 }}" style="{{ tab1 }}">Página do produto</button>
+          <button onClick="{{ pick2 }}" style="{{ tab2 }}">Dar lance e disputar</button>
+          <button onClick="{{ pick3 }}" style="{{ tab3 }}">Meus lances</button>
+          <button onClick="{{ pick4 }}" style="{{ tab4 }}">Novidades</button>
+        </div>
+      </div>
+
+      <div data-reveal="1" style="display: flex; justify-content: center;">
+        <div style="position: relative; width: 340px; border-radius: 36px; overflow: hidden; background: #fff; border: 9px solid #2A2632; box-shadow: 0 50px 90px -30px rgba(0,0,0,.6);">
+          <img src="{{ demoSrc }}" alt="{{ demoAlt }}" style="width: 100%; height: auto;" />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="planos" style="padding: 106px 24px;">
+    <div style="max-width: 1180px; margin: 0 auto;">
+      <div data-reveal="1" style="text-align: center; max-width: 640px; margin: 0 auto;">
+        <div style="font-size: 12.5px; letter-spacing: .16em; text-transform: uppercase; color: #E8114B; font-weight: 800;">Planos</div>
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 46px; line-height: 1.1; letter-spacing: -.02em; margin: 14px 0 0;">Um preço só. Tudo liberado.</h2>
+        <p style="font-size: 17px; color: #55505F; margin: 14px 0 0;">Produtos ilimitados, clientes ilimitadas, disparos ilimitados. Sem comissão sobre o que você vender.</p>
+      </div>
+
+      <div style="max-width: 900px; margin: 50px auto 0; display: grid; grid-template-columns: 1fr 1fr; gap: 22px;" data-two="1">
+        <div data-reveal="1" style="background: #fff; border: 1px solid rgba(20,18,26,.09); border-radius: 28px; padding: 38px 34px; display: flex; flex-direction: column;">
+          <div style="font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #7A7484;">Mensal</div>
+          <div style="display: flex; align-items: baseline; gap: 6px; margin-top: 16px;">
+            <span style="font-size: 22px; font-weight: 700; color: #14121A;">R$</span>
+            <span style="font-family: 'Playfair Display', serif; font-size: 62px; font-weight: 700; line-height: 1; letter-spacing: -.02em;">49,90</span>
+            <span style="font-size: 16px; color: #7A7484; font-weight: 600;">/mês</span>
+          </div>
+          <p style="font-size: 14.5px; color: #6B6674; margin: 14px 0 26px; line-height: 1.55;">Comece agora, cancele quando quiser. Sem fidelidade.</p>
+          <div style="display: grid; gap: 12px; font-size: 15px; color: #2C2836;">
+            <div style="display: flex; gap: 10px;"><span style="color: #E8114B; font-weight: 800;">✓</span> Produtos e leilões ilimitados</div>
+            <div style="display: flex; gap: 10px;"><span style="color: #E8114B; font-weight: 800;">✓</span> Disparos de WhatsApp automáticos</div>
+            <div style="display: flex; gap: 10px;"><span style="color: #E8114B; font-weight: 800;">✓</span> App público da sua loja</div>
+            <div style="display: flex; gap: 10px;"><span style="color: #E8114B; font-weight: 800;">✓</span> Painel, ao vivo e ganhadoras</div>
+          </div>
+          <a href="https://wa.me/5555981519990" style="margin-top: 30px; text-align: center; background: #14121A; color: #fff; padding: 16px; border-radius: 999px; font-weight: 800; font-size: 16px;" style-hover="background: #2C2836; color: #fff;">Assinar mensal</a>
+        </div>
+
+        <div data-reveal="1" style="position: relative; background: linear-gradient(165deg, #1C1622, #14121A); color: #fff; border: 1px solid rgba(232,17,75,.4); border-radius: 28px; padding: 38px 34px; display: flex; flex-direction: column; box-shadow: 0 40px 80px -40px rgba(232,17,75,.5);">
+          <div style="position: absolute; top: 22px; right: 24px; background: #E8114B; color: #fff; font-size: 11.5px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 6px 12px; border-radius: 999px;">2 meses grátis</div>
+          <div style="font-size: 13px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; color: #FF6B93; max-width: 60%;">Anual</div>
+          <div style="display: flex; align-items: baseline; gap: 6px; margin-top: 16px;">
+            <span style="font-size: 22px; font-weight: 700;">R$</span>
+            <span style="font-family: 'Playfair Display', serif; font-size: 62px; font-weight: 700; line-height: 1; letter-spacing: -.02em;">399,90</span>
+            <span style="font-size: 16px; color: rgba(255,255,255,.5); font-weight: 600;">/ano</span>
+          </div>
+          <p style="font-size: 14.5px; color: rgba(255,255,255,.6); margin: 14px 0 26px; line-height: 1.55;">Sai por <strong style="color: #fff;">R$ 33,32 por mês</strong>, economia de R$ 198,90 no ano.</p>
+          <div style="display: grid; gap: 12px; font-size: 15px; color: rgba(255,255,255,.88);">
+            <div style="display: flex; gap: 10px;"><span style="color: #FF6B93; font-weight: 800;">✓</span> Tudo do plano mensal</div>
+            <div style="display: flex; gap: 10px;"><span style="color: #FF6B93; font-weight: 800;">✓</span> Preço travado por 12 meses</div>
+            <div style="display: flex; gap: 10px;"><span style="color: #FF6B93; font-weight: 800;">✓</span> Suporte prioritário no WhatsApp</div>
+            <div style="display: flex; gap: 10px;"><span style="color: #FF6B93; font-weight: 800;">✓</span> Ajuda na configuração inicial</div>
+          </div>
+          <a href="https://wa.me/5555981519990" style="margin-top: 30px; text-align: center; background: #E8114B; color: #fff; padding: 16px; border-radius: 999px; font-weight: 800; font-size: 16px; box-shadow: 0 14px 30px -10px rgba(232,17,75,.6);" style-hover="background: #FF2E63; color: #fff;">Assinar anual</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section style="padding: 0 24px 110px;">
+    <div style="max-width: 800px; margin: 0 auto;" data-reveal="1">
+      <h2 style="font-family: 'Playfair Display', serif; font-size: 42px; line-height: 1.1; letter-spacing: -.02em; margin: 0 0 34px; text-align: center;">Perguntas frequentes</h2>
+
+      <details style="background: #fff; border: 1px solid rgba(20,18,26,.08); border-radius: 18px; padding: 20px 24px; margin-bottom: 12px;">
+        <summary style="font-size: 16.5px; font-weight: 700; display: flex; justify-content: space-between; gap: 16px; align-items: center;">Minhas clientes precisam baixar algum aplicativo?<span style="color: #E8114B; font-size: 22px; line-height: 1;">+</span></summary>
+        <p style="font-size: 15px; line-height: 1.65; color: #55505F; margin: 14px 0 0;">Não. Elas abrem o link no navegador e já dão lance. Se quiserem, salvam na tela inicial e fica com cara de app.</p>
+      </details>
+      <details style="background: #fff; border: 1px solid rgba(20,18,26,.08); border-radius: 18px; padding: 20px 24px; margin-bottom: 12px;">
+        <summary style="font-size: 16.5px; font-weight: 700; display: flex; justify-content: space-between; gap: 16px; align-items: center;">As mensagens saem do meu número de WhatsApp?<span style="color: #E8114B; font-size: 22px; line-height: 1;">+</span></summary>
+        <p style="font-size: 15px; line-height: 1.65; color: #55505F; margin: 14px 0 0;">Sim. A automação usa o número da sua loja, então a cliente recebe de quem ela já conhece, e responde ali mesmo.</p>
+      </details>
+      <details style="background: #fff; border: 1px solid rgba(20,18,26,.08); border-radius: 18px; padding: 20px 24px; margin-bottom: 12px;">
+        <summary style="font-size: 16.5px; font-weight: 700; display: flex; justify-content: space-between; gap: 16px; align-items: center;">O Deu Lance cobra comissão sobre as vendas?<span style="color: #E8114B; font-size: 22px; line-height: 1;">+</span></summary>
+        <p style="font-size: 15px; line-height: 1.65; color: #55505F; margin: 14px 0 0;">Nenhuma. Você paga a mensalidade e fica com 100% do valor arrematado. O pagamento é combinado direto entre você e a cliente.</p>
+      </details>
+      <details style="background: #fff; border: 1px solid rgba(20,18,26,.08); border-radius: 18px; padding: 20px 24px; margin-bottom: 12px;">
+        <summary style="font-size: 16.5px; font-weight: 700; display: flex; justify-content: space-between; gap: 16px; align-items: center;">Tem limite de produtos ou de clientes?<span style="color: #E8114B; font-size: 22px; line-height: 1;">+</span></summary>
+        <p style="font-size: 15px; line-height: 1.65; color: #55505F; margin: 14px 0 0;">Não. Os dois planos são ilimitados: cadastre quantas peças quiser, para quantas clientes quiser.</p>
+      </details>
+      <details style="background: #fff; border: 1px solid rgba(20,18,26,.08); border-radius: 18px; padding: 20px 24px; margin-bottom: 12px;">
+        <summary style="font-size: 16.5px; font-weight: 700; display: flex; justify-content: space-between; gap: 16px; align-items: center;">E se ninguém der lance na peça?<span style="color: #E8114B; font-size: 22px; line-height: 1;">+</span></summary>
+        <p style="font-size: 15px; line-height: 1.65; color: #55505F; margin: 14px 0 0;">Você define o lance inicial, que funciona como preço mínimo. Se não houver disputa, o leilão encerra sem vencedora e a peça volta pro estoque, é só relançar.</p>
+      </details>
+      <details style="background: #fff; border: 1px solid rgba(20,18,26,.08); border-radius: 18px; padding: 20px 24px;">
+        <summary style="font-size: 16.5px; font-weight: 700; display: flex; justify-content: space-between; gap: 16px; align-items: center;">Serve pra loja física que quer girar estoque parado?<span style="color: #E8114B; font-size: 22px; line-height: 1;">+</span></summary>
+        <p style="font-size: 15px; line-height: 1.65; color: #55505F; margin: 14px 0 0;">É um dos melhores usos. Peça encalhada com lance inicial baixo vira disputa, e a retirada pode ser na própria loja, o que ainda traz a cliente pra dentro.</p>
+      </details>
+    </div>
+  </section>
+
+  <section style="padding: 0 24px 110px;">
+    <div data-reveal="1" style="max-width: 1180px; margin: 0 auto; background: linear-gradient(135deg, #E8114B, #FF5C3B); border-radius: 36px; padding: 76px 48px; text-align: center; color: #fff; position: relative; overflow: hidden; box-shadow: 0 50px 100px -50px rgba(232,17,75,.8);">
+      <div style="position: absolute; top: -120px; left: -60px; width: 380px; height: 380px; border-radius: 50%; background: rgba(255,255,255,.1);"></div>
+      <div style="position: absolute; bottom: -160px; right: -40px; width: 420px; height: 420px; border-radius: 50%; background: rgba(255,255,255,.08);"></div>
+      <div style="position: relative;">
+        <h2 style="font-family: 'Playfair Display', serif; font-size: 52px; line-height: 1.06; letter-spacing: -.02em; margin: 0; text-wrap: balance;">Coloque a primeira peça em disputa hoje</h2>
+        <p style="font-size: 18px; line-height: 1.6; color: rgba(255,255,255,.9); margin: 18px auto 0; max-width: 520px;">Leva um minuto pra cadastrar e um segundo pra colar o link no grupo. O resto é a competitividade delas.</p>
+        <div style="display: flex; gap: 14px; justify-content: center; flex-wrap: wrap; margin-top: 34px;">
+          <a href="https://wa.me/5555981519990" style="background: #fff; color: #E8114B; padding: 17px 34px; border-radius: 999px; font-weight: 800; font-size: 16.5px;" style-hover="background: #14121A; color: #fff;">Assinar por R$ 49,90/mês</a>
+          <a href="https://wa.me/5555981519990" style="border: 1.5px solid rgba(255,255,255,.55); color: #fff; padding: 17px 34px; border-radius: 999px; font-weight: 700; font-size: 16.5px;" style-hover="background: rgba(255,255,255,.14); color: #fff;">Falar no WhatsApp</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer style="background: #14121A; color: rgba(255,255,255,.6); padding: 56px 24px 40px;">
+    <div style="max-width: 1180px; margin: 0 auto; display: flex; flex-wrap: wrap; gap: 32px; justify-content: space-between; align-items: flex-start;">
+      <div style="max-width: 300px;">
+        <div style="display: flex; align-items: center; gap: 10px;">
+          <div style="width: 28px; height: 28px; border-radius: 9px; background: #E8114B; display: grid; place-items: center; color: #fff; font-size: 14px;">♥</div>
+          <span style="font-family: 'Playfair Display', serif; font-weight: 700; font-size: 19px; color: #fff;">Deu Lance</span>
+        </div>
+        <p style="font-size: 14px; line-height: 1.6; margin: 14px 0 0;">Leilões de moda que acontecem onde suas clientes já estão: no WhatsApp.</p>
+      </div>
+      <div style="display: grid; gap: 10px; font-size: 14.5px;">
+        <div style="color: #fff; font-weight: 700; margin-bottom: 4px;">Navegue</div>
+        <a href="#como" style="color: rgba(255,255,255,.6);" style-hover="color: #fff;">Como funciona</a>
+        <a href="#recursos" style="color: rgba(255,255,255,.6);" style-hover="color: #fff;">Recursos</a>
+        <a href="#demo" style="color: rgba(255,255,255,.6);" style-hover="color: #fff;">Demonstração</a>
+        <a href="#planos" style="color: rgba(255,255,255,.6);" style-hover="color: #fff;">Planos</a>
+      </div>
+      <div style="display: grid; gap: 10px; font-size: 14.5px;">
+        <div style="color: #fff; font-weight: 700; margin-bottom: 4px;">Contato</div>
+        <a href="https://wa.me/5555981519990" style="color: rgba(255,255,255,.6);" style-hover="color: #fff;">WhatsApp (55) 98151-9990</a>
+        <a href="https://deulance.vercel.app" style="color: rgba(255,255,255,.6);" style-hover="color: #fff;">deulance.vercel.app</a>
+      </div>
+    </div>
+    <div style="max-width: 1180px; margin: 40px auto 0; padding-top: 22px; border-top: 1px solid rgba(255,255,255,.08); font-size: 13px; color: rgba(255,255,255,.38);">© 2026 Deu Lance. Todos os direitos reservados.</div>
+  </footer>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1280,&quot;height&quot;:900}}">
+const SCREENS = [
+  ["/vendas/uploads/pasted-1787850336602-0.png", "Explorar leilões no app"],
+  ["/vendas/uploads/pasted-1787850441846-0.png", "Página do produto"],
+  ["/vendas/uploads/pasted-1787850453201-0.png", "Dar lance e histórico de lances"],
+  ["/vendas/uploads/pasted-1787850370538-0.png", "Meus lances"],
+  ["/vendas/uploads/pasted-1787850360526-0.png", "Novidades"]
+];
+
+const TAB_BASE = "text-align:left;cursor:pointer;font-family:inherit;font-size:15.5px;font-weight:700;padding:15px 20px;border-radius:14px;transition:all .25s ease;";
+
+class Component extends DCLogic {
+  state = { demo: 0 };
+
+  componentDidMount() {
+    const root = this.rootEl || document;
+    const els = Array.from(root.querySelectorAll("[data-reveal]"));
+    const vh = window.innerHeight;
+    const hidden = [];
+    els.forEach(el => {
+      if (el.getBoundingClientRect().top > vh * 0.85) {
+        el.style.opacity = "0";
+        el.style.transform = "translateY(26px)";
+        el.style.transition = "opacity .7s cubic-bezier(.22,1,.36,1), transform .7s cubic-bezier(.22,1,.36,1)";
+        hidden.push(el);
+      }
+    });
+    const show = el => { el.style.opacity = "1"; el.style.transform = "none"; };
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { show(e.target); io.unobserve(e.target); } });
+      }, { rootMargin: "0px 0px -12% 0px", threshold: 0.05 });
+      hidden.forEach(el => io.observe(el));
+      this._io = io;
+    } else {
+      hidden.forEach(show);
+    }
+    this._fallback = setTimeout(() => hidden.forEach(show), 6000);
+
+    this._onResize = () => { this.forceUpdate(); this.applyResponsive(); };
+    window.addEventListener("resize", this._onResize);
+
+    this._onScroll = () => {
+      const nav = root.querySelector("nav");
+      if (nav) nav.style.boxShadow = window.scrollY > 12 ? "0 8px 30px -18px rgba(20,18,26,.45)" : "none";
+    };
+    window.addEventListener("scroll", this._onScroll, { passive: true });
+    this.applyResponsive();
+    this._ro = setInterval(() => this.applyResponsive(), 800);
+  }
+
+  componentWillUnmount() {
+    if (this._io) this._io.disconnect();
+    clearTimeout(this._fallback);
+    clearInterval(this._ro);
+    window.removeEventListener("resize", this._onResize);
+    window.removeEventListener("scroll", this._onScroll);
+  }
+
+  applyResponsive() {
+    const root = this.rootEl || document;
+    const w = window.innerWidth;
+    const narrow = w < 800;
+    const remember = (el, attr) => {
+      if (!el.dataset[attr]) el.dataset[attr] = el.style.gridTemplateColumns || "1fr 1fr";
+      return el.dataset[attr];
+    };
+    root.querySelectorAll("[data-two],[data-hero-grid]").forEach(el => {
+      const orig = remember(el, "origCols");
+      el.style.gridTemplateColumns = narrow ? "1fr" : orig;
+    });
+    root.querySelectorAll("[data-three]").forEach(el => {
+      const orig = remember(el, "origCols");
+      el.style.gridTemplateColumns = w < 640 ? "1fr" : (narrow ? "1fr 1fr" : orig);
+    });
+    root.querySelectorAll("[data-four]").forEach(el => {
+      const orig = remember(el, "origCols");
+      el.style.gridTemplateColumns = w < 640 ? "1fr" : (narrow ? "1fr 1fr" : orig);
+    });
+    root.querySelectorAll("[data-navlink]").forEach(el => {
+      el.style.display = w < 760 ? "none" : "inline";
+    });
+    root.querySelectorAll("[data-hero-card]").forEach(el => {
+      el.style.display = w < 560 ? "none" : "";
+    });
+    root.querySelectorAll("h1").forEach(el => { el.style.fontSize = w < 640 ? "40px" : ""; });
+    root.querySelectorAll("h2").forEach(el => { if (w < 640) el.style.fontSize = "32px"; else el.style.fontSize = ""; });
+  }
+
+  tabStyle(i) {
+    const on = this.state.demo === i;
+    return TAB_BASE + (on
+      ? "background:#E8114B;color:#fff;border:1px solid #E8114B;box-shadow:0 14px 30px -14px rgba(232,17,75,.8);"
+      : "background:rgba(255,255,255,.05);color:rgba(255,255,255,.7);border:1px solid rgba(255,255,255,.12);");
+  }
+
+  renderVals() {
+    const pick = i => () => this.setState({ demo: i });
+    const s = SCREENS[this.state.demo] || SCREENS[0];
+    return {
+      demoSrc: s[0], demoAlt: s[1],
+      pick0: pick(0), pick1: pick(1), pick2: pick(2), pick3: pick(3), pick4: pick(4),
+      tab0: this.tabStyle(0), tab1: this.tabStyle(1), tab2: this.tabStyle(2),
+      tab3: this.tabStyle(3), tab4: this.tabStyle(4)
+    };
+  }
+}
+</script>
+</body>
+</html>
