@@ -6,7 +6,9 @@ export function formatCurrency(value: number): string {
 }
 
 export function formatWhatsApp(phone: string): string {
-  const cleaned = phone.replace(/\D/g, '')
+  if (!phone) return ''
+  const phoneStr = String(phone)
+  const cleaned = phoneStr.replace(/\D/g, '')
   
   if (cleaned.startsWith('598')) {
     const num = cleaned.slice(3)
@@ -39,7 +41,9 @@ export function slugify(text: string): string {
 }
 
 export function getWhatsAppLink(phone: string, message?: string): string {
-  const cleaned = phone.replace(/\D/g, '')
+  if (!phone) return ''
+  const phoneStr = String(phone)
+  const cleaned = phoneStr.replace(/\D/g, '')
   const number = (cleaned.startsWith('55') || cleaned.startsWith('598')) ? cleaned : `55${cleaned}`
   return `https://wa.me/${number}${message ? `?text=${encodeURIComponent(message)}` : ''}`
 }
