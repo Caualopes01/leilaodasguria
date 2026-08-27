@@ -101,7 +101,7 @@
         },
         "sendBody": true,
         "specifyBody": "json",
-        "jsonBody": "={{ { number: '555584040993-1548286301@g.us', mediatype: 'image', mimetype: 'image/jpeg', media: $json.imagens[0], mentionsEveryOne: true, caption: (() => { const t = $json.titulo; const s = $json.slug; return `🚨 @todos *ATENÇÃO! FALTAM APENAS 30 MINUTOS!* 🚨\\n\\nMeninas, o leilão da peça *${t}* está quase acabando!\\n\\nSe você ainda não deu o seu lance, essa é a hora! Corra e não perca essa oportunidade incrível! 🏃‍♀️💨💖\\n\\nDê o seu lance agora mesmo: https://leilaodasguria.vercel.app/leiloes/${s}`; })() } }}",
+        "jsonBody": "={{ { number: '555584040993-1548286301@g.us', mediatype: 'image', mimetype: 'image/jpeg', media: $json.imagens[0], mentionsEveryOne: true, caption: (() => { const t = $json.titulo; const s = $json.slug; return `🚨 @todos *ATENÇÃO! FALTAM APENAS 30 MINUTOS!* 🚨\\n\\nMeninas, o leilão da peça *${t}* está quase acabando!\\n\\nSe você ainda não deu o seu lance, essa é a hora! Corra e não perca essa oportunidade incrível! 🏃‍♀️💨💖\\n\\nDê o seu lance agora mesmo: https://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}`; })() } }}",
         "options": {}
       },
       "name": "Enviar Aviso Grupo",

@@ -1,0 +1,406 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?id=eq.{{$json.body.record.produto_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Produto",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        148,
+        304
+      ],
+      "id": "d166e481-a7a6-4cb3-9376-99805ff4d07e"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolutionapi.autosulai.com.br/message/sendMedia/amanda_gc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "9F27C3716F67-421B-B5CF-75DB2D187808"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { \n  number: '555584040993-1548286301@g.us', \n  mentionsEveryOne: true,\n  mentionEveryOne: true,\n  mediatype: 'image', \n  mimetype: 'image/jpeg', \n  media: ($('Buscar Produto').first().json[0]?.imagens || $('Buscar Produto').first().json.imagens)[0], \n  caption: (() => { \n    const record = $('Webhook Supabase1').first().json.body.record; \n    const nome = record.nome.split(' ')[0]; \n    const valor = record.valor; \n    const produto = $('Buscar Produto').first().json[0] || $('Buscar Produto').first().json; \n    const titulo = produto.titulo; \n    const slug = produto.slug; \n    return `@everyone\\n\\n\ud83d\udd25 *Novo lance no leil\u00e3o!* \ud83d\udd25\\n\\nA *${nome}* est\u00e1 ganhando o produto *${titulo}* com o lance de *R$ ${valor}*!\\n\\nParticipe agora: https://deulance.vercel.app/loja/leilaodasgurias/leilao/${slug}`; \n  })() \n} }}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp Grupo (Novo Lance)",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        548,
+        304
+      ],
+      "id": "79b21c0f-2675-4892-b162-612c75123bfa"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "novo_lance_admin1",
+        "options": {}
+      },
+      "name": "Webhook Supabase1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        304
+      ],
+      "id": "9e96fd30-6759-4101-b6bc-8572ba27f270",
+      "webhookId": "60aa6f42-3830-4772-9c8d-037f997c6020"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolutionapi.autosulai.com.br/message/sendText/amanda_gc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "9F27C3716F67-421B-B5CF-75DB2D187808"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: '5555981519990', text: (() => { const record = $('Webhook Supabase1').first().json.body.record; const nome = record.nome; const valor = record.valor; const titulo = $json[0]?.titulo || $json.titulo; const slug = $json[0]?.slug || $json.slug; return `\ud83d\udd14 *Novo Lance!*\n\n*Pessoa:* ${nome}\n*Produto:* ${titulo}\n*Valor:* R$ ${valor}\n*Link:* https://deulance.vercel.app/loja/leilaodasgurias/leilao/${slug}`; })() } }}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp Admin1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        340,
+        304
+      ],
+      "id": "e80bce9b-7fbc-4a93-b9b2-15bcddbe0a9a"
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes",
+              "minutesInterval": 10
+            }
+          ]
+        }
+      },
+      "name": "Schedule",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -160,
+        0
+      ],
+      "id": "fc42b44a-785a-49bc-917c-7c7b1210defc"
+    },
+    {
+      "parameters": {
+        "url": "=\nhttps://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?tenant_id=eq.eb4d8e7a-5803-4eeb-ac20-bce322218d9b&status=eq.ativo&fim_em=gte.{{new Date(new Date().getTime() + 20 * 60000).toISOString()}}&fim_em=lte.{{new Date(new Date().getTime() + 30 * 60000).toISOString()}}\n",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Leil\u00f5es Acabando",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        48,
+        0
+      ],
+      "id": "6c5c4cf2-28a1-45ec-a870-92b7f063633e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.id != undefined }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Tem Leil\u00f5es?",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        240,
+        0
+      ],
+      "id": "57795501-d9e5-457a-9843-48f9461fba4f"
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        448,
+        -96
+      ],
+      "id": "c7061d83-3d51-4102-b81b-a04220a49b01"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolutionapi.autosulai.com.br/message/sendMedia/amanda_gc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "9F27C3716F67-421B-B5CF-75DB2D187808"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: '555584040993-1548286301@g.us', mediatype: 'image', mimetype: 'image/jpeg', media: $json.imagens[0], mentionsEveryOne: true, caption: (() => { const t = $json.titulo; const s = $json.slug; return `\ud83d\udea8 @todos *ATEN\u00c7\u00c3O! FALTAM APENAS 30 MINUTOS!* \ud83d\udea8\\n\\nMeninas, o leil\u00e3o da pe\u00e7a *${t}* est\u00e1 quase acabando!\\n\\nSe voc\u00ea ainda n\u00e3o deu o seu lance, essa \u00e9 a hora! Corra e n\u00e3o perca essa oportunidade incr\u00edvel! \ud83c\udfc3\u200d\u2640\ufe0f\ud83d\udca8\ud83d\udc96\\n\\nD\u00ea o seu lance agora mesmo: https://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}`; })() } }}",
+        "options": {}
+      },
+      "name": "Enviar Aviso Grupo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        656,
+        -96
+      ],
+      "id": "dd671ea6-9d7e-4376-8e60-091d79d25fd6"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.wait",
+      "typeVersion": 1.1,
+      "position": [
+        864,
+        -96
+      ],
+      "id": "893a49b4-7aeb-4cce-ad14-beb35b96ed05",
+      "name": "Wait",
+      "webhookId": "9bfc6cbd-e8cb-4cf3-95ce-e8ab310593a6"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.record.tenant_id}}",
+              "value2": "eb4d8e7a-5803-4eeb-ac20-bce322218d9b"
+            }
+          ]
+        }
+      },
+      "name": "Verifica Loja",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -10,
+        304
+      ],
+      "id": "e4b3c2d1-a1b2-c3d4-e5f6-a1b2c3d4e5f6"
+    }
+  ],
+  "connections": {
+    "Buscar Produto": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Admin1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook Supabase1": {
+      "main": [
+        [
+          {
+            "node": "Verifica Loja",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp Admin1": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Grupo (Novo Lance)",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule": {
+      "main": [
+        [
+          {
+            "node": "Buscar Leil\u00f5es Acabando",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Leil\u00f5es Acabando": {
+      "main": [
+        [
+          {
+            "node": "Tem Leil\u00f5es?",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Leil\u00f5es?": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "Enviar Aviso Grupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar Aviso Grupo": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica Loja": {
+      "main": [
+        [
+          {
+            "node": "Buscar Produto",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Webhook Supabase1": [
+      {
+        "headers": {
+          "host": "autosul-n8n.typ8tk.easypanel.host",
+          "user-agent": "pg_net/0.20.4",
+          "content-length": "319",
+          "accept": "*/*",
+          "content-type": "application/json",
+          "x-forwarded-for": "54.94.133.140",
+          "x-forwarded-host": "autosul-n8n.typ8tk.easypanel.host",
+          "x-forwarded-port": "443",
+          "x-forwarded-proto": "https",
+          "x-forwarded-server": "7c2950e513be",
+          "x-real-ip": "54.94.133.140",
+          "accept-encoding": "gzip"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "type": "INSERT",
+          "table": "lances",
+          "record": {
+            "id": "42b9aa35-ab7e-4906-aefb-978604c2b719",
+            "nome": "Laura de Oliveira danele",
+            "valor": 24,
+            "whatsapp": "5555997274877",
+            "criado_em": "2026-08-24T15:55:58.444649+00:00",
+            "produto_id": "d98b235a-9e0b-475f-b2b2-d5b6a568643a"
+          },
+          "schema": "public",
+          "old_record": null
+        },
+        "webhookUrl": "https://autosul-n8n.typ8tk.easypanel.host/webhook/lance_novo",
+        "executionMode": "production"
+      }
+    ]
+  },
+  "meta": {
+    "instanceId": "20121183c73c930b96c2957f692b4fe98e5034b7c0f6533053109b77a4980a9b"
+  }
+}

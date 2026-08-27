@@ -1,0 +1,637 @@
+{
+  "nodes": [
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "lance_novo",
+        "options": {}
+      },
+      "name": "Webhook Supabase1",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        1120
+      ],
+      "id": "110be5fd-c857-49c9-8ced-71d8c86eaf3b",
+      "webhookId": "6d87f0cb-79e7-40f5-8d8d-57a9227c8bf7"
+    },
+    {
+      "parameters": {
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/lances?produto_id=eq.{{$json.body.record.produto_id}}&order=valor.desc&limit=2",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Lances1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -332,
+        1120
+      ],
+      "id": "fe328efd-9734-4205-884f-a5d0e3e9f619"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $input.all().length > 1 && $input.all()[0].json.whatsapp != $input.all()[1].json.whatsapp }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Foi Superado por Outro?1",
+      "type": "n8n-nodes-base.if",
+      "executeOnce": true,
+      "typeVersion": 1,
+      "position": [
+        -140,
+        1120
+      ],
+      "id": "1f8bf7dd-44a7-4010-81cf-e8fc18e2833a"
+    },
+    {
+      "parameters": {
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?id=eq.{{$json.produto_id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Produto1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -32,
+        1008
+      ],
+      "id": "236f1191-0287-4979-b606-426c8f00b913"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolutionapi.autosulai.com.br/message/sendText/amanda_gc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "9F27C3716F67-421B-B5CF-75DB2D187808"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ JSON.stringify({ number: $('Buscar Lances1').all()[1].json.whatsapp.startsWith('55') || $('Buscar Lances1').all()[1].json.whatsapp.startsWith('598') ? $('Buscar Lances1').all()[1].json.whatsapp : '55' + $('Buscar Lances1').all()[1].json.whatsapp, text: (() => { const isUy = $('Buscar Lances1').all()[1].json.whatsapp.startsWith('598'); const vA = $('Buscar Lances1').all()[1].json.valor; const vN = $('Buscar Lances1').all()[0].json.valor; const rawNome = $('Buscar Lances1').all()[1].json.nome; const nome = rawNome ? rawNome.split(' ')[0] : 'Guria'; const t = $json.titulo; const s = $json.slug; const rand = Math.floor(Math.random() * 3); if (isUy) { if (rand === 0) return `\u00a1Uy ${nome}, parece que alguien le ha echado el ojo a la misma prenda que t\u00fa! \ud83d\udc40\\n\u00a1Tu oferta de R$ ${vA} en el producto *${t}* acaba de ser superada por R$ ${vN}!\\nCorre para no dejar que se escape:\\nhttps://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}`; if (rand === 1) return `\u00a1Hola ${nome}! \ud83d\ude31 Tu oferta en el *${t}* acaba de ser superada \u2014 \u00a1alguien ofreci\u00f3 R$ ${vN} y pas\u00f3 tus R$ ${vA}!\\nCorre, que esta prenda es la favorita y no va a durar:\\nhttps://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}`; return `\u00a1Oye, ${nome}! \ud83d\udc40 Parece que hay competencia por ah\u00ed...\\n\u00a1Tu oferta de R$ ${vA} en el *${t}* acaba de ser superada por una oferta de R$ ${vN}!\\nNo dejes que se te escape, corre a subir tu oferta:\\nhttps://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}`; } else { if (rand === 0) return `Iiihh ${nome}, parece que algu\u00e9m t\u00e1 de olho na mesma pe\u00e7a que voc\u00ea! \ud83d\udc40\\nSeu lance de R$ ${vA} no *${t}* acabou de ser superado por R$ ${vN}!\\nCorre l\u00e1, pra n\u00e3o deixar essa pe\u00e7a escapar:\\nhttps://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}`; if (rand === 1) return `Oi ${nome}! \ud83d\ude31 Seu lance no *${t}* acabou de ser superado \u2014 algu\u00e9m deu R$ ${vN} e passou seus R$ ${vA}!\\nCorre, que essa pe\u00e7a \u00e9 uma queridinha e n\u00e3o vai sobrar:\\nhttps://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}`; return `Psiu, ${nome}! \ud83d\udc40 Parece que tem concorr\u00eancia rolando por a\u00ed...\\nSeu lance de R$ ${vA} no *${t}* acabou de ser superado por um lance de R$ ${vN}!\\nN\u00e3o deixa essa gracinha escapar, corre pra dar o troco:\\nhttps://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}`; } })() }) }}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        176,
+        1008
+      ],
+      "id": "ea02d174-d45a-4bc4-81e4-63b62091ec63"
+    },
+    {
+      "parameters": {
+        "resource": "groups-api",
+        "operation": "fetch-groups",
+        "instanceName": "amanda_gc",
+        "searchMethod": "fetchAll"
+      },
+      "type": "n8n-nodes-evolution-api.evolutionApi",
+      "typeVersion": 1,
+      "position": [
+        688,
+        912
+      ],
+      "id": "29c9f6ac-bf0d-4703-82b3-54d868849784",
+      "name": "Buscar grupos",
+      "credentials": {
+        "evolutionApi": {
+          "id": "zABG6HqZ9xnM04K9",
+          "name": "amanda_gc"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "field": "minutes"
+            }
+          ]
+        }
+      },
+      "name": "Schedule1",
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1,
+      "position": [
+        -640,
+        1536
+      ],
+      "id": "4833debf-213e-4e37-9bbd-af694d32593a"
+    },
+    {
+      "parameters": {
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?tenant_id=eq.eb4d8e7a-5803-4eeb-ac20-bce322218d9b&status=eq.ativo&fim_em=lte.now()",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Expirados1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        -432,
+        1536
+      ],
+      "id": "fbea745c-3c71-408f-a29e-527b28ed3302"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.id != undefined }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Tem Leil\u00f5es?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -240,
+        1536
+      ],
+      "id": "fde27489-2a86-4198-b746-06db0d3a5c98"
+    },
+    {
+      "parameters": {
+        "batchSize": 1,
+        "options": {}
+      },
+      "name": "Split In Batches1",
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 1,
+      "position": [
+        -32,
+        1440
+      ],
+      "id": "00827a68-dec9-4083-b2bb-d153966fa117"
+    },
+    {
+      "parameters": {
+        "method": "PATCH",
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/produtos?id=eq.{{$json.id}}",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Prefer",
+              "value": "return=minimal"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "{\"status\": \"encerrado\"}",
+        "options": {}
+      },
+      "name": "Mudar Status1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        176,
+        1440
+      ],
+      "id": "24d02429-055a-46bc-b4b5-2f9771468011"
+    },
+    {
+      "parameters": {
+        "url": "=https://rpwuxmhzabijhhhcmhzv.supabase.co/rest/v1/lances?produto_id=eq.{{$('Split In Batches1').item.json.id}}&order=valor.desc&limit=1",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            },
+            {
+              "name": "Authorization",
+              "value": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJwd3V4bWh6YWJpamhoaGNtaHp2Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc4NzQxNzAxMywiZXhwIjoyMTAyOTkzMDEzfQ.8gebmV1bMIYrfdwVR334YGNlGrUtksXT6-4tjnrMzQM"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "name": "Buscar Maior Lance1",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        368,
+        1440
+      ],
+      "id": "c80c68d4-efd1-4bce-8f93-64c5e412501a"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{ $json.id != undefined }}",
+              "value2": true
+            }
+          ]
+        }
+      },
+      "name": "Teve Lance?1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        576,
+        1440
+      ],
+      "id": "8a698798-520d-4821-8f7b-548a9f68e4d0"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolutionapi.autosulai.com.br/message/sendText/amanda_gc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "9F27C3716F67-421B-B5CF-75DB2D187808"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: $json.whatsapp.startsWith('55') || $json.whatsapp.startsWith('598') ? $json.whatsapp : '55' + $json.whatsapp, text: (() => { const isUy = $json.whatsapp.startsWith('598'); const t = $('Split In Batches1').item.json.titulo; const s = $('Split In Batches1').item.json.slug; const v = $json.valor; const nome = $json.nome ? $json.nome.split(' ')[0] : 'Guria'; return isUy ? `\u00a1\u00a1Felicidades ${nome}!! \ud83c\udf89\n\n\u00a1Fuiste la gran ganadora de la subasta!\n\n\u00a1Has ganado el producto *${t}* por el incre\u00edble precio de *R$ ${v}*! \ud83d\udc96\nhttps://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}\n\nAhora tienes 24h para realizar el pago y asegurar tu art\u00edculo por este precio.\n\nAceptamos efectivo, tarjeta (al retirar) o PIX.\n\ud83d\udd11 Clave PIX: 22.658.621.0001-08\n\nSi pagas por PIX, por favor env\u00edanos el comprobante por aqu\u00ed.\n\n\ud83d\udccd Retiro: Av 07 de Setembro, 894, Sala 02 (tienda blanca) - Gurias Chiques.` : `Parab\u00e9\u00e9\u00e9ns ${nome}!! \ud83c\udf89\n\nVoc\u00ea foi a grande vencedora do leil\u00e3o!\n\nVoc\u00ea arrematou o produto *${t}* pelo valor incr\u00edvel de *R$ ${v}*! \ud83d\udc96\nhttps://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}\n\nAgora voc\u00ea tem 24h para efetuar o pagamento e garantir a sua pe\u00e7a por esse precinho.\n\nAceitamos dinheiro, cart\u00e3o (na retirada) ou PIX.\n\ud83d\udd11 Chave PIX: 22.658.621.0001-08\n\nSe pagar por PIX, por gentileza nos envie o comprovante por aqui.\n\n\ud83d\udccd Retirada: Av 07 de Setembro, 894, Sala 02 (loja branca) - Gurias Chiques.`; })() } }}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp2",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        768,
+        1408
+      ],
+      "id": "b56bbbe9-4e6e-4ccc-8090-e4185bdbca60"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolutionapi.autosulai.com.br/message/sendText/amanda_gc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "9F27C3716F67-421B-B5CF-75DB2D187808"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: '5555981519990', text: (() => { const lance = $('Buscar Maior Lance1').item.json; const t = $('Split In Batches1').item.json.titulo; const fim_em = $('Split In Batches1').item.json.fim_em; const v = lance.valor; const nome = lance.nome ? lance.nome : 'Guria'; const whatsapp = lance.whatsapp; const dataFormatada = new Date(fim_em).toLocaleString('pt-BR', { timeZone: 'America/Sao_Paulo' }); return `\ud83d\udea8 *Leil\u00e3o Encerrado com Ganhadora!*\n\n*Leil\u00e3o:* ${t}\n*Ganhadora:* ${nome}\n*Contato:* ${whatsapp}\n*Valor:* R$ ${v}\n*Encerrado em:* ${dataFormatada}`; })() } }}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp Admin Vencedor",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        960,
+        1408
+      ],
+      "id": "c1737eef-6d51-4c8f-8f03-3183ffeb77c8"
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://evolutionapi.autosulai.com.br/message/sendMedia/amanda_gc",
+        "sendHeaders": true,
+        "headerParameters": {
+          "parameters": [
+            {
+              "name": "apikey",
+              "value": "9F27C3716F67-421B-B5CF-75DB2D187808"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={{ { number: '555584040993-1548286301@g.us', mediatype: 'image', mimetype: 'image/jpeg', media: $('Split In Batches1').item.json.imagens[0], caption: (() => { const lance = $('Buscar Maior Lance1').item.json; const t = $('Split In Batches1').item.json.titulo; const s = $('Split In Batches1').item.json.slug; const v = lance.valor; const nome = lance.nome ? lance.nome.split(' ')[0] : 'Guria'; return `\ud83c\udf89 *Parab\u00e9ns ${nome}!* \ud83c\udf89\n\nVoc\u00ea foi a grande vencedora do leil\u00e3o do produto *${t}*!\nO lance vencedor foi de *R$ ${v}*! \ud83d\udc96\n\nConfira o leil\u00e3o: https://deulance.vercel.app/loja/leilaodasgurias/leilao/${s}`; })() } }}",
+        "options": {}
+      },
+      "name": "Enviar WhatsApp Grupo",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 3,
+      "position": [
+        1152,
+        1408
+      ],
+      "id": "84e12156-3de9-4de9-ba89-cb5f4a37b46e"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$json.body.record.tenant_id}}",
+              "value2": "eb4d8e7a-5803-4eeb-ac20-bce322218d9b"
+            }
+          ]
+        }
+      },
+      "name": "Verifica Loja",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        -540,
+        1120
+      ],
+      "id": "e4b3c2d1-a1b2-c3d4-e5f6-fechamentoo"
+    }
+  ],
+  "connections": {
+    "Webhook Supabase1": {
+      "main": [
+        [
+          {
+            "node": "Verifica Loja",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Lances1": {
+      "main": [
+        [
+          {
+            "node": "Foi Superado por Outro?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Foi Superado por Outro?1": {
+      "main": [
+        [
+          {
+            "node": "Buscar Produto1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Produto1": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Schedule1": {
+      "main": [
+        [
+          {
+            "node": "Buscar Expirados1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Expirados1": {
+      "main": [
+        [
+          {
+            "node": "Tem Leil\u00f5es?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Tem Leil\u00f5es?1": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches1": {
+      "main": [
+        [
+          {
+            "node": "Mudar Status1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Mudar Status1": {
+      "main": [
+        [
+          {
+            "node": "Buscar Maior Lance1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Buscar Maior Lance1": {
+      "main": [
+        [
+          {
+            "node": "Teve Lance?1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Teve Lance?1": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp2",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp2": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Admin Vencedor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp Admin Vencedor": {
+      "main": [
+        [
+          {
+            "node": "Enviar WhatsApp Grupo",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Enviar WhatsApp Grupo": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Verifica Loja": {
+      "main": [
+        [
+          {
+            "node": "Buscar Lances1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "pinData": {
+    "Webhook Supabase1": [
+      {
+        "headers": {
+          "host": "autosul-n8n.typ8tk.easypanel.host",
+          "user-agent": "pg_net/0.20.4",
+          "content-length": "310",
+          "accept": "*/*",
+          "content-type": "application/json",
+          "x-forwarded-for": "54.94.133.140",
+          "x-forwarded-host": "autosul-n8n.typ8tk.easypanel.host",
+          "x-forwarded-port": "443",
+          "x-forwarded-proto": "https",
+          "x-forwarded-server": "7c2950e513be",
+          "x-real-ip": "54.94.133.140",
+          "accept-encoding": "gzip"
+        },
+        "params": {},
+        "query": {},
+        "body": {
+          "type": "INSERT",
+          "table": "lances",
+          "record": {
+            "id": "15835868-3192-499c-89cd-ed716bd08ba4",
+            "nome": "Giovana Antunes",
+            "valor": 26,
+            "whatsapp": "5555996173200",
+            "criado_em": "2026-08-24T02:08:43.844943+00:00",
+            "produto_id": "4a5de040-c4c7-459e-8441-2d6641717122"
+          },
+          "schema": "public",
+          "old_record": null
+        },
+        "webhookUrl": "https://autosul-n8n.typ8tk.easypanel.host/webhook/lance_novo",
+        "executionMode": "production"
+      }
+    ]
+  },
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "20121183c73c930b96c2957f692b4fe98e5034b7c0f6533053109b77a4980a9b"
+  }
+}
