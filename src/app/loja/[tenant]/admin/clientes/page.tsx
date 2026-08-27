@@ -8,7 +8,7 @@ import { formatCurrency, formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
 
 type ClienteAgrupado = {
   whatsapp: string
-  telefone: string
+  telefone_original: string
   total_lances: number
   total_gasto: number
   primeiro_lance: string
@@ -48,13 +48,13 @@ export default function TenantClientesPage() {
       const mapa = new Map<string, ClienteAgrupado>()
 
       data.forEach(lance => {
-        const tel = lance.telefone
+        const tel = lance.whatsapp
         const zap = formatWhatsApp(tel)
         
         if (!mapa.has(tel)) {
           mapa.set(tel, {
             whatsapp: zap,
-            telefone: tel,
+            telefone_original: tel,
             total_lances: 0,
             total_gasto: 0,
             primeiro_lance: lance.criado_em,
@@ -80,7 +80,7 @@ export default function TenantClientesPage() {
   }
 
   const filtered = clientes.filter(c =>
-    c.whatsapp.includes(search) || c.telefone.includes(search)
+    c.whatsapp.includes(search) || c.telefone_original?.includes(search)
   )
 
   return (
@@ -115,14 +115,14 @@ export default function TenantClientesPage() {
       ) : (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {filtered.map(cliente => (
-            <div key={cliente.telefone} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-sm transition-all">
+            <div key={cliente.telefone_original} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-sm transition-all">
               <div className="flex items-start justify-between mb-4">
                 <div>
                   <h3 className="font-bold text-gray-800 text-lg tracking-tight">
                     {cliente.whatsapp}
                   </h3>
                   <a 
-                    href={getWhatsAppLink(cliente.telefone)}
+                    href={getWhatsAppLink(cliente.telefone_original)}
                     target="_blank"
                     className="text-xs font-semibold text-green-600 hover:text-green-700 mt-1 inline-block"
                   >
