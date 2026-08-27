@@ -10,6 +10,22 @@ const nextConfig = {
       },
     ],
   },
+  async rewrites() {
+    return {
+      beforeFiles: [
+        {
+          source: '/',
+          has: [
+            {
+              type: 'host',
+              value: '(?<host>.*deulance.*)', // regex matches anything containing deulance
+            },
+          ],
+          destination: '/vendas/index.html',
+        }
+      ]
+    }
+  }
 }
 
 module.exports = nextConfig

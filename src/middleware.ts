@@ -30,16 +30,8 @@ export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname
   const hostname = request.headers.get('host') || ''
 
-  // =============================================
-  // REWRITE/REDIRECT DA HOME PAGE (/)
-  // =============================================
-  if (pathname === '/') {
-    if (hostname.includes('deulance')) {
-      return NextResponse.rewrite(new URL('/vendas/index.html', request.url))
-    }
-    // Comportamento original da plataforma Leilão das Gurias
-    return NextResponse.redirect(new URL('/leiloes', request.url))
-  }
+  // Removido o rewrite manual para '/' pois Next.js pode dar conflito (404).
+  // A lógica de fallback foi movida para o src/app/page.tsx e next.config.js
 
   // =============================================
   // ROTAS ORIGINAIS /admin/* (intocadas)
