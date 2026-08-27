@@ -1,28 +1,33 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
+import { useParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
-import { Users, Search, ShoppingBag, DollarSign, Calendar, Gavel } from 'lucide-react'
-import { formatCurrency, formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
+import { Users, Search, Edit2, MessageCircle, X } from 'lucide-react'
+import { formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
+import PhoneInput from '@/components/PhoneInput'
+import { toast } from 'sonner'
 
-type ClienteAgrupado = {
+type Cliente = {
+  nome: string
   whatsapp: string
-  telefone_original: string
-  total_lances: number
-  total_gasto: number
-  primeiro_lance: string
-  ultimo_lance: string
-  produtos_ids: Set<string>
+  totalLances: number
+  ultimoLance: string
 }
 
 export default function TenantClientesPage() {
   const params = useParams()
   const tenantSlug = params.tenant as string
-  const [clientes, setClientes] = useState<ClienteAgrupado[]>([])
+  const [clientes, setClientes] = useState<Cliente[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [editingCliente, setEditingCliente] = useState<Cliente | null>(null)
+  const [editPhone, setEditPhone] = useState('')
+  const [isUpdating, setIsUpdating] = useState(false)
+  const [tenantId, setTenantId] = useState<string | null>(null)
+  
   const supabase = createClient()
+  const router = useRouter()
 
   useEffect(() => {
     loadClientes()
@@ -36,129 +41,240 @@ export default function TenantClientesPage() {
       .single()
 
     if (!tenant) return
+    setTenantId(tenant.id)
 
-    // Buscar todos os lances para calcular os totais
     const { data } = await supabase
       .from('lances')
       .select('*, produtos!inner(tenant_id)')
       .eq('produtos.tenant_id', tenant.id)
-      .order('criado_em', { ascending: true })
+      .order('criado_em', { ascending: false })
 
     if (data) {
-      const mapa = new Map<string, ClienteAgrupado>()
+      const clientesMap = new Map<string, Cliente>()
 
-      data.forEach(lance => {
-        const tel = lance.whatsapp
-        const zap = formatWhatsApp(tel)
-        
-        if (!mapa.has(tel)) {
-          mapa.set(tel, {
-            whatsapp: zap,
-            telefone_original: tel,
-            total_lances: 0,
-            total_gasto: 0,
-            primeiro_lance: lance.criado_em,
-            ultimo_lance: lance.criado_em,
-            produtos_ids: new Set()
+      for (const lance of data) {
+        // Clean whatsapp to ensure uniqueness
+        if (!lance.whatsapp) continue
+        const wp = String(lance.whatsapp).replace(/\D/g, '')
+        if (!wp) continue
+
+        const existing = clientesMap.get(wp)
+        if (existing) {
+          existing.totalLances += 1
+          // Since it's ordered by descending created_at, the first one seen is the most recent
+          if (new Date(lance.criado_em) > new Date(existing.ultimoLance)) {
+            existing.ultimoLance = lance.criado_em
+          }
+        } else {
+          clientesMap.set(wp, {
+            nome: lance.nome || 'Sem Nome',
+            whatsapp: lance.whatsapp,
+            totalLances: 1,
+            ultimoLance: lance.criado_em,
           })
         }
+      }
 
-        const cli = mapa.get(tel)!
-        cli.total_lances += 1
-        cli.ultimo_lance = lance.criado_em
-        
-        // Se for lance vencedor, soma no total gasto (simplificação)
-        // O ideal seria checar se é o lance máximo do produto encerrado
-        cli.produtos_ids.add(lance.produto_id)
-      })
-
-      const lista = Array.from(mapa.values())
-      lista.sort((a, b) => b.total_lances - a.total_lances) // ordena pelos mais engajados
-      setClientes(lista)
+      setClientes(Array.from(clientesMap.values()))
     }
     setLoading(false)
   }
 
-  const filtered = clientes.filter(c =>
-    c.whatsapp.includes(search) || c.telefone_original?.includes(search)
+  async function handleSavePhone() {
+    if (!editingCliente || !tenantId) return
+    setIsUpdating(true)
+    
+    const cleanOld = editingCliente.whatsapp.replace(/\D/g, '')
+    
+    // Precisamos achar os lances deste tenant que tem o whatsapp antigo
+    const { data: lancesParaAtualizar } = await supabase
+      .from('lances')
+      .select('id, whatsapp, produtos!inner(tenant_id)')
+      .eq('produtos.tenant_id', tenantId)
+      
+    let updated = false
+    
+    if (lancesParaAtualizar) {
+      const idsToUpdate = lancesParaAtualizar
+        .filter(l => l.whatsapp && String(l.whatsapp).replace(/\D/g, '') === cleanOld)
+        .map(l => l.id)
+        
+      if (idsToUpdate.length > 0) {
+        const { error } = await supabase
+          .from('lances')
+          .update({ whatsapp: editPhone })
+          .in('id', idsToUpdate)
+
+        if (error) {
+          toast.error('Erro ao atualizar telefone.')
+          console.error(error)
+        } else {
+          toast.success('Telefone atualizado com sucesso!')
+          updated = true
+        }
+      } else {
+         toast.info('Nenhum lance encontrado para este número.')
+      }
+    }
+    
+    setIsUpdating(false)
+    setEditingCliente(null)
+    
+    if (updated) {
+      loadClientes()
+      router.refresh()
+    }
+  }
+
+  const filtered = clientes.filter(c => 
+    c.nome.toLowerCase().includes(search.toLowerCase()) || 
+    c.whatsapp.includes(search)
   )
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="w-8 h-8 border-2 border-rosa-200 border-t-rosa-600 rounded-full animate-spin" />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div>
-        <h1 className="font-display text-2xl lg:text-3xl font-bold text-gray-800">Meus Clientes</h1>
-        <p className="text-gray-500 text-sm mt-1">{clientes.length} cliente{clientes.length !== 1 ? 's' : ''} já deram lances.</p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="font-display text-2xl lg:text-3xl font-bold text-gray-800 flex items-center gap-3">
+            <Users className="w-8 h-8 text-rosa-600" />
+            Clientes
+          </h1>
+          <p className="text-gray-500 text-sm mt-1">
+            {clientes.length} pessoas já participaram dos leilões desta loja.
+          </p>
+        </div>
       </div>
 
-      <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Buscar por telefone..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full sm:max-w-md pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm bg-white"
-        />
+      <div className="bg-white rounded-2xl border border-gray-100 p-4 sm:p-6 shadow-sm">
+        {/* Search */}
+        <div className="mb-6 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            placeholder="Buscar por nome ou whatsapp..."
+            className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-rosa-500/20 focus:border-rosa-500 transition-all"
+          />
+        </div>
+
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead>
+              <tr className="border-b border-gray-100 text-sm font-semibold text-gray-500">
+                <th className="py-3 px-4">Nome</th>
+                <th className="py-3 px-4">WhatsApp</th>
+                <th className="py-3 px-4 text-center">Total de Lances</th>
+                <th className="py-3 px-4 text-right">Última Atividade</th>
+                <th className="py-3 px-4 text-right">Ação</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filtered.length === 0 ? (
+                <tr>
+                  <td colSpan={5} className="py-8 text-center text-gray-400">
+                    Nenhuma cliente encontrada
+                  </td>
+                </tr>
+              ) : (
+                filtered.map((cliente, i) => (
+                  <tr key={i} className="border-b border-gray-50 hover:bg-gray-50/50 transition-colors">
+                    <td className="py-3 px-4">
+                      <div className="font-medium text-gray-800">{cliente.nome}</div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="text-gray-600 text-sm">{formatWhatsApp(cliente.whatsapp)}</div>
+                    </td>
+                    <td className="py-3 px-4 text-center">
+                      <span className="inline-flex items-center justify-center bg-rosa-50 text-rosa-600 font-bold px-2 py-1 rounded-lg text-xs">
+                        {cliente.totalLances}
+                      </span>
+                    </td>
+                    <td className="py-3 px-4 text-right text-gray-500 text-sm">
+                      {new Date(cliente.ultimoLance).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })}
+                    </td>
+                    <td className="py-3 px-4 text-right">
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          onClick={() => {
+                            setEditingCliente(cliente)
+                            setEditPhone(cliente.whatsapp)
+                          }}
+                          className="inline-flex items-center justify-center bg-gray-100 hover:bg-gray-200 text-gray-600 w-8 h-8 rounded-lg transition-all"
+                          title="Editar Telefone"
+                        >
+                          <Edit2 className="w-4 h-4" />
+                        </button>
+                        <a
+                          href={getWhatsAppLink(cliente.whatsapp)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1.5 bg-green-500 hover:bg-green-600 text-white px-3 py-1.5 rounded-lg text-xs font-semibold transition-all shadow-sm shadow-green-200"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          Chamar
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
       </div>
 
-      {loading ? (
-        <div className="flex items-center justify-center h-64">
-          <div className="w-8 h-8 border-2 border-rosa-200 border-t-rosa-600 rounded-full animate-spin" />
-        </div>
-      ) : filtered.length === 0 ? (
-        <div className="bg-white rounded-2xl border border-gray-100 p-12 text-center">
-          <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <Users className="w-8 h-8 text-gray-300" />
-          </div>
-          <p className="text-gray-400 font-medium">Nenhum cliente encontrado.</p>
-        </div>
-      ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {filtered.map(cliente => (
-            <div key={cliente.telefone_original} className="bg-white rounded-2xl border border-gray-100 p-5 hover:shadow-sm transition-all">
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <h3 className="font-bold text-gray-800 text-lg tracking-tight">
-                    {cliente.whatsapp}
-                  </h3>
-                  <a 
-                    href={getWhatsAppLink(cliente.telefone_original)}
-                    target="_blank"
-                    className="text-xs font-semibold text-green-600 hover:text-green-700 mt-1 inline-block"
-                  >
-                    Enviar mensagem
-                  </a>
-                </div>
-                <div className="w-10 h-10 rounded-full bg-rosa-50 flex items-center justify-center text-rosa-600">
-                  <Users className="w-5 h-5" />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-2 gap-3 mb-4">
-                <div className="bg-gray-50 rounded-xl p-3">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mb-1">
-                    <ShoppingBag className="w-3.5 h-3.5" />
-                    Produtos
-                  </div>
-                  <p className="text-xl font-bold text-gray-800">{cliente.produtos_ids.size}</p>
-                </div>
-                <div className="bg-gray-50 rounded-xl p-3">
-                  <div className="flex items-center gap-1.5 text-xs font-semibold text-gray-500 mb-1">
-                    <Gavel className="w-3.5 h-3.5" />
-                    Lances
-                  </div>
-                  <p className="text-xl font-bold text-gray-800">{cliente.total_lances}</p>
-                </div>
-              </div>
-
-              <div className="flex items-center justify-between text-xs text-gray-500 pt-3 border-t border-gray-50">
-                <span className="flex items-center gap-1">
-                  <Calendar className="w-3.5 h-3.5" />
-                  Último: {new Date(cliente.ultimo_lance).toLocaleDateString('pt-BR')}
-                </span>
-              </div>
+      {/* Modal de Edição */}
+      {editingCliente && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 flex items-center justify-center p-4 animate-fade-in">
+          <div className="bg-white rounded-2xl w-full max-w-md shadow-2xl overflow-hidden">
+            <div className="p-4 border-b border-gray-100 flex justify-between items-center">
+              <h2 className="font-display font-bold text-gray-800 text-lg">Editar WhatsApp</h2>
+              <button onClick={() => setEditingCliente(null)} className="text-gray-400 hover:text-gray-600 transition-colors">
+                <X className="w-5 h-5" />
+              </button>
             </div>
-          ))}
+            
+            <div className="p-5">
+              <p className="text-sm text-gray-600 mb-4">
+                Atualizando contato de: <span className="font-semibold text-gray-900">{editingCliente.nome}</span>
+              </p>
+              
+              <PhoneInput 
+                value={editPhone}
+                onChange={setEditPhone}
+              />
+              
+              <p className="text-xs text-gray-500 mt-3">
+                Isso atualizará o número em todos os {editingCliente.totalLances} lance(s) vinculados a esta pessoa.
+              </p>
+            </div>
+            
+            <div className="p-4 bg-gray-50 flex justify-end gap-3 border-t border-gray-100">
+              <button 
+                onClick={() => setEditingCliente(null)}
+                className="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 bg-white border border-gray-200 shadow-sm hover:bg-gray-50 transition-colors"
+                disabled={isUpdating}
+              >
+                Cancelar
+              </button>
+              <button 
+                onClick={handleSavePhone}
+                disabled={isUpdating || !editPhone}
+                className="px-4 py-2 rounded-xl text-sm font-bold text-white bg-rosa-600 hover:bg-rosa-700 shadow-sm hover:shadow-md transition-all flex items-center gap-2 disabled:opacity-50"
+              >
+                {isUpdating ? 'Salvando...' : 'Salvar Alteração'}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

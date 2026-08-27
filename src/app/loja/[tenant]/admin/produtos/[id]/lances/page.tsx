@@ -196,7 +196,8 @@ export default function TenantHistoricoLancesPage() {
                       <div className="flex-1 min-w-0">
                         <div className="flex justify-between items-start mb-2">
                           <div>
-                            <p className="font-bold text-gray-900 text-lg">{formatWhatsApp(vencedor.whatsapp)}</p>
+                            <p className="font-bold text-gray-900 text-lg">{vencedor.nome || 'Sem Nome'}</p>
+                            <p className="text-sm font-medium text-gray-600 mb-1">{formatWhatsApp(vencedor.whatsapp)}</p>
                             <p className="text-xs text-green-700 font-medium">{new Date(vencedor.criado_em).toLocaleString('pt-BR')}</p>
                           </div>
                           <div className="text-right">
@@ -237,7 +238,8 @@ export default function TenantHistoricoLancesPage() {
                             {idx + 2}º
                           </div>
                           <div>
-                            <p className="font-semibold text-gray-800">{formatWhatsApp(lance.whatsapp)}</p>
+                            <p className="font-semibold text-gray-800">{lance.nome || 'Sem Nome'}</p>
+                            <p className="text-sm text-gray-500 mb-0.5">{formatWhatsApp(lance.whatsapp)}</p>
                             <p className="text-xs text-gray-400">{new Date(lance.criado_em).toLocaleString('pt-BR')}</p>
                           </div>
                         </div>
