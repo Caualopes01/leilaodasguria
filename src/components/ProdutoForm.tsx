@@ -24,9 +24,11 @@ function getLocalISOString(dateString: string) {
 
 interface ProdutoFormProps {
   produto?: Produto
+  tenantId?: string
+  basePath?: string
 }
 
-export default function ProdutoForm({ produto }: ProdutoFormProps) {
+export default function ProdutoForm({ produto, tenantId, basePath = '/admin/produtos' }: ProdutoFormProps) {
   const isEditing = !!produto
   const router = useRouter()
   const supabase = createClient()
@@ -206,7 +208,7 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
       status = 'ativo'
     }
 
-    const payload = {
+    const payload: any = {
       titulo: titulo.trim(),
       slug,
       descricao: descricao.trim() || null,
@@ -219,6 +221,10 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
       status,
       imagens,
       atualizado_em: new Date().toISOString(),
+    }
+
+    if (tenantId) {
+      payload.tenant_id = tenantId
     }
 
     let error
@@ -236,13 +242,13 @@ export default function ProdutoForm({ produto }: ProdutoFormProps) {
 
     toast.success(isEditing ? 'Produto atualizado!' : 'Produto criado!')
     router.refresh()
-    router.push('/admin/produtos')
+    router.push(basePath)
   }
 
   return (
     <div className="space-y-6 animate-fade-in max-w-2xl">
       <div className="flex items-center gap-3">
-        <Link href="/admin/produtos" className="p-2 rounded-lg hover:bg-rosa-50 text-gray-500 hover:text-rosa-600 transition-colors">
+        <Link href={basePath} className="p-2 rounded-lg hover:bg-rosa-50 text-gray-500 hover:text-rosa-600 transition-colors">
           <ArrowLeft className="w-5 h-5" />
         </Link>
         <div>
