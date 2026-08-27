@@ -5,7 +5,7 @@ import { useRouter, usePathname, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import {
-  Heart, LayoutDashboard, Package, LogOut, Menu, X, ChevronRight, Store, ExternalLink, Gavel, Users
+  Heart, LayoutDashboard, Package, LogOut, Menu, X, ChevronRight, Store, ExternalLink, Gavel, Users, Settings
 } from 'lucide-react'
 
 export default function TenantAdminLayout({ children }: { children: React.ReactNode }) {
@@ -69,6 +69,7 @@ export default function TenantAdminLayout({ children }: { children: React.ReactN
     { href: `${basePath}/produtos`, icon: Package, label: 'Produtos' },
     { href: `${basePath}/lances`, icon: Gavel, label: 'Lances' },
     { href: `${basePath}/clientes`, icon: Users, label: 'Clientes' },
+    { href: `${basePath}/configuracoes`, icon: Settings, label: 'Configurações' },
   ]
 
   return (

@@ -8,6 +8,7 @@ import { formatCurrency } from '@/lib/utils'
 import { Heart, Clock, TrendingUp, Gavel, Search, Crown, ChevronDown, ChevronUp } from 'lucide-react'
 import TenantFooterNav from '@/components/TenantFooterNav'
 import InstallPwaButton from '@/components/InstallPwaButton'
+import Image from 'next/image'
 
 function useCountdownShort(targetDate: string) {
   const [label, setLabel] = useState('')
@@ -44,7 +45,7 @@ function ProdutoCardCompacto({ produto, tenantSlug }: { produto: Produto; tenant
       <div className="bg-white/90 backdrop-blur-sm rounded-xl border border-orange-200/60 shadow-sm overflow-hidden hover:shadow-md transition-all relative">
         <div className="relative aspect-square bg-orange-50 overflow-hidden">
           {produto.imagens && produto.imagens.length > 0 ? (
-            <img src={produto.imagens[0]} alt={produto.titulo} className="w-full h-full object-cover" />
+            <Image src={produto.imagens[0]} alt={produto.titulo} fill className="object-cover" sizes="(max-width: 768px) 50vw, 33vw" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-xl">🛍️</div>
           )}
@@ -90,7 +91,7 @@ function ProdutoCard({ produto, tenantSlug }: { produto: Produto; tenantSlug: st
       <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden hover:shadow-md hover:border-rosa-200 transition-all active:scale-[0.98]">
         <div className="relative aspect-square bg-rosa-50 overflow-hidden">
           {produto.imagens && produto.imagens.length > 0 ? (
-            <img src={produto.imagens[0]} alt={produto.titulo} className="w-full h-full object-cover" />
+            <Image src={produto.imagens[0]} alt={produto.titulo} fill className="object-cover" sizes="(max-width: 768px) 50vw, 33vw" />
           ) : (
             <div className="w-full h-full flex items-center justify-center text-4xl">🛍️</div>
           )}
@@ -137,6 +138,7 @@ export default function TenantMarketplacePage() {
   const tenantSlug = params.tenant as string
   const [produtos, setProdutos] = useState<Produto[]>([])
   const [tenantNome, setTenantNome] = useState('')
+  const [tenantLogo, setTenantLogo] = useState('')
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
   const [isTodayExpanded, setIsTodayExpanded] = useState(false)
@@ -176,14 +178,17 @@ export default function TenantMarketplacePage() {
   }, [tenantSlug])
 
   async function loadTenantAndProdutos() {
-    // Buscar nome do tenant
+    // Buscar nome e logo do tenant
     const { data: tenant } = await supabase
       .from('tenants')
-      .select('nome')
+      .select('nome, logo_url')
       .eq('slug', tenantSlug)
       .single()
     
-    if (tenant) setTenantNome(tenant.nome)
+    if (tenant) {
+      setTenantNome(tenant.nome)
+      if (tenant.logo_url) setTenantLogo(tenant.logo_url)
+    }
 
     // Buscar produtos do tenant
     const { data } = await supabase
@@ -270,7 +275,13 @@ export default function TenantMarketplacePage() {
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur-sm border-b border-rosa-100 px-4 py-4">
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-rosa-500" fill="currentColor" />
+            {tenantLogo ? (
+              <div className="relative w-8 h-8 rounded-full overflow-hidden">
+                <Image src={tenantLogo} alt={tenantNome} fill className="object-cover" sizes="32px" />
+              </div>
+            ) : (
+              <Heart className="w-5 h-5 text-rosa-500" fill="currentColor" />
+            )}
             <span className="font-display font-bold text-rosa-600">{tenantNome || 'Leilão'}</span>
           </div>
           <InstallPwaButton />

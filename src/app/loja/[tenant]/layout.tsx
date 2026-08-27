@@ -1,45 +1,41 @@
-'use client'
+import { Metadata } from 'next'
+import { getTenantBySlug } from '@/lib/tenant'
+import { TenantProvider } from '@/components/TenantProvider'
 
-import { useEffect, useState } from 'react'
-import { useParams } from 'next/navigation'
-import { createClient } from '@/lib/supabase'
-import type { Tenant } from '@/lib/tenant'
+type Props = {
+  params: { tenant: string }
+}
 
-export default function TenantLayout({ children }: { children: React.ReactNode }) {
-  const params = useParams()
-  const tenantSlug = params.tenant as string
-  const [tenant, setTenant] = useState<Tenant | null>(null)
-  const [loading, setLoading] = useState(true)
+export async function generateMetadata(
+  { params }: Props
+): Promise<Metadata> {
+  const tenant = await getTenantBySlug(params.tenant)
 
-  useEffect(() => {
-    loadTenant()
-  }, [tenantSlug])
-
-  async function loadTenant() {
-    const supabase = createClient()
-    const { data } = await supabase
-      .from('tenants')
-      .select('*')
-      .eq('slug', tenantSlug)
-      .eq('ativo', true)
-      .single()
-
-    if (data) {
-      setTenant(data as Tenant)
-      // Injetar cor personalizada como CSS custom property
-      document.documentElement.style.setProperty('--tenant-primary', data.cor_primaria || '#e91e8c')
-      document.documentElement.style.setProperty('--tenant-secondary', data.cor_secundaria || '#f97316')
+  if (!tenant) {
+    return {
+      title: 'Loja não encontrada',
     }
-    setLoading(false)
   }
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-3 border-rosa-200 border-t-rosa-600 rounded-full animate-spin" />
-      </div>
-    )
+  return {
+    title: tenant.app_titulo || tenant.nome,
+    description: `Leilões online da ${tenant.nome}`,
+    icons: tenant.app_icone_url ? {
+      icon: tenant.app_icone_url,
+      apple: tenant.app_icone_url,
+    } : undefined,
+    manifest: `/api/manifest/${tenant.slug}`,
   }
+}
+
+export default async function TenantLayout({ 
+  children,
+  params
+}: { 
+  children: React.ReactNode
+  params: { tenant: string }
+}) {
+  const tenant = await getTenantBySlug(params.tenant)
 
   if (!tenant) {
     return (
@@ -50,5 +46,9 @@ export default function TenantLayout({ children }: { children: React.ReactNode }
     )
   }
 
-  return <>{children}</>
+  return (
+    <TenantProvider tenant={tenant}>
+      {children}
+    </TenantProvider>
+  )
 }

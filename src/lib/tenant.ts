@@ -17,6 +17,8 @@ export type Tenant = {
   ativo: boolean
   criado_em: string
   atualizado_em: string
+  app_titulo: string | null
+  app_icone_url: string | null
 }
 
 export type Subscription = {
