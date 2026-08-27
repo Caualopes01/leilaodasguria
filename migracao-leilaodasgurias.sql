@@ -1,22 +1,23 @@
 DO $$
 DECLARE
     v_user_id uuid;
+    v_user_email text;
     v_tenant_id uuid;
 BEGIN
-    -- Busca o ID do usuário administrador original (substitua o e-mail pelo seu, se quiser ser exato)
-    -- Aqui pegamos o usuário mais antigo cadastrado, que provavelmente é você.
-    SELECT id INTO v_user_id FROM auth.users ORDER BY created_at ASC LIMIT 1;
+    -- Busca o ID e o E-mail do usuário administrador original
+    SELECT id, email INTO v_user_id, v_user_email FROM auth.users ORDER BY created_at ASC LIMIT 1;
     
     IF v_user_id IS NULL THEN
         RAISE EXCEPTION 'Nenhum usuário encontrado na tabela auth.users. Crie uma conta primeiro.';
     END IF;
 
     -- 1. Cria a loja oficial do Leilão das Gurias
-    INSERT INTO public.tenants (id, slug, nome, cor_primaria, whatsapp, user_id, ativo)
+    INSERT INTO public.tenants (id, slug, nome, email, cor_primaria, whatsapp, user_id, ativo)
     VALUES (
         gen_random_uuid(),
         'leilaodasgurias',
         'Leilão das Gurias',
+        v_user_email,
         '#E8114B',
         '5555981519990', -- Coloque seu número aqui
         v_user_id,
@@ -25,15 +26,15 @@ BEGIN
     RETURNING id INTO v_tenant_id;
 
     -- 2. Cria a assinatura vitalícia gratuita para a sua loja
-    INSERT INTO public.subscriptions (id, tenant_id, stripe_customer_id, stripe_subscription_id, plano, status, atual_periodo_fim, fim_em)
+    INSERT INTO public.subscriptions (id, tenant_id, gateway, gateway_customer_id, gateway_subscription_id, plano, status, fim_em)
     VALUES (
         gen_random_uuid(),
         v_tenant_id,
+        'legacy',
         'LEGACY',
         'LEGACY',
         'anual',
         'ativa',
-        '2099-12-31 23:59:59',
         '2099-12-31 23:59:59'
     );
 
