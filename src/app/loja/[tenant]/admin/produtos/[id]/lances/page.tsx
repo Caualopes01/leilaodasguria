@@ -101,7 +101,7 @@ export default function TenantHistoricoLancesPage() {
         : (produto.valor_inicial || 0)
         
       await supabase.from('produtos').update({ valor_atual: maxL }).eq('id', id)
-      setProduto(prev => ({ ...prev, valor_atual: maxL }))
+      setProduto((prev: any) => ({ ...prev, valor_atual: maxL }))
     }
   }
 

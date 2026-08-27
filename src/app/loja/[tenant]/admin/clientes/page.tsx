@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
-import { Users, Search, ShoppingBag, DollarSign, Calendar } from 'lucide-react'
+import { Users, Search, ShoppingBag, DollarSign, Calendar, Gavel } from 'lucide-react'
 import { formatCurrency, formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
 
 type ClienteAgrupado = {
