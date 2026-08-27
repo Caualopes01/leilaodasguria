@@ -37,62 +37,53 @@ export default function LoginPage() {
       <div className="w-full max-w-sm">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-rosa-100 mb-4">
-            <Heart className="w-8 h-8 text-rosa-600" fill="currentColor" />
+          <div className="w-16 h-16 bg-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg shadow-purple-200">
+            <Lock className="w-8 h-8 text-white" />
           </div>
-          <h1 className="font-display text-3xl font-bold text-rosa-700">
-            Leilão das Gurias
-          </h1>
-          <p className="text-gray-500 text-sm mt-1 font-body">Painel Administrativo</p>
+          <h1 className="font-display text-3xl font-bold text-gray-800">Super Admin</h1>
+          <p className="text-gray-500 mt-2">Acesso exclusivo à gestão da plataforma Deu Lance.</p>
         </div>
 
         {/* Card */}
-        <div className="bg-white rounded-2xl shadow-lg shadow-rosa-100 border border-rosa-100 p-8">
-          <h2 className="font-display text-xl font-semibold text-gray-800 mb-6">Entrar</h2>
-
-          <form onSubmit={handleLogin} className="space-y-4">
+        <div className="bg-white p-8 rounded-3xl shadow-xl shadow-purple-100/50 border border-purple-50">
+          <form onSubmit={handleLogin} className="space-y-5">
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  required
-                  placeholder="seu@email.com"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm transition-all"
-                />
-              </div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                E-mail de Acesso Global
+              </label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all"
+                placeholder="seu@email.com"
+                required
+              />
             </div>
-
+            
             <div>
-              <label className="block text-sm font-medium text-gray-600 mb-1.5">Senha</label>
-              <div className="relative">
-                <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-                <input
-                  type="password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                  placeholder="••••••••"
-                  className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm transition-all"
-                />
-              </div>
+              <label className="block text-sm font-semibold text-gray-700 mb-1">
+                Senha
+              </label>
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring-2 focus:ring-purple-200 outline-none transition-all"
+                placeholder="••••••••"
+                required
+              />
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full bg-rosa-600 hover:bg-rosa-700 disabled:opacity-60 text-white font-semibold py-3 rounded-xl transition-all duration-200 mt-2 flex items-center justify-center gap-2"
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-semibold py-3 rounded-xl transition-colors flex items-center justify-center gap-2 mt-2 disabled:opacity-70"
             >
               {loading ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                  Entrando...
-                </>
+                <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
               ) : (
-                'Entrar'
+                'Entrar no Sistema'
               )}
             </button>
           </form>

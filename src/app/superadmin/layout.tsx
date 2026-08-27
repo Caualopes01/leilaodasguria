@@ -23,7 +23,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
     const { data: { session } } = await supabase.auth.getSession()
     const user = session?.user ?? null
     if (!user) {
-      router.push('/admin/login')
+      router.push('/superadmin/login')
       return
     }
     setUser(user)
@@ -32,7 +32,7 @@ export default function SuperAdminLayout({ children }: { children: React.ReactNo
 
   async function handleLogout() {
     await supabase.auth.signOut()
-    router.push('/admin/login')
+    router.push('/superadmin/login')
   }
 
   if (loading) {

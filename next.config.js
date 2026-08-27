@@ -25,6 +25,25 @@ const nextConfig = {
         }
       ]
     }
+  },
+  async redirects() {
+    return [
+      {
+        source: '/admin/:path*',
+        destination: '/loja/leilaodasgurias/admin/:path*',
+        permanent: true,
+      },
+      {
+        source: '/leiloes',
+        destination: '/loja/leilaodasgurias/leiloes',
+        permanent: true,
+      },
+      {
+        source: '/leilao/:slug',
+        destination: '/loja/leilaodasgurias/leilao/:slug',
+        permanent: true,
+      }
+    ]
   }
 }
 

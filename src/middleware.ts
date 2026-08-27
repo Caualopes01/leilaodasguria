@@ -33,21 +33,8 @@ export async function middleware(request: NextRequest) {
   // Removido o rewrite manual para '/' pois Next.js pode dar conflito (404).
   // A lógica de fallback foi movida para o src/app/page.tsx e next.config.js
 
-  // =============================================
-  // ROTAS ORIGINAIS /admin/* (intocadas)
-  // =============================================
-  const isOriginalAdminRoute = pathname.startsWith('/admin') && !pathname.startsWith('/admin/') === false
-  const isOriginalLoginPage = pathname === '/admin/login'
-
-  if (pathname.startsWith('/admin') && !pathname.startsWith('/loja/')) {
-    if (!isOriginalLoginPage && !user) {
-      return NextResponse.redirect(new URL('/admin/login', request.url))
-    }
-    if (isOriginalLoginPage && user) {
-      return NextResponse.redirect(new URL('/admin', request.url))
-    }
-    return supabaseResponse
-  }
+  // A rota original /admin foi migrada para a estrutura /loja/[tenant]/admin
+  // via redirect no next.config.js
 
   // =============================================
   // ROTAS MULTI-TENANT /loja/[tenant]/admin/*
