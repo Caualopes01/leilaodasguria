@@ -31,10 +31,14 @@ export async function middleware(request: NextRequest) {
   const hostname = request.headers.get('host') || ''
 
   // =============================================
-  // REWRITE DA PÁGINA DE VENDAS PARA O NOVO DOMÍNIO
+  // REWRITE/REDIRECT DA HOME PAGE (/)
   // =============================================
-  if (pathname === '/' && hostname.includes('deulance')) {
-    return NextResponse.rewrite(new URL('/vendas/index.html', request.url))
+  if (pathname === '/') {
+    if (hostname.includes('deulance')) {
+      return NextResponse.rewrite(new URL('/vendas/index.html', request.url))
+    }
+    // Comportamento original da plataforma Leilão das Gurias
+    return NextResponse.redirect(new URL('/leiloes', request.url))
   }
 
   // =============================================
