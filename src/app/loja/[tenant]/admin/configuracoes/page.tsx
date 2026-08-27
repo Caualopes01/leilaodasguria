@@ -2,6 +2,8 @@ import { getTenantBySlug } from '@/lib/tenant'
 import { redirect } from 'next/navigation'
 import ConfiguracoesForm from '@/components/ConfiguracoesForm'
 
+export const dynamic = 'force-dynamic'
+
 export default async function ConfiguracoesPage({ params }: { params: { tenant: string } }) {
   const tenant = await getTenantBySlug(params.tenant)
   
