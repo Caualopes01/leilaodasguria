@@ -8,6 +8,7 @@ import 'react-image-crop/dist/ReactCrop.css'
 import { createClient, Produto } from '@/lib/supabase'
 import { slugify } from '@/lib/utils'
 import getCroppedImg from '@/lib/cropImage'
+import imageCompression from 'browser-image-compression'
 import {
   Upload, X, ArrowLeft, Save,
   Loader2, ChevronLeft, ChevronRight, Check, Scissors
@@ -68,11 +69,32 @@ export default function ProdutoForm({ produto, tenantId, basePath = '/admin/prod
         toast.error(`${file.name} é muito grande (máx 5MB)`)
         continue
       }
-      const ext = file.name.split('.').pop()
+      
+      let fileToUpload = file
+      try {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1600,
+          useWebWorker: true,
+          fileType: 'image/webp',
+          initialQuality: 0.8
+        }
+        fileToUpload = await imageCompression(file, options) as File
+        const oldSize = (file.size / 1024).toFixed(0)
+        const newSize = (fileToUpload.size / 1024).toFixed(0)
+        toast.success(`Comprimido: ${oldSize}KB → ${newSize}KB`)
+      } catch (error) {
+        console.error('Erro na compressão:', error)
+        toast.error(`Falha ao comprimir ${file.name}. Upload cancelado por segurança.`)
+        continue
+      }
+
+      const ext = 'webp'
       const path = `${user.id}/${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`
-      const { error } = await supabase.storage.from('produtos').upload(path, file, {
-        cacheControl: '3600',
-        upsert: false
+      const { error } = await supabase.storage.from('produtos').upload(path, fileToUpload, {
+        cacheControl: '86400',
+        upsert: false,
+        contentType: 'image/webp'
       })
       if (error) {
         toast.error(`Erro ao fazer upload de ${file.name}`)
@@ -153,16 +175,35 @@ export default function ProdutoForm({ produto, tenantId, basePath = '/admin/prod
       const croppedFile = await getCroppedImg(cropImageUrl, actualCrop)
       if (!croppedFile) throw new Error('Falha ao cortar imagem')
 
+      let fileToUpload = croppedFile as File
+      try {
+        const options = {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1600,
+          useWebWorker: true,
+          fileType: 'image/webp',
+          initialQuality: 0.8
+        }
+        fileToUpload = await imageCompression(croppedFile as File, options) as File
+        const oldSize = (croppedFile.size / 1024).toFixed(0)
+        const newSize = (fileToUpload.size / 1024).toFixed(0)
+        toast.success(`Recorte comprimido: ${oldSize}KB → ${newSize}KB`)
+      } catch (error) {
+        console.error('Erro na compressão do recorte:', error)
+        throw new Error('Falha ao comprimir imagem recortada.')
+      }
+
       const { data: { user } } = await supabase.auth.getUser()
       if (!user) throw new Error('Não autorizado')
 
       // Upload nova imagem cortada
-      const ext = croppedFile.name.split('.').pop()
+      const ext = 'webp'
       const newPath = `${user.id}/${Date.now()}-cropped-${Math.random().toString(36).slice(2)}.${ext}`
       
-      const { error: uploadError } = await supabase.storage.from('produtos').upload(newPath, croppedFile, {
-        cacheControl: '3600',
-        upsert: false
+      const { error: uploadError } = await supabase.storage.from('produtos').upload(newPath, fileToUpload, {
+        cacheControl: '86400',
+        upsert: false,
+        contentType: 'image/webp'
       })
       if (uploadError) throw uploadError
 
