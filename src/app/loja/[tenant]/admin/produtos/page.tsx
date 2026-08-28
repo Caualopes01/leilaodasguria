@@ -7,14 +7,15 @@ import { createClient, Produto } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
 import {
   Plus, Edit, Trash2, ExternalLink, Search,
-  Clock, CheckCircle, XCircle, Copy
+  Clock, CheckCircle, XCircle, Copy, Trophy
 } from 'lucide-react'
 import { toast } from 'sonner'
 
 const STATUS_LABELS: Record<string, { label: string; color: string; icon: any }> = {
   aguardando: { label: 'Aguardando', color: 'bg-yellow-100 text-yellow-700', icon: Clock },
-  ativo: { label: 'Ativo', color: 'bg-green-100 text-green-700', icon: CheckCircle },
-  encerrado: { label: 'Encerrado', color: 'bg-gray-100 text-gray-600', icon: XCircle },
+  ativo: { label: 'Ativo', color: 'bg-emerald-100 text-emerald-700', icon: CheckCircle },
+  encerrado: { label: 'Encerrado (Sem Lances)', color: 'bg-gray-100 text-gray-500', icon: XCircle },
+  encerrado_ganhador: { label: 'Encerrado (Vendido)', color: 'bg-rosa-100 text-rosa-700', icon: Trophy },
 }
 
 export default function TenantProdutosPage() {
@@ -131,8 +132,11 @@ export default function TenantProdutosPage() {
       ) : (
         <div className="grid gap-4">
           {filtered.map(produto => {
-            const resolvedStatus = (produto.ativo && produto.status !== 'encerrado') ? 'ativo' : produto.status
-            const status = STATUS_LABELS[resolvedStatus]
+            let resolvedStatus = (produto.ativo && produto.status !== 'encerrado') ? 'ativo' : produto.status
+            if (resolvedStatus === 'encerrado' && ((produto as any).lances?.length || 0) > 0) {
+              resolvedStatus = 'encerrado_ganhador'
+            }
+            const status = STATUS_LABELS[resolvedStatus] || STATUS_LABELS.encerrado
             const StatusIcon = status.icon
             return (
               <div key={produto.id} className="bg-white rounded-2xl border border-gray-100 p-4 flex gap-4 hover:shadow-sm transition-all">

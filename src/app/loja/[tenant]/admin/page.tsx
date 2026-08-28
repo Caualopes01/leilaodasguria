@@ -6,10 +6,13 @@ import { useParams } from 'next/navigation'
 import { createClient, Produto, Lance } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
 import {
-  Package, TrendingUp, Clock, Trophy, Crown,
-  ArrowRight, Plus, ExternalLink, X, Phone, User, ListOrdered, Gavel, Star, Check, DollarSign, Activity, Users
+  TrendingUp, Plus, ExternalLink, X, Phone, ListOrdered, Crown, DollarSign, Activity, Users, Gavel, PieChart as PieChartIcon
 } from 'lucide-react'
 import { formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
+import { format, subDays, isAfter } from 'date-fns'
+import { LineChart, Line, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
+
+const PIE_COLORS = ['#db2777', '#f472b6', '#fbcfe8', '#fdf2f8', '#e5e7eb'] // Tons de rosa da paleta
 
 export default function TenantDashboardPage() {
   const params = useParams()
@@ -27,7 +30,6 @@ export default function TenantDashboardPage() {
   }, [tenantSlug])
 
   async function loadData() {
-    // Resolver tenant_id
     const { data: tenant } = await supabase
       .from('tenants')
       .select('id')
@@ -52,14 +54,13 @@ export default function TenantDashboardPage() {
     setLoading(false)
   }
 
+  // --- LÓGICA DE MÉTRICAS ---
   const ativos = produtos.filter(p => p.status === 'ativo')
-  const encerrados = produtos.filter(p => p.status === 'encerrado' && p.ativo !== false)
-  const aguardando = produtos.filter(p => p.status === 'aguardando')
+  const encerrados = produtos.filter(p => p.status === 'encerrado') // Agora conta TODOS os encerrados (inclusive entregues)
 
-  const totalLancesCount = produtos.reduce((acc, p) => acc + ((p as any).lances?.length || 0), 0)
-  const produtosComLancesCount = produtos.filter(p => ((p as any).lances?.length || 0) > 0).length
+  const todosLances = produtos.flatMap((p: any) => p.lances || [])
+  const totalLancesCount = todosLances.length
 
-  // Novas Métricas de Faturamento
   const faturamentoGeral = encerrados
     .filter(p => ((p as any).lances?.length || 0) > 0)
     .reduce((acc, p) => acc + (p.valor_atual || 0), 0)
@@ -67,39 +68,36 @@ export default function TenantDashboardPage() {
   const leiloesAtivosComLance = ativos.filter(p => ((p as any).lances?.length || 0) > 0)
   const faturamentoAtivo = leiloesAtivosComLance.reduce((acc, p) => acc + (p.valor_atual || 0), 0)
 
-  const [vencedores, setVencedores] = useState<any[]>([])
-
-  useEffect(() => {
-    if (encerrados.length > 0) {
-      loadVencedores(encerrados.map(p => p.id))
+  // --- DADOS PARA O GRÁFICO DE LINHA (Últimos 7 dias) ---
+  const hoje = new Date()
+  const chartDataLineMap = new Map()
+  for(let i = 6; i >= 0; i--) {
+    chartDataLineMap.set(format(subDays(hoje, i), 'dd/MM'), 0)
+  }
+  todosLances.forEach((l: any) => {
+    const d = new Date(l.criado_em)
+    if (isAfter(d, subDays(hoje, 7))) {
+      const k = format(d, 'dd/MM')
+      if(chartDataLineMap.has(k)) {
+        chartDataLineMap.set(k, chartDataLineMap.get(k) + 1)
+      }
     }
-  }, [produtos])
+  })
+  const chartDataLine = Array.from(chartDataLineMap.entries()).map(([date, lances]) => ({ date, lances }))
 
-  async function loadVencedores(ids: string[]) {
-    const results = []
-    for (const id of ids.slice(0, 20)) {
-      const { data } = await supabase
-        .from('lances')
-        .select('*, produto:produtos(titulo, slug)')
-        .eq('produto_id', id)
-        .order('valor', { ascending: false })
-        .limit(1)
-        .single()
-      if (data) results.push(data)
-    }
-    setVencedores(results)
+  // --- DADOS PARA O GRÁFICO DE PIZZA (Top Produtos Ativos) ---
+  const topProdutos = ativos
+    .map(p => ({ titulo: p.titulo, lancesCount: (p as any).lances?.length || 0 }))
+    .filter(p => p.lancesCount > 0)
+    .sort((a, b) => b.lancesCount - a.lancesCount)
+  
+  const chartDataPie = topProdutos.slice(0, 4)
+  if (topProdutos.length > 4) {
+    const outrosCount = topProdutos.slice(4).reduce((acc, p) => acc + p.lancesCount, 0)
+    chartDataPie.push({ titulo: 'Outros', lancesCount: outrosCount })
   }
 
-  async function marcarComoEntregue(e: React.MouseEvent, produtoId: string) {
-    e.stopPropagation()
-    if (!confirm('Deseja marcar como entregue e limpar da lista?')) return
-    
-    setProdutos(prev => prev.map(p => p.id === produtoId ? { ...p, ativo: false } : p))
-    setVencedores(prev => prev.filter(v => v.produto_id !== produtoId))
-    
-    await supabase.from('produtos').update({ ativo: false }).eq('id', produtoId)
-  }
-
+  // --- REALTIME (Ao Vivo e Lances) ---
   useEffect(() => {
     const channelLances = supabase
       .channel(`tenant-admin-lances-${tenantSlug}`)
@@ -112,7 +110,6 @@ export default function TenantDashboardPage() {
         
         const { data: pData } = await supabase.from('produtos').select('*').eq('id', novoLance.produto_id).single()
         
-        // Só processar lances do nosso tenant
         if (pData && pData.tenant_id === tenantId) {
           setLancesRecentes(prev => {
             const nl = { ...novoLance, produto: pData }
@@ -157,6 +154,14 @@ export default function TenantDashboardPage() {
     )
   }
 
+  const paginasAcessadas = ((Object.entries(
+    onlineUsers.reduce((acc, user) => {
+      const key = user.page === 'vitrine' ? 'Vitrine Principal' : (user.titulo || 'Página de Produto')
+      acc[key] = (acc[key] || 0) + 1
+      return acc
+    }, {} as Record<string, number>)
+  )) as [string, number][]).sort((a, b) => b[1] - a[1])
+
   return (
     <div className="flex flex-1 flex-col gap-6 p-4 md:p-6 bg-gray-50/50 min-h-screen animate-fade-in">
       {/* Header */}
@@ -174,7 +179,7 @@ export default function TenantDashboardPage() {
         </Link>
       </div>
 
-      {/* Efferd-style Top Cards */}
+      {/* Top Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         
         {/* Card 1: Faturamento Geral */}
@@ -189,7 +194,7 @@ export default function TenantDashboardPage() {
             </p>
             <div className="flex items-center gap-1 text-xs">
               <div className="inline-flex items-center gap-1 text-emerald-600 bg-emerald-50 px-1.5 py-0.5 rounded-md font-medium">
-                <span>Vendas concretizadas</span>
+                <span>Total de vendas concluídas</span>
               </div>
             </div>
           </div>
@@ -207,7 +212,7 @@ export default function TenantDashboardPage() {
             </p>
             <div className="flex items-center gap-1 text-xs">
               <span className="text-gray-500">
-                Retido em <strong className="text-gray-700">{leiloesAtivosComLance.length} leilões</strong>
+                Retido em <strong className="text-gray-700">{leiloesAtivosComLance.length} leilões ativos</strong>
               </span>
             </div>
           </div>
@@ -216,7 +221,7 @@ export default function TenantDashboardPage() {
         {/* Card 3: Lances Recebidos */}
         <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm">
           <div className="flex flex-row items-center justify-between p-5 pb-2">
-            <h3 className="font-medium text-sm text-gray-500">Lances Recebidos</h3>
+            <h3 className="font-medium text-sm text-gray-500">Total de Lances</h3>
             <Gavel className="h-4 w-4 text-gray-400" />
           </div>
           <div className="p-5 pt-0 flex flex-col gap-1">
@@ -224,122 +229,90 @@ export default function TenantDashboardPage() {
               {totalLancesCount}
             </p>
             <div className="flex items-center gap-1 text-xs text-gray-500">
-              Total de interações
+              Engajamento acumulado
             </div>
           </div>
         </div>
 
         {/* Card 4: Pessoas Ao Vivo */}
-        <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm">
-          <div className="flex flex-row items-center justify-between p-5 pb-2">
+        <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm relative group overflow-hidden">
+          <div className="flex flex-row items-center justify-between p-5 pb-2 relative z-10">
             <h3 className="font-medium text-sm text-gray-500">Visitantes Ao Vivo</h3>
             <Users className="h-4 w-4 text-gray-400" />
           </div>
-          <div className="p-5 pt-0 flex flex-col gap-1">
+          <div className="p-5 pt-0 flex flex-col gap-1 relative z-10">
             <p className="font-semibold text-2xl tabular-nums tracking-tight text-gray-900 flex items-center gap-2">
               {onlineUsers.length}
               {onlineUsers.length > 0 && (
                 <span className="relative flex h-3 w-3">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-3 w-3 bg-green-500"></span>
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                 </span>
               )}
             </p>
-            <div className="flex items-center gap-1 text-xs text-gray-500">
-              Navegando na sua vitrine
-            </div>
+            {onlineUsers.length > 0 && (
+              <div className="mt-2 space-y-1">
+                {paginasAcessadas.slice(0, 2).map(([pageName, count]) => (
+                  <div key={pageName} className="flex items-center justify-between text-xs">
+                    <span className="text-gray-500 truncate pr-2" title={pageName}>{pageName}</span>
+                    <span className="font-medium text-gray-700 bg-gray-100 px-1 rounded">{count}</span>
+                  </div>
+                ))}
+                {paginasAcessadas.length > 2 && (
+                  <div className="text-xs text-gray-400">e mais {paginasAcessadas.length - 2} locais...</div>
+                )}
+              </div>
+            )}
+            {onlineUsers.length === 0 && (
+              <div className="flex items-center gap-1 text-xs text-gray-500">
+                Navegando na sua vitrine
+              </div>
+            )}
           </div>
         </div>
-
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         
-        {/* Coluna Principal (Tabelas) */}
+        {/* Coluna Principal (Gráficos e Leilões em andamento) */}
         <div className="lg:col-span-2 space-y-6">
           
-          {/* Gráfico Placeholder */}
+          {/* Gráfico de Lances (Linha) */}
           <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm">
              <div className="p-5 border-b border-gray-100 flex items-center justify-between">
                <div>
-                 <h3 className="font-bold text-gray-900">Evolução do Faturamento</h3>
-                 <p className="text-sm text-gray-500">Receita nos últimos dias</p>
+                 <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                   <TrendingUp className="w-4 h-4 text-rosa-600" />
+                   Evolução de Lances
+                 </h3>
+                 <p className="text-sm text-gray-500 mt-0.5">Total de lances recebidos nos últimos 7 dias</p>
                </div>
              </div>
              <div className="p-5">
-               <div className="h-[200px] w-full bg-gray-50 rounded-lg border border-dashed border-gray-200 flex items-center justify-center">
-                  <span className="text-gray-400 text-sm font-medium flex items-center gap-2">
-                    <TrendingUp className="h-4 w-4"/> Área reservada para Gráfico (Recharts)
-                  </span>
+               <div className="h-[250px] w-full">
+                 <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={chartDataLine} margin={{ top: 5, right: 20, bottom: 5, left: 0 }}>
+                      <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f3f4f6" />
+                      <XAxis dataKey="date" stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} />
+                      <YAxis stroke="#9ca3af" fontSize={12} tickLine={false} axisLine={false} allowDecimals={false} />
+                      <Tooltip 
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                        itemStyle={{ color: '#db2777', fontWeight: 'bold' }}
+                        formatter={(value) => [`${value} lances`, 'Total']}
+                        labelStyle={{ color: '#6b7280', marginBottom: '4px' }}
+                      />
+                      <Line 
+                        type="monotone" 
+                        dataKey="lances" 
+                        stroke="#db2777" 
+                        strokeWidth={3}
+                        dot={{ r: 4, strokeWidth: 2, fill: '#fff' }}
+                        activeDot={{ r: 6, fill: '#db2777', stroke: '#fff' }}
+                      />
+                    </LineChart>
+                 </ResponsiveContainer>
                </div>
              </div>
-          </div>
-
-          {/* Vencedores (Estilo Tabela Efferd) */}
-          <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm">
-            <div className="p-5 border-b border-gray-100">
-              <h3 className="font-bold text-gray-900 flex items-center gap-2">
-                <Trophy className="w-4 h-4 text-rosa-600" />
-                Últimos Ganhadores
-              </h3>
-              <p className="text-sm text-gray-500 mt-0.5">Leilões encerrados pendentes de entrega.</p>
-            </div>
-            <div className="p-0">
-              {vencedores.length === 0 ? (
-                <p className="text-gray-400 text-sm text-center py-8">Nenhum leilão encerrado ainda.</p>
-              ) : (
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm text-left">
-                    <thead className="bg-gray-50/50 border-b border-gray-100 text-gray-500 font-medium">
-                      <tr>
-                        <th className="px-5 py-3 font-medium">Cliente</th>
-                        <th className="px-5 py-3 font-medium hidden sm:table-cell">Produto</th>
-                        <th className="px-5 py-3 font-medium text-right">Valor Final</th>
-                        <th className="px-5 py-3 font-medium text-center">Status</th>
-                        <th className="px-5 py-3 font-medium text-right">Ação</th>
-                      </tr>
-                    </thead>
-                    <tbody className="divide-y divide-gray-100">
-                      {vencedores.map(v => (
-                        <tr key={v.id} className="hover:bg-gray-50/50 transition-colors">
-                          <td className="px-5 py-3">
-                            <div 
-                              className="flex items-center gap-3 cursor-pointer"
-                              onClick={() => setSelectedLance(v)}
-                            >
-                              <div className="w-8 h-8 rounded-full bg-rosa-100 flex items-center justify-center text-rosa-700 font-bold shrink-0">
-                                {v.nome.charAt(0).toUpperCase()}
-                              </div>
-                              <span className="font-medium text-gray-900">{v.nome}</span>
-                            </div>
-                          </td>
-                          <td className="px-5 py-3 hidden sm:table-cell text-gray-600 max-w-[150px] truncate">
-                            {v.produto?.titulo}
-                          </td>
-                          <td className="px-5 py-3 text-right font-semibold text-gray-900">
-                            {formatCurrency(v.valor)}
-                          </td>
-                          <td className="px-5 py-3 text-center">
-                            <span className="inline-flex items-center justify-center bg-yellow-100 text-yellow-700 px-2 py-1 rounded text-xs font-medium whitespace-nowrap">
-                              Pendente
-                            </span>
-                          </td>
-                          <td className="px-5 py-3 text-right">
-                            <button
-                              onClick={(e) => marcarComoEntregue(e, v.produto_id)}
-                              className="inline-flex items-center justify-center p-1.5 bg-white border border-gray-200 rounded-md text-gray-400 hover:text-green-600 hover:border-green-300 hover:bg-green-50 transition-colors shadow-sm"
-                              title="Marcar como entregue"
-                            >
-                              <Check className="w-4 h-4" />
-                            </button>
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-              )}
-            </div>
           </div>
 
           {/* Produtos Ativos Simplificados */}
@@ -351,7 +324,7 @@ export default function TenantDashboardPage() {
                   <p className="text-sm text-gray-500">Monitorando lances ativos.</p>
                 </div>
                 <Link href={`${basePath}/produtos`} className="text-rosa-600 text-sm font-medium flex items-center gap-1 hover:gap-2 transition-all">
-                  Ver todos <ArrowRight className="w-4 h-4" />
+                  Ver todos <ExternalLink className="w-4 h-4" />
                 </Link>
               </div>
               <div className="p-0">
@@ -396,32 +369,56 @@ export default function TenantDashboardPage() {
 
         </div>
 
-        {/* Coluna Lateral (Feed) */}
+        {/* Coluna Lateral (Gráfico Pizza e Feed) */}
         <div className="space-y-6">
           
-          {/* Team / Users Analytics List */}
-          {onlineUsers.length > 0 && (
+          {/* Gráfico de Pizza (Produtos Mais Lances) */}
+          {chartDataPie.length > 0 && (
             <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm">
               <div className="p-5 border-b border-gray-100">
-                <h3 className="font-bold text-gray-900 text-sm">Páginas mais acessadas agora</h3>
+                <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm">
+                  <PieChartIcon className="w-4 h-4 text-rosa-600" />
+                  Engajamento Ativo
+                </h3>
+                <p className="text-xs text-gray-500 mt-1">Leilões ativos com mais lances</p>
               </div>
-              <div className="p-0">
-                <ul className="divide-y divide-gray-100">
-                  {((Object.entries(
-                    onlineUsers.reduce((acc, user) => {
-                      const key = user.page === 'vitrine' ? 'Vitrine Principal' : (user.titulo || 'Página de Produto')
-                      acc[key] = (acc[key] || 0) + 1
-                      return acc
-                    }, {} as Record<string, number>)
-                  )) as [string, number][]).sort((a, b) => b[1] - a[1]).map(([pageName, count]) => (
-                    <li key={pageName} className="flex items-center justify-between p-4">
-                      <span className="text-sm text-gray-700 truncate pr-4">{pageName}</span>
-                      <span className="inline-flex items-center justify-center bg-gray-100 text-gray-800 px-2 py-0.5 rounded text-xs font-bold shrink-0">
-                        {count} view{count > 1 ? 's' : ''}
-                      </span>
-                    </li>
+              <div className="p-5 flex flex-col items-center">
+                <div className="h-[200px] w-full">
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={chartDataPie}
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={60}
+                        outerRadius={80}
+                        paddingAngle={2}
+                        dataKey="lancesCount"
+                        stroke="none"
+                      >
+                        {chartDataPie.map((entry, index) => (
+                          <Cell key={`cell-${index}`} fill={PIE_COLORS[index % PIE_COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip 
+                        formatter={(value) => [`${value} lances`, 'Volume']}
+                        contentStyle={{ borderRadius: '8px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                </div>
+                {/* Legenda Customizada */}
+                <div className="w-full mt-4 space-y-2">
+                  {chartDataPie.map((entry, index) => (
+                    <div key={index} className="flex items-center justify-between text-xs">
+                      <div className="flex items-center gap-2 truncate pr-2">
+                        <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: PIE_COLORS[index % PIE_COLORS.length] }} />
+                        <span className="text-gray-600 truncate" title={entry.titulo}>{entry.titulo}</span>
+                      </div>
+                      <span className="font-bold text-gray-900 shrink-0">{entry.lancesCount}</span>
+                    </div>
                   ))}
-                </ul>
+                </div>
               </div>
             </div>
           )}
@@ -436,7 +433,7 @@ export default function TenantDashboardPage() {
                 <p className="text-gray-400 text-sm text-center py-6">Nenhuma atividade recente.</p>
               ) : (
                 <ul className="divide-y divide-gray-50">
-                  {lancesRecentes.slice(0, 8).map(lance => {
+                  {lancesRecentes.slice(0, 6).map(lance => {
                     const prod = (lance as any).produto
                     const realProd = produtos.find(p => p.id === lance.produto_id)
                     const isWinning = realProd && lance.valor >= realProd.valor_atual
@@ -487,7 +484,7 @@ export default function TenantDashboardPage() {
         </div>
       </div>
 
-      {/* Modal de Detalhes do Usuário */}
+      {/* Modal de Detalhes do Lance */}
       {selectedLance && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
           <div className="absolute inset-0 bg-gray-900/40 backdrop-blur-sm" onClick={() => setSelectedLance(null)} />
