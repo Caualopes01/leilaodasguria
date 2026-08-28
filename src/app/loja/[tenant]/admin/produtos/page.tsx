@@ -132,7 +132,7 @@ export default function TenantProdutosPage() {
       ) : (
         <div className="grid gap-4">
           {filtered.map(produto => {
-            let resolvedStatus = (produto.ativo && produto.status !== 'encerrado') ? 'ativo' : produto.status
+            let resolvedStatus: string = (produto.ativo && produto.status !== 'encerrado') ? 'ativo' : produto.status
             if (resolvedStatus === 'encerrado' && ((produto as any).lances?.length || 0) > 0) {
               resolvedStatus = 'encerrado_ganhador'
             }
