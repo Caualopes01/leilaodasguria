@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 import { useParams } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import { formatCurrency } from '@/lib/utils'
-import { Trophy, Check, Phone, X, ExternalLink } from 'lucide-react'
+import { Trophy, Check, Phone, X, ExternalLink, PackageCheck, Banknote, ListTodo } from 'lucide-react'
 import { formatWhatsApp, getWhatsAppLink } from '@/lib/utils'
 
 export default function TenantGanhadoresPage() {
@@ -14,6 +14,10 @@ export default function TenantGanhadoresPage() {
   const [vencedores, setVencedores] = useState<any[]>([])
   const [loading, setLoading] = useState(true)
   const [selectedLance, setSelectedLance] = useState<any | null>(null)
+  
+  // Controle de abas
+  const [activeTab, setActiveTab] = useState<'pendentes' | 'concluidos'>('pendentes')
+
   const supabase = createClient()
 
   useEffect(() => {
@@ -33,13 +37,12 @@ export default function TenantGanhadoresPage() {
     }
     setTenantId(tenant.id)
 
-    // Buscar produtos encerrados
+    // Buscar produtos encerrados (ativos e inativos para termos pendentes e concluidos)
     const { data: prods } = await supabase
       .from('produtos')
-      .select('id, titulo, slug')
+      .select('id, titulo, slug, ativo, pedido_separado, pago')
       .eq('tenant_id', tenant.id)
       .eq('status', 'encerrado')
-      .eq('ativo', true) // Apenas os que ainda não foram marcados como entregues
 
     if (!prods || prods.length === 0) {
       setVencedores([])
@@ -69,37 +72,103 @@ export default function TenantGanhadoresPage() {
     setLoading(false)
   }
 
-  async function marcarComoEntregue(e: React.MouseEvent, produtoId: string) {
-    e.stopPropagation()
-    if (!confirm('Deseja marcar como entregue e remover da lista de pendentes?')) return
+  async function toggleStatus(produtoId: string, campo: 'pedido_separado' | 'pago', valorAtual: boolean) {
+    const newValue = !valorAtual
     
-    setVencedores(prev => prev.filter(v => v.produto_id !== produtoId))
-    await supabase.from('produtos').update({ ativo: false }).eq('id', produtoId)
+    // Atualiza localmente (optimistic UI)
+    setVencedores(prev => prev.map(v => {
+      if (v.produto_id === produtoId) {
+        return { ...v, produto: { ...v.produto, [campo]: newValue } }
+      }
+      return v
+    }))
+
+    // Salva no banco
+    await supabase.from('produtos').update({ [campo]: newValue }).eq('id', produtoId)
   }
+
+  async function marcarComoEntregue(produtoId: string) {
+    if (!confirm('Deseja marcar como entregue e enviar para a lista de concluídos?')) return
+    
+    // Atualiza para ativo = false (concluído)
+    setVencedores(prev => prev.map(v => {
+      if (v.produto_id === produtoId) {
+        return { ...v, produto: { ...v.produto, ativo: false, pedido_separado: true, pago: true } }
+      }
+      return v
+    }))
+
+    await supabase.from('produtos').update({ 
+      ativo: false,
+      pedido_separado: true, // Força os outros status para true se já está entregue
+      pago: true
+    }).eq('id', produtoId)
+  }
+
+  // Filtragem das listas pelas abas
+  const pendentes = vencedores.filter(v => v.produto?.ativo === true)
+  const concluidos = vencedores.filter(v => v.produto?.ativo === false)
+
+  const displayList = activeTab === 'pendentes' ? pendentes : concluidos
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center justify-between pb-2 border-b border-gray-200">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 pb-4 border-b border-gray-200">
         <div>
           <h1 className="font-display text-2xl lg:text-3xl font-bold text-gray-900 tracking-tight flex items-center gap-2">
             <Trophy className="w-7 h-7 text-rosa-600" />
-            Últimos Ganhadores
+            Gestão de Ganhadores
           </h1>
-          <p className="text-gray-500 text-sm mt-1">Lista de leilões encerrados pendentes de entrega.</p>
+          <p className="text-gray-500 text-sm mt-1">Acompanhe as etapas de separação, pagamento e entrega.</p>
         </div>
+      </div>
+
+      {/* Tabs */}
+      <div className="flex space-x-1 p-1 bg-gray-100/80 rounded-xl w-fit">
+        <button
+          onClick={() => setActiveTab('pendentes')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            activeTab === 'pendentes'
+              ? 'bg-white text-gray-900 shadow-sm border border-gray-200/60'
+              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
+          }`}
+        >
+          <ListTodo className="w-4 h-4" />
+          Pendentes
+          {pendentes.length > 0 && (
+            <span className="ml-1.5 bg-rosa-100 text-rosa-700 text-[10px] font-bold px-2 py-0.5 rounded-full">
+              {pendentes.length}
+            </span>
+          )}
+        </button>
+        <button
+          onClick={() => setActiveTab('concluidos')}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-medium transition-all ${
+            activeTab === 'concluidos'
+              ? 'bg-white text-gray-900 shadow-sm border border-gray-200/60'
+              : 'text-gray-500 hover:text-gray-700 hover:bg-gray-200/50'
+          }`}
+        >
+          <Check className="w-4 h-4" />
+          Concluídos
+        </button>
       </div>
 
       {loading ? (
         <div className="flex items-center justify-center h-64">
           <div className="w-8 h-8 border-2 border-rosa-200 border-t-rosa-600 rounded-full animate-spin" />
         </div>
-      ) : vencedores.length === 0 ? (
+      ) : displayList.length === 0 ? (
         <div className="bg-white rounded-2xl border border-gray-200 p-12 text-center shadow-sm">
           <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
             <Trophy className="w-8 h-8 text-gray-300" />
           </div>
-          <p className="text-gray-500 font-medium text-lg">Nenhum leilão pendente</p>
-          <p className="text-gray-400 text-sm mt-1">Todos os ganhadores já foram marcados como entregues.</p>
+          <p className="text-gray-500 font-medium text-lg">Nenhum leilão {activeTab === 'pendentes' ? 'pendente' : 'concluído'}</p>
+          <p className="text-gray-400 text-sm mt-1">
+            {activeTab === 'pendentes' 
+              ? 'Todos os ganhadores já foram despachados.' 
+              : 'Nenhum leilão foi marcado como entregue ainda.'}
+          </p>
         </div>
       ) : (
         <div className="bg-white rounded-xl border border-gray-200 shadow-sm overflow-hidden">
@@ -110,12 +179,21 @@ export default function TenantGanhadoresPage() {
                   <th className="px-6 py-4 font-semibold">Cliente</th>
                   <th className="px-6 py-4 font-semibold">Produto Arrematado</th>
                   <th className="px-6 py-4 font-semibold text-right">Valor Final</th>
-                  <th className="px-6 py-4 font-semibold text-center">Status</th>
-                  <th className="px-6 py-4 font-semibold text-right">Ação</th>
+                  
+                  {/* Colunas de Status (Apenas para Pendentes) */}
+                  {activeTab === 'pendentes' ? (
+                    <>
+                      <th className="px-4 py-4 font-semibold text-center border-l border-gray-100 bg-gray-50/50">Pedido Separado</th>
+                      <th className="px-4 py-4 font-semibold text-center border-l border-gray-100 bg-gray-50/50">Pago</th>
+                      <th className="px-4 py-4 font-semibold text-center border-l border-gray-100 bg-gray-50/50">Entregue</th>
+                    </>
+                  ) : (
+                    <th className="px-6 py-4 font-semibold text-center">Status</th>
+                  )}
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-100">
-                {vencedores.map(v => (
+                {displayList.map(v => (
                   <tr key={v.id} className="hover:bg-gray-50 transition-colors">
                     <td className="px-6 py-4">
                       <div 
@@ -152,20 +230,46 @@ export default function TenantGanhadoresPage() {
                         {new Date(v.criado_em).toLocaleDateString('pt-BR')}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-center">
-                      <span className="inline-flex items-center justify-center bg-amber-100 text-amber-700 px-2.5 py-1 rounded-md text-xs font-bold whitespace-nowrap">
-                        Aguardando Pagto/Envio
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <button
-                        onClick={(e) => marcarComoEntregue(e, v.produto_id)}
-                        className="inline-flex items-center justify-center gap-2 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-gray-500 hover:text-emerald-700 hover:border-emerald-300 hover:bg-emerald-50 transition-all shadow-sm font-medium"
-                      >
-                        <Check className="w-4 h-4" />
-                        Concluir
-                      </button>
-                    </td>
+                    
+                    {activeTab === 'pendentes' ? (
+                      <>
+                        <td className="px-4 py-4 text-center border-l border-gray-50">
+                          <label className="flex items-center justify-center cursor-pointer group h-full w-full">
+                            <input 
+                              type="checkbox" 
+                              checked={v.produto?.pedido_separado || false}
+                              onChange={() => toggleStatus(v.produto_id, 'pedido_separado', v.produto?.pedido_separado || false)}
+                              className="w-5 h-5 text-rosa-600 border-gray-300 rounded focus:ring-rosa-600 focus:ring-2 cursor-pointer transition-colors" 
+                            />
+                          </label>
+                        </td>
+                        <td className="px-4 py-4 text-center border-l border-gray-50">
+                          <label className="flex items-center justify-center cursor-pointer group h-full w-full">
+                            <input 
+                              type="checkbox" 
+                              checked={v.produto?.pago || false}
+                              onChange={() => toggleStatus(v.produto_id, 'pago', v.produto?.pago || false)}
+                              className="w-5 h-5 text-emerald-600 border-gray-300 rounded focus:ring-emerald-600 focus:ring-2 cursor-pointer transition-colors" 
+                            />
+                          </label>
+                        </td>
+                        <td className="px-4 py-4 text-center border-l border-gray-50">
+                          <button
+                            onClick={() => marcarComoEntregue(v.produto_id)}
+                            className="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-gray-600 hover:text-white hover:border-emerald-600 hover:bg-emerald-600 transition-all shadow-sm font-medium text-xs w-full"
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            Finalizar
+                          </button>
+                        </td>
+                      </>
+                    ) : (
+                      <td className="px-6 py-4 text-center">
+                        <span className="inline-flex items-center justify-center gap-1 bg-emerald-100 text-emerald-700 px-3 py-1.5 rounded-lg text-xs font-bold whitespace-nowrap">
+                          <Check className="w-3.5 h-3.5" /> Entregue
+                        </span>
+                      </td>
+                    )}
                   </tr>
                 ))}
               </tbody>

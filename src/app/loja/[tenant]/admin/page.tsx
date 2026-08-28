@@ -469,10 +469,11 @@ export default function TenantDashboardPage() {
                 <Link href={`${basePath}/lances`} className="text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors">
                   Ver histórico completo
                 </Link>
+              </div>
             </div>
           </div>
 
-      </div>
+        </div>
 
       {/* Modal de Detalhes do Lance */}
       {selectedLance && (
