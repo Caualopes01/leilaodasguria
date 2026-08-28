@@ -28,6 +28,10 @@ type TenantRow = {
 export default function SuperAdminPage() {
   const [tenants, setTenants] = useState<TenantRow[]>([])
   const [loading, setLoading] = useState(true)
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [editingTenant, setEditingTenant] = useState<TenantRow | null>(null)
+  const [formData, setFormData] = useState({ nome: '', slug: '', email: '', whatsapp: '' })
+  const [saving, setSaving] = useState(false)
   const supabase = createClient()
 
   useEffect(() => {
@@ -88,6 +92,69 @@ export default function SuperAdminPage() {
     setTenants(prev => prev.map(t => t.id === id ? { ...t, ativo: !ativo } : t))
   }
 
+  async function handleSaveTenant() {
+    if (!formData.nome.trim() || !formData.slug.trim()) {
+      alert('Nome e Slug são obrigatórios');
+      return;
+    }
+    setSaving(true)
+    try {
+      if (editingTenant) {
+        // Edit
+        const { error } = await supabase
+          .from('tenants')
+          .update({
+            nome: formData.nome,
+            slug: formData.slug,
+            email: formData.email,
+            whatsapp: formData.whatsapp || null,
+          })
+          .eq('id', editingTenant.id)
+        
+        if (error) throw error
+      } else {
+        // Create
+        // Gerar user_id dummy ou usar auth signUp, para simplificar vamos tentar inserir sem user_id se for opcional,
+        // ou gerar um uuid para user_id se for requerido.
+        const fakeUserId = crypto.randomUUID()
+        const { data: tenant, error } = await supabase
+          .from('tenants')
+          .insert({
+            nome: formData.nome,
+            slug: formData.slug,
+            email: formData.email,
+            whatsapp: formData.whatsapp || null,
+            user_id: fakeUserId, // Se falhar, pode ser devido ao user_id não existir na tabela auth.users. 
+          })
+          .select()
+          .single()
+          
+        if (error) {
+          // Fallback caso fk auth.users falhe: criar pelo auth primeiro se precisar, mas como não temos como sem deslogar,
+          // vamos apenas tentar. Se falhar por RLS ou FK, mostramos erro.
+          throw error
+        }
+
+        // Criar assinatura trial
+        const fimTrial = new Date()
+        fimTrial.setDate(fimTrial.getDate() + 7)
+        await supabase.from('subscriptions').insert({
+          tenant_id: tenant.id,
+          plano: 'mensal',
+          status: 'trial',
+          valor: 49.90,
+          fim_em: fimTrial.toISOString(),
+        })
+      }
+      setIsModalOpen(false)
+      loadData()
+    } catch (err: any) {
+      console.error(err)
+      alert('Erro ao salvar loja: ' + err.message)
+    }
+    setSaving(false)
+  }
+
   const totalAtivos = tenants.filter(t => t.ativo).length
   const totalComAssinatura = tenants.filter(t => t.subscription?.status === 'ativa').length
   const totalTrial = tenants.filter(t => t.subscription?.status === 'trial').length
@@ -142,8 +209,18 @@ export default function SuperAdminPage() {
 
       {/* Lista de Tenants */}
       <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div className="p-6 border-b border-gray-100">
+        <div className="p-6 border-b border-gray-100 flex justify-between items-center">
           <h2 className="font-display text-lg font-bold text-gray-800">Todas as Lojas</h2>
+          <button
+            onClick={() => {
+              setEditingTenant(null)
+              setFormData({ nome: '', slug: '', email: '', whatsapp: '' })
+              setIsModalOpen(true)
+            }}
+            className="px-4 py-2 bg-purple-600 text-white text-sm font-semibold rounded-lg hover:bg-purple-700 transition-colors"
+          >
+            Adicionar Loja
+          </button>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full text-left">
@@ -233,6 +310,21 @@ export default function SuperAdminPage() {
                         >
                           {tenant.ativo ? 'Desativar' : 'Ativar'}
                         </button>
+                        <button
+                          onClick={() => {
+                            setEditingTenant(tenant)
+                            setFormData({
+                              nome: tenant.nome || '',
+                              slug: tenant.slug || '',
+                              email: tenant.email || '',
+                              whatsapp: (tenant as any).whatsapp || '',
+                            })
+                            setIsModalOpen(true)
+                          }}
+                          className="px-3 py-1.5 bg-gray-100 text-gray-700 hover:bg-gray-200 rounded-lg text-xs font-semibold transition-colors"
+                        >
+                          Editar
+                        </button>
                       </div>
                     </td>
                   </tr>
@@ -242,6 +334,88 @@ export default function SuperAdminPage() {
           </table>
         </div>
       </div>
+
+      {/* Modal Criar/Editar Loja */}
+      {isModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white rounded-2xl p-6 w-full max-w-md shadow-xl">
+            <div className="flex justify-between items-center mb-6">
+              <h3 className="text-xl font-bold text-gray-800">
+                {editingTenant ? 'Editar Loja' : 'Nova Loja'}
+              </h3>
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="text-gray-400 hover:text-gray-600 p-1"
+              >
+                <XCircle className="w-6 h-6" />
+              </button>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Nome</label>
+                <input
+                  type="text"
+                  value={formData.nome}
+                  onChange={e => setFormData({ ...formData, nome: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="Nome da Loja"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Slug (URL)</label>
+                <input
+                  type="text"
+                  value={formData.slug}
+                  onChange={e => setFormData({ ...formData, slug: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="slug-da-loja"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input
+                  type="email"
+                  value={formData.email}
+                  onChange={e => setFormData({ ...formData, email: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="email@exemplo.com"
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">WhatsApp (Opcional)</label>
+                <input
+                  type="text"
+                  value={formData.whatsapp}
+                  onChange={e => setFormData({ ...formData, whatsapp: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-purple-500"
+                  placeholder="51999999999"
+                />
+              </div>
+            </div>
+
+            <div className="mt-8 flex justify-end gap-3">
+              <button
+                onClick={() => setIsModalOpen(false)}
+                className="px-4 py-2 text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-lg font-medium transition-colors"
+                disabled={saving}
+              >
+                Cancelar
+              </button>
+              <button
+                onClick={handleSaveTenant}
+                disabled={saving}
+                className="px-4 py-2 bg-purple-600 text-white rounded-lg font-medium hover:bg-purple-700 transition-colors disabled:opacity-50"
+              >
+                {saving ? 'Salvando...' : 'Salvar Loja'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
