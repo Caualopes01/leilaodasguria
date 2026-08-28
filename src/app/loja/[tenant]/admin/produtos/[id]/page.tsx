@@ -30,7 +30,7 @@ export default function TenantEditarProdutoPage() {
       // Carregar produto
       const { data } = await supabase
         .from('produtos')
-        .select('*')
+        .select('*, lances(valor)')
         .eq('id', id)
         .eq('tenant_id', tenant.id)
         .single()

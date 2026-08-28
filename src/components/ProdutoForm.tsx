@@ -208,12 +208,23 @@ export default function ProdutoForm({ produto, tenantId, basePath = '/admin/prod
       status = 'ativo'
     }
 
+    let novoValorAtual = Number(valorInicial)
+    if (isEditing) {
+      const hasLances = (produto as any).lances && (produto as any).lances.length > 0
+      if (hasLances) {
+        const maiorLance = Math.max(...(produto as any).lances.map((l: any) => l.valor))
+        novoValorAtual = Math.max(Number(valorInicial), maiorLance)
+      } else {
+        novoValorAtual = Number(valorInicial)
+      }
+    }
+
     const payload: any = {
       titulo: titulo.trim(),
       slug,
       descricao: descricao.trim() || null,
       valor_inicial: Number(valorInicial),
-      valor_atual: isEditing ? produto.valor_atual : Number(valorInicial),
+      valor_atual: novoValorAtual,
       incremento_minimo: Number(incremento) || 1,
       inicio_em: inicioDate.toISOString(),
       fim_em: fimDate.toISOString(),
