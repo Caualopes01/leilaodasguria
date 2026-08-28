@@ -24,6 +24,7 @@ export default function TenantProdutosPage() {
   const [produtos, setProdutos] = useState<Produto[]>([])
   const [loading, setLoading] = useState(true)
   const [search, setSearch] = useState('')
+  const [statusFilter, setStatusFilter] = useState<string>('todos')
   const [deleting, setDeleting] = useState<string | null>(null)
   const [tenantId, setTenantId] = useState<string | null>(null)
   const supabase = createClient()
@@ -80,9 +81,17 @@ export default function TenantProdutosPage() {
     toast.success('Link copiado!')
   }
 
-  const filtered = produtos.filter(p =>
-    p.titulo.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = produtos.filter(p => {
+    let resolvedStatus: string = (p.ativo && p.status !== 'encerrado') ? 'ativo' : p.status
+    if (resolvedStatus === 'encerrado' && ((p as any).lances?.length || 0) > 0) {
+      resolvedStatus = 'encerrado_ganhador'
+    }
+
+    const matchesSearch = p.titulo.toLowerCase().includes(search.toLowerCase())
+    const matchesStatus = statusFilter === 'todos' || resolvedStatus === statusFilter
+    
+    return matchesSearch && matchesStatus
+  })
 
   const basePath = `/loja/${tenantSlug}/admin`
 
@@ -102,16 +111,29 @@ export default function TenantProdutosPage() {
         </Link>
       </div>
 
-      {/* Search */}
-      <div className="relative">
-        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-        <input
-          type="text"
-          placeholder="Buscar produto..."
-          value={search}
-          onChange={e => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl text-sm bg-white"
-        />
+      {/* Filters */}
+      <div className="flex flex-col sm:flex-row gap-3">
+        <div className="relative flex-1">
+          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Buscar produto..."
+            value={search}
+            onChange={e => setSearch(e.target.value)}
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white focus:ring-2 focus:ring-rosa-600 focus:border-transparent outline-none transition-all"
+          />
+        </div>
+        <select
+          value={statusFilter}
+          onChange={e => setStatusFilter(e.target.value)}
+          className="px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-white text-gray-700 min-w-[200px] focus:ring-2 focus:ring-rosa-600 focus:border-transparent outline-none transition-all cursor-pointer"
+        >
+          <option value="todos">Todos os status</option>
+          <option value="ativo">Ativo</option>
+          <option value="encerrado_ganhador">Encerrado (Vendido)</option>
+          <option value="encerrado">Encerrado (Sem Lances)</option>
+          <option value="aguardando">Aguardando</option>
+        </select>
       </div>
 
       {loading ? (
