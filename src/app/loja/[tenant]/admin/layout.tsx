@@ -11,6 +11,7 @@ import {
 export default function TenantAdminLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null)
   const [tenantNome, setTenantNome] = useState('')
+  const [tenantLogo, setTenantLogo] = useState('')
   const [loading, setLoading] = useState(true)
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const router = useRouter()
@@ -32,14 +33,17 @@ export default function TenantAdminLayout({ children }: { children: React.ReactN
     }
     setUser(user)
 
-    // Buscar nome do tenant
+    // Buscar nome e logo do tenant
     const { data: tenant } = await supabase
       .from('tenants')
-      .select('nome')
+      .select('nome, logo_url')
       .eq('slug', tenantSlug)
       .single()
     
-    if (tenant) setTenantNome(tenant.nome)
+    if (tenant) {
+      setTenantNome(tenant.nome)
+      if (tenant.logo_url) setTenantLogo(tenant.logo_url)
+    }
     setLoading(false)
   }
 
@@ -94,8 +98,12 @@ export default function TenantAdminLayout({ children }: { children: React.ReactN
         {/* Logo */}
         <div className="p-6 border-b border-rosa-100">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-full bg-rosa-100 flex items-center justify-center">
-              <Heart className="w-5 h-5 text-rosa-600" fill="currentColor" />
+            <div className="w-10 h-10 rounded-full bg-rosa-100 flex items-center justify-center overflow-hidden shrink-0 border border-rosa-100">
+              {tenantLogo ? (
+                <img src={tenantLogo} alt={tenantNome} className="w-full h-full object-cover" />
+              ) : (
+                <Heart className="w-5 h-5 text-rosa-600" fill="currentColor" />
+              )}
             </div>
             <div>
               <h1 className="font-display font-bold text-rosa-700 leading-tight">{tenantNome || 'Minha'}</h1>
@@ -175,7 +183,13 @@ export default function TenantAdminLayout({ children }: { children: React.ReactN
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <Heart className="w-5 h-5 text-rosa-600" fill="currentColor" />
+            <div className="w-6 h-6 rounded-full overflow-hidden shrink-0 bg-rosa-100 flex items-center justify-center border border-rosa-100">
+              {tenantLogo ? (
+                <img src={tenantLogo} alt={tenantNome} className="w-full h-full object-cover" />
+              ) : (
+                <Heart className="w-4 h-4 text-rosa-600" fill="currentColor" />
+              )}
+            </div>
             <span className="font-display font-bold text-rosa-700">{tenantNome || 'Admin'}</span>
           </div>
         </header>
