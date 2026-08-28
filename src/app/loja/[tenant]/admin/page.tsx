@@ -272,13 +272,10 @@ export default function TenantDashboardPage() {
         </div>
       </div>
 
-      <div className="grid lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         
-        {/* Coluna Principal (Gráficos e Leilões em andamento) */}
-        <div className="lg:col-span-2 space-y-6">
-          
-          {/* Gráfico de Lances (Linha) */}
-          <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm">
+        {/* Gráfico de Lances (Linha) - Desktop: Col 1-2 / Mobile: 1º */}
+        <div className="lg:col-span-2 order-1 flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm">
              <div className="p-5 border-b border-gray-100 flex items-center justify-between">
                <div>
                  <h3 className="font-bold text-gray-900 flex items-center gap-2">
@@ -315,9 +312,9 @@ export default function TenantDashboardPage() {
              </div>
           </div>
 
-          {/* Produtos Ativos Simplificados */}
+          {/* Produtos Ativos - Desktop: Col 1-2 (Row 2) / Mobile: 4º */}
           {ativos.length > 0 && (
-            <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm">
+            <div className="lg:col-span-2 order-4 lg:order-3 flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm h-fit">
               <div className="p-5 border-b border-gray-100 flex items-center justify-between">
                 <div>
                   <h3 className="font-bold text-gray-900">Leilões em Andamento</h3>
@@ -367,14 +364,9 @@ export default function TenantDashboardPage() {
             </div>
           )}
 
-        </div>
-
-        {/* Coluna Lateral (Gráfico Pizza e Feed) */}
-        <div className="space-y-6">
-          
-          {/* Gráfico de Pizza (Produtos Mais Lances) */}
-          {chartDataPie.length > 0 && (
-            <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm">
+        {/* Gráfico de Pizza - Desktop: Col 3 (Row 1) / Mobile: 3º */}
+        {chartDataPie.length > 0 && (
+          <div className="lg:col-span-1 order-3 lg:order-2 flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm h-fit">
               <div className="p-5 border-b border-gray-100">
                 <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm">
                   <PieChartIcon className="w-4 h-4 text-rosa-600" />
@@ -421,11 +413,11 @@ export default function TenantDashboardPage() {
                 </div>
               </div>
             </div>
-          )}
+        )}
 
-          {/* Lances Recentes (Feed Estilo) */}
-          <div className="flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm">
-            <div className="p-5 border-b border-gray-100">
+        {/* Feed de Lances - Desktop: Col 3 (Row 2) / Mobile: 2º */}
+        <div className="lg:col-span-1 order-2 lg:order-4 flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm h-fit">
+          <div className="p-5 border-b border-gray-100">
               <h3 className="font-bold text-gray-900 text-sm">Feed de Lances</h3>
             </div>
             <div className="p-0">
@@ -477,11 +469,9 @@ export default function TenantDashboardPage() {
                 <Link href={`${basePath}/lances`} className="text-xs font-medium text-gray-500 hover:text-gray-900 transition-colors">
                   Ver histórico completo
                 </Link>
-              </div>
             </div>
           </div>
 
-        </div>
       </div>
 
       {/* Modal de Detalhes do Lance */}
