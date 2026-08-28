@@ -365,16 +365,17 @@ export default function TenantDashboardPage() {
           )}
 
         {/* Gráfico de Pizza - Desktop: Col 3 (Row 1) / Mobile: 3º */}
-        {chartDataPie.length > 0 && (
-          <div className="lg:col-span-1 order-3 lg:order-2 flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm h-fit">
-              <div className="p-5 border-b border-gray-100">
-                <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm">
-                  <PieChartIcon className="w-4 h-4 text-rosa-600" />
-                  Engajamento Ativo
-                </h3>
-                <p className="text-xs text-gray-500 mt-1">Leilões ativos com mais lances</p>
-              </div>
-              <div className="p-5 flex flex-col items-center">
+        <div className="lg:col-span-1 order-3 lg:order-2 flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm h-fit">
+          <div className="p-5 border-b border-gray-100">
+            <h3 className="font-bold text-gray-900 flex items-center gap-2 text-sm">
+              <PieChartIcon className="w-4 h-4 text-rosa-600" />
+              Engajamento Ativo
+            </h3>
+            <p className="text-xs text-gray-500 mt-1">Leilões ativos com mais lances</p>
+          </div>
+          <div className="p-5 flex flex-col items-center">
+            {chartDataPie.length > 0 ? (
+              <>
                 <div className="h-[200px] w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -411,9 +412,15 @@ export default function TenantDashboardPage() {
                     </div>
                   ))}
                 </div>
+              </>
+            ) : (
+              <div className="h-[200px] w-full flex flex-col items-center justify-center text-gray-400 text-sm gap-2">
+                <PieChartIcon className="w-8 h-8 text-gray-200" />
+                <p>Nenhum leilão ativo com lances</p>
               </div>
-            </div>
-        )}
+            )}
+          </div>
+        </div>
 
         {/* Feed de Lances - Desktop: Col 3 (Row 2) / Mobile: 2º */}
         <div className="lg:col-span-1 order-2 lg:order-4 flex flex-col rounded-xl border border-gray-200 bg-white shadow-sm h-fit">
