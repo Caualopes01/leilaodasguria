@@ -1,0 +1,130 @@
+{
+  "timestamp": "2026-08-28T18:48:56.811Z",
+  "isDryRun": true,
+  "totalProdutos": 5,
+  "produtosProcessados": 5,
+  "imagensProcessadas": 14,
+  "bytesEconomizados": 20676598,
+  "erros": [],
+  "produtos": [
+    {
+      "id": "9b18113a-b2a4-4817-b7c2-dc6573d3e517",
+      "titulo": "Vestido tomara que caia",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459034068-dfshx0k5b3.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 2030,
+          "newSizeKB": 207
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459035189-fwugz2u90vw.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 3037,
+          "newSizeKB": 394
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459036008-d0imt083vri.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 1864,
+          "newSizeKB": 144
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "392709b6-43e5-4511-86cc-073457b11510",
+      "titulo": "Conjunto casaco e vestido",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489048326-mya83s8p2t.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 954,
+          "newSizeKB": 141
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489048832-dzm6bpwmajp.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 952,
+          "newSizeKB": 260
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489049454-9iezblfhrif.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 1576,
+          "newSizeKB": 304
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489049918-03x98jhzf2mp.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 1619,
+          "newSizeKB": 278
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "45ba00be-8da7-4dd5-a929-c313fc82dde5",
+      "titulo": "Tshirt Enfermagem",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787699590025-hwmkm001z6o.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 2294,
+          "newSizeKB": 226
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787701432122-s70ubybwz2.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 187,
+          "newSizeKB": 81
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "66abc28c-29f5-4de3-b11d-4348d51ff0ce",
+      "titulo": "Saia Bordô",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787427715060-cropped-3ott2ovptva.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 211,
+          "newSizeKB": 50
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787457643000-in5p4jkx59.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 387,
+          "newSizeKB": 125
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "f327a910-0d89-41a0-a81a-f03af6242b1b",
+      "titulo": "Vestido midi vermelho",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787929134672-xa4fju958sb.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 2398,
+          "newSizeKB": 121
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787929135818-bhd7bgm7qdn.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 2818,
+          "newSizeKB": 178
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787929136589-fl9vmgi3jnl.jpeg",
+          "newUrl": "(dry run simulada)",
+          "oldSizeKB": 2499,
+          "newSizeKB": 126
+        }
+      ],
+      "hasError": false
+    }
+  ]
+}

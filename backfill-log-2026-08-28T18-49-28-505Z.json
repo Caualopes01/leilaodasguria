@@ -1,0 +1,67 @@
+{
+  "timestamp": "2026-08-28T18:49:20.464Z",
+  "isDryRun": false,
+  "totalProdutos": 2,
+  "produtosProcessados": 2,
+  "imagensProcessadas": 7,
+  "bytesEconomizados": 10552536,
+  "erros": [],
+  "produtos": [
+    {
+      "id": "9b18113a-b2a4-4817-b7c2-dc6573d3e517",
+      "titulo": "Vestido tomara que caia",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459034068-dfshx0k5b3.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459034068-dfshx0k5b3-opt.webp",
+          "oldSizeKB": 2030,
+          "newSizeKB": 207
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459035189-fwugz2u90vw.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459035189-fwugz2u90vw-opt.webp",
+          "oldSizeKB": 3037,
+          "newSizeKB": 394
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459036008-d0imt083vri.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459036008-d0imt083vri-opt.webp",
+          "oldSizeKB": 1864,
+          "newSizeKB": 144
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "392709b6-43e5-4511-86cc-073457b11510",
+      "titulo": "Conjunto casaco e vestido",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489048326-mya83s8p2t.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489048326-mya83s8p2t-opt.webp",
+          "oldSizeKB": 954,
+          "newSizeKB": 141
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489048832-dzm6bpwmajp.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489048832-dzm6bpwmajp-opt.webp",
+          "oldSizeKB": 952,
+          "newSizeKB": 260
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489049454-9iezblfhrif.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489049454-9iezblfhrif-opt.webp",
+          "oldSizeKB": 1576,
+          "newSizeKB": 304
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489049918-03x98jhzf2mp.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787489049918-03x98jhzf2mp-opt.webp",
+          "oldSizeKB": 1619,
+          "newSizeKB": 278
+        }
+      ],
+      "hasError": false
+    }
+  ]
+}

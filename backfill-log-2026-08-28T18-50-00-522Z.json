@@ -1,0 +1,175 @@
+{
+  "timestamp": "2026-08-28T18:49:42.338Z",
+  "isDryRun": false,
+  "totalProdutos": 10,
+  "produtosProcessados": 10,
+  "imagensProcessadas": 18,
+  "bytesEconomizados": 30097321,
+  "erros": [],
+  "produtos": [
+    {
+      "id": "45ba00be-8da7-4dd5-a929-c313fc82dde5",
+      "titulo": "Tshirt Enfermagem",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787699590025-hwmkm001z6o.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787699590025-hwmkm001z6o-opt.webp",
+          "oldSizeKB": 2294,
+          "newSizeKB": 226
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787701432122-s70ubybwz2.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787701432122-s70ubybwz2-opt.webp",
+          "oldSizeKB": 187,
+          "newSizeKB": 81
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "66abc28c-29f5-4de3-b11d-4348d51ff0ce",
+      "titulo": "Saia Bordô",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787427715060-cropped-3ott2ovptva.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787427715060-cropped-3ott2ovptva-opt.webp",
+          "oldSizeKB": 211,
+          "newSizeKB": 50
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787457643000-in5p4jkx59.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787457643000-in5p4jkx59-opt.webp",
+          "oldSizeKB": 387,
+          "newSizeKB": 125
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "f327a910-0d89-41a0-a81a-f03af6242b1b",
+      "titulo": "Vestido midi vermelho",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787929134672-xa4fju958sb.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787929134672-xa4fju958sb-opt.webp",
+          "oldSizeKB": 2398,
+          "newSizeKB": 121
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787929135818-bhd7bgm7qdn.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787929135818-bhd7bgm7qdn-opt.webp",
+          "oldSizeKB": 2818,
+          "newSizeKB": 178
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787929136589-fl9vmgi3jnl.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787929136589-fl9vmgi3jnl-opt.webp",
+          "oldSizeKB": 2499,
+          "newSizeKB": 126
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "c36cfcbe-d8fd-4a36-b3e0-1a80bdcfd37f",
+      "titulo": "Blusa cetim marinho",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459349450-zynlqmce6z.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459349450-zynlqmce6z-opt.webp",
+          "oldSizeKB": 2149,
+          "newSizeKB": 130
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459350590-nln3v07zul9.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459350590-nln3v07zul9-opt.webp",
+          "oldSizeKB": 2583,
+          "newSizeKB": 255
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "cc19f4ee-8d1f-4e15-badd-da2fdc8bdf71",
+      "titulo": "Vestido tomara que caia rosa",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459209122-2fhwu3rmllw.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459209122-2fhwu3rmllw-opt.webp",
+          "oldSizeKB": 2730,
+          "newSizeKB": 171
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459210502-rri2ybgpv1j.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459210502-rri2ybgpv1j-opt.webp",
+          "oldSizeKB": 3551,
+          "newSizeKB": 307
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459212036-h6pfyej1oev.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459212036-h6pfyej1oev-opt.webp",
+          "oldSizeKB": 1919,
+          "newSizeKB": 117
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "9480f920-18b8-4742-bd75-b2871ac1c185",
+      "titulo": "Regata",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459537270-cropped-39x51bvj0yd.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787459537270-cropped-39x51bvj0yd-opt.webp",
+          "oldSizeKB": 385,
+          "newSizeKB": 118
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787700372368-9xdlqc78afr.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787700372368-9xdlqc78afr-opt.webp",
+          "oldSizeKB": 3070,
+          "newSizeKB": 459
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "f8e8f958-1d79-4a5c-b54a-e4788ea98a6e",
+      "titulo": "Short jeans 38/40",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787458097262-5e66nglui3f.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787458097262-5e66nglui3f-opt.webp",
+          "oldSizeKB": 2909,
+          "newSizeKB": 408
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787458098525-fm2zdaqdc8n.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787458098525-fm2zdaqdc8n-opt.webp",
+          "oldSizeKB": 2255,
+          "newSizeKB": 262
+        }
+      ],
+      "hasError": false
+    },
+    {
+      "id": "406b0d09-7b11-4615-bd25-769fb5f52c48",
+      "titulo": "Cropped bege",
+      "mudancas": [
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787784934396-cropped-ta61ktbns1a.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787784934396-cropped-ta61ktbns1a-opt.webp",
+          "oldSizeKB": 86,
+          "newSizeKB": 33
+        },
+        {
+          "oldUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787784948383-cropped-nsjf6d3344.jpeg",
+          "newUrl": "https://rpwuxmhzabijhhhcmhzv.supabase.co/storage/v1/object/public/produtos/f76d5152-a709-4091-ae83-e2b52ad424fc/1787784948383-cropped-nsjf6d3344-opt.webp",
+          "oldSizeKB": 203,
+          "newSizeKB": 74
+        }
+      ],
+      "hasError": false
+    }
+  ]
+}

@@ -458,7 +458,7 @@ export default function TenantDashboardPage() {
                           <p className="text-xs text-gray-500 truncate mt-1">{prod?.titulo}</p>
                           <div className="flex items-center gap-2 mt-1.5">
                             <span className="text-[10px] text-gray-400 font-medium">
-                              {new Date(lance.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
+                              {new Date(lance.criado_em).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' })} às {new Date(lance.criado_em).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' })}
                             </span>
                             {isWinning && (
                               <span className="text-[10px] font-bold text-amber-600 bg-amber-50 px-1.5 rounded-sm flex items-center gap-0.5">
