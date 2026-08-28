@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase'
 import type { Tenant } from '@/lib/tenant'
@@ -21,6 +21,13 @@ export default function ConfiguracoesForm({ tenant }: { tenant: Tenant }) {
   const [uploadingLogo, setUploadingLogo] = useState(false)
   const [uploadingIcone, setUploadingIcone] = useState(false)
   const [saving, setSaving] = useState(false)
+
+  useEffect(() => {
+    setNome(tenant.nome || '')
+    setAppTitulo(tenant.app_titulo || '')
+    setLogoUrl(tenant.logo_url || '')
+    setIconeUrl(tenant.app_icone_url || '')
+  }, [tenant])
 
   const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>, tipo: 'logo' | 'icone') => {
     const file = e.target.files?.[0]

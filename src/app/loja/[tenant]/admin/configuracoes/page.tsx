@@ -3,7 +3,8 @@ import { redirect } from 'next/navigation'
 import ConfiguracoesForm from '@/components/ConfiguracoesForm'
 
 export const dynamic = 'force-dynamic'
-
+export const fetchCache = 'force-no-store'
+export const revalidate = 0
 export default async function ConfiguracoesPage({ params }: { params: { tenant: string } }) {
   const tenant = await getTenantBySlug(params.tenant)
   
