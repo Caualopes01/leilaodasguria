@@ -16,6 +16,7 @@
 # Misc
 .DS_Store
 *.pem
+.superpowers/
 
 # Debug
 npm-debug.log*
