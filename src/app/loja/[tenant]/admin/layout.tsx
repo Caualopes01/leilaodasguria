@@ -5,8 +5,9 @@ import { useRouter, usePathname, useParams } from 'next/navigation'
 import Link from 'next/link'
 import { createClient } from '@/lib/supabase'
 import {
-  Heart, LayoutDashboard, Package, LogOut, Menu, X, ChevronRight, Store, ExternalLink, Gavel, Users, Settings, Trophy
+  Heart, LayoutDashboard, Package, LogOut, Menu, X, ChevronRight, Store, ExternalLink, Gavel, Users, Settings, Trophy, Shirt, ClipboardList, Tags
 } from 'lucide-react'
+import { LOJA_TENANT_SLUG } from '@/lib/loja-types'
 
 export default function TenantAdminLayout({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<any>(null)
@@ -68,13 +69,21 @@ export default function TenantAdminLayout({ children }: { children: React.ReactN
 
   const basePath = `/loja/${tenantSlug}/admin`
 
+  const isLojaEcommerce = tenantSlug === LOJA_TENANT_SLUG
+
   const navItems = [
     { href: basePath, icon: LayoutDashboard, label: 'Dashboard' },
-    { href: `${basePath}/produtos`, icon: Package, label: 'Produtos' },
+    { href: `${basePath}/produtos`, icon: Package, label: 'Produtos (Leilão)' },
     { href: `${basePath}/lances`, icon: Gavel, label: 'Lances' },
     { href: `${basePath}/ganhadores`, icon: Trophy, label: 'Ganhadores' },
     { href: `${basePath}/clientes`, icon: Users, label: 'Clientes' },
     { href: `${basePath}/configuracoes`, icon: Settings, label: 'Configurações' },
+  ]
+
+  const lojaNavItems = [
+    { href: `${basePath}/loja/produtos`, icon: Shirt, label: 'Loja: Roupas' },
+    { href: `${basePath}/loja/pedidos`, icon: ClipboardList, label: 'Loja: Pedidos' },
+    { href: `${basePath}/loja/categorias`, icon: Tags, label: 'Loja: Categorias' },
   ]
 
   return (
@@ -114,6 +123,49 @@ export default function TenantAdminLayout({ children }: { children: React.ReactN
 
         {/* Nav */}
         <nav className="p-4 space-y-1">
+          {/* Seção Loja E-commerce */}
+          {isLojaEcommerce && (
+            <div className="mb-4">
+              <div className="px-3 mb-2 flex items-center justify-between">
+                <span className="text-[10px] font-bold uppercase tracking-wider text-rosa-700 bg-rosa-50 px-2 py-0.5 rounded-md">
+                  Venda Direta
+                </span>
+              </div>
+              <div className="space-y-1">
+                {lojaNavItems.map(item => {
+                  const active = pathname.startsWith(item.href)
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={() => setSidebarOpen(false)}
+                      className={`
+                        flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all
+                        ${active
+                          ? 'bg-rosa-600 text-white shadow-sm shadow-rosa-200'
+                          : 'text-gray-700 hover:bg-rosa-50 hover:text-rosa-700'
+                        }
+                      `}
+                    >
+                      <item.icon className="w-4 h-4" />
+                      {item.label}
+                      {active && <ChevronRight className="w-4 h-4 ml-auto" />}
+                    </Link>
+                  )
+                })}
+              </div>
+              <div className="my-3 border-t border-gray-100" />
+            </div>
+          )}
+
+          {isLojaEcommerce && (
+            <div className="px-3 mb-1">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-gray-400">
+                Sistema de Leilão
+              </span>
+            </div>
+          )}
+
           {navItems.map(item => {
             const active = pathname === item.href
             return (
@@ -122,31 +174,44 @@ export default function TenantAdminLayout({ children }: { children: React.ReactN
                 href={item.href}
                 onClick={() => setSidebarOpen(false)}
                 className={`
-                  flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all
+                  flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all
                   ${active
                     ? 'bg-rosa-600 text-white shadow-sm shadow-rosa-200'
                     : 'text-gray-600 hover:bg-rosa-50 hover:text-rosa-700'
                   }
                 `}
               >
-                <item.icon className="w-5 h-5" />
+                <item.icon className="w-4 h-4" />
                 {item.label}
                 {active && <ChevronRight className="w-4 h-4 ml-auto" />}
               </Link>
             )
           })}
           
-          {/* Link para Loja Pública */}
-          <div className="pt-4 mt-2 border-t border-gray-100">
+          {/* Links para Lojas Públicas */}
+          <div className="pt-3 mt-2 border-t border-gray-100 space-y-1.5">
+            {isLojaEcommerce && (
+              <Link
+                href={`/loja/${tenantSlug}/shop`}
+                target="_blank"
+                onClick={() => setSidebarOpen(false)}
+                className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-emerald-700 hover:bg-emerald-50 transition-all border border-emerald-200/60 bg-emerald-50/50"
+              >
+                <Shirt className="w-4 h-4 text-emerald-600" />
+                Ver Vitrine Loja
+                <ExternalLink className="w-3 h-3 ml-auto opacity-60" />
+              </Link>
+            )}
+
             <Link
               href={`/loja/${tenantSlug}/leiloes`}
               target="_blank"
               onClick={() => setSidebarOpen(false)}
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-rosa-600 hover:bg-rosa-50 transition-all border border-rosa-100 bg-rosa-50/50"
+              className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-rosa-600 hover:bg-rosa-50 transition-all border border-rosa-100 bg-rosa-50/50"
             >
-              <Store className="w-5 h-5" />
-              Ver Loja Pública
-              <ExternalLink className="w-4 h-4 ml-auto opacity-50" />
+              <Store className="w-4 h-4" />
+              Ver Leilões Ativos
+              <ExternalLink className="w-3 h-3 ml-auto opacity-50" />
             </Link>
           </div>
         </nav>

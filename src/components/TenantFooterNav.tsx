@@ -3,9 +3,10 @@
 import Link from 'next/link'
 import { usePathname, useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { ShoppingBag, Bell, Gavel } from 'lucide-react'
+import { ShoppingBag, Bell, Gavel, Shirt } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { toast } from 'sonner'
+import { LOJA_TENANT_SLUG } from '@/lib/loja-types'
 
 export default function TenantFooterNav() {
   const pathname = usePathname()
@@ -115,14 +116,25 @@ export default function TenantFooterNav() {
   }, [tenantSlug])
 
   const basePath = `/loja/${tenantSlug}`
+  const isLojaEcommerce = tenantSlug === LOJA_TENANT_SLUG
 
   const tabs = [
     {
       href: `${basePath}/leiloes`,
-      label: 'Explorar',
+      label: 'Leilões',
       icon: ShoppingBag,
       active: pathname === `${basePath}/leiloes` || pathname.startsWith(`${basePath}/leilao`),
     },
+    ...(isLojaEcommerce
+      ? [
+          {
+            href: `${basePath}/shop`,
+            label: 'Loja',
+            icon: Shirt,
+            active: pathname.startsWith(`${basePath}/shop`),
+          },
+        ]
+      : []),
     {
       href: `${basePath}/meus-lances`,
       label: 'Meus Lances',
