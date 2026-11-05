@@ -35,6 +35,20 @@ describe('Formatação de Mensagem de Pedido para WhatsApp', () => {
     expect(msg).not.toContain('Obs:')
   })
 
+  it('inclui link do pedido quando informado', () => {
+    const pedido = {
+      numero: 1044,
+      cliente_nome: 'Carla',
+      observacao: null,
+      total: 120,
+      itens: [{ titulo: 'Conjunto Alfaiataria', tamanho: 'G', quantidade: 1, preco_unitario: 120 }],
+      linkPedido: 'https://guriaschiques.vercel.app/loja/leilaodasgurias/shop/pedido/abc-123',
+    }
+    const msg = gerarMensagemPedido(pedido)
+    expect(msg).toContain('🔗 Ver detalhes do pedido:')
+    expect(msg).toContain('https://guriaschiques.vercel.app/loja/leilaodasgurias/shop/pedido/abc-123')
+  })
+
   it('gera link wa.me válido com o telefone do tenant', () => {
     const link = gerarLinkWhatsAppPedido('5551999998888', 'Olá!')
     expect(link).toContain('https://wa.me/5551999998888?text=Ol%C3%A1!')

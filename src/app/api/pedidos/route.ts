@@ -93,13 +93,20 @@ export async function POST(req: Request) {
       )
     }
 
-    // 6. Gerar mensagem e link wa.me
+    // 6. Determinar link do pedido para acompanhamento
+    const host = req.headers.get('x-forwarded-host') || req.headers.get('host') || 'guriaschiques.vercel.app'
+    const proto = req.headers.get('x-forwarded-proto') || 'https'
+    const origin = req.headers.get('origin') || `${proto}://${host}`
+    const linkPedido = `${origin}/loja/${LOJA_TENANT_SLUG}/shop/pedido/${novoPedido.id}`
+
+    // 7. Gerar mensagem e link wa.me
     const mensagem = gerarMensagemPedido({
       numero: novoPedido.numero,
       cliente_nome: payload.cliente_nome.trim(),
       observacao: payload.observacao?.trim() || null,
       total: validacao.totalCalculado,
       itens: validacao.itensProcessados,
+      linkPedido,
     })
 
     const whatsappDestino = tenant.whatsapp || '5555981519990'
@@ -109,6 +116,8 @@ export async function POST(req: Request) {
       {
         sucesso: true,
         numero: novoPedido.numero,
+        id: novoPedido.id,
+        linkPedido,
         whatsappUrl,
       },
       { status: 201 }

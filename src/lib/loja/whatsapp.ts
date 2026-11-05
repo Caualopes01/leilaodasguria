@@ -13,6 +13,7 @@ export interface PedidoParaMensagem {
   observacao?: string | null
   itens: ItemParaMensagem[]
   total: number
+  linkPedido?: string | null
 }
 
 function formatarMoeda(valor: number): string {
@@ -35,6 +36,10 @@ export function gerarMensagemPedido(pedido: PedidoParaMensagem): string {
 
   if (pedido.observacao && pedido.observacao.trim()) {
     linhas.push(`Obs: ${pedido.observacao.trim()}`)
+  }
+
+  if (pedido.linkPedido && pedido.linkPedido.trim()) {
+    linhas.push(`\n🔗 Ver detalhes do pedido:\n${pedido.linkPedido.trim()}`)
   }
 
   return linhas.join('\n')
