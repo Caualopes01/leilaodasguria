@@ -19,6 +19,7 @@ export type Tenant = {
   atualizado_em: string
   app_titulo: string | null
   app_icone_url: string | null
+  loja_subtitulo?: string | null
 }
 
 export type Subscription = {

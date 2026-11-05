@@ -14,6 +14,7 @@ export default function ConfiguracoesForm({ tenant }: { tenant: Tenant }) {
   
   const [nome, setNome] = useState(tenant.nome || '')
   const [appTitulo, setAppTitulo] = useState(tenant.app_titulo || '')
+  const [lojaSubtitulo, setLojaSubtitulo] = useState(tenant.loja_subtitulo || 'Catálogo & Venda Direta')
   
   const [logoUrl, setLogoUrl] = useState(tenant.logo_url || '')
   const [iconeUrl, setIconeUrl] = useState(tenant.app_icone_url || '')
@@ -25,6 +26,7 @@ export default function ConfiguracoesForm({ tenant }: { tenant: Tenant }) {
   useEffect(() => {
     setNome(tenant.nome || '')
     setAppTitulo(tenant.app_titulo || '')
+    setLojaSubtitulo(tenant.loja_subtitulo || 'Catálogo & Venda Direta')
     setLogoUrl(tenant.logo_url || '')
     setIconeUrl(tenant.app_icone_url || '')
   }, [tenant])
@@ -86,17 +88,35 @@ export default function ConfiguracoesForm({ tenant }: { tenant: Tenant }) {
 
     setSaving(true)
     try {
+      const payload: Record<string, any> = {
+        nome,
+        app_titulo: appTitulo || null,
+        logo_url: logoUrl || null,
+        app_icone_url: iconeUrl || null,
+        loja_subtitulo: lojaSubtitulo?.trim() || null,
+      }
+
       const { error } = await supabase
         .from('tenants')
-        .update({
-          nome,
-          app_titulo: appTitulo || null,
-          logo_url: logoUrl || null,
-          app_icone_url: iconeUrl || null,
-        })
+        .update(payload)
         .eq('id', tenant.id)
 
-      if (error) throw error
+      if (error) {
+        // Se a coluna ainda não existir no banco, salva as outras e avisa amigavelmente
+        if (error.message?.includes('loja_subtitulo')) {
+          delete payload.loja_subtitulo
+          const { error: fallbackErr } = await supabase
+            .from('tenants')
+            .update(payload)
+            .eq('id', tenant.id)
+
+          if (fallbackErr) throw fallbackErr
+          toast.warning('Salvo com sucesso! Execute a migration SQL no Supabase para ativar a coluna do subtítulo.')
+          router.refresh()
+          return
+        }
+        throw error
+      }
 
       toast.success('Configurações salvas com sucesso!')
       router.refresh()
@@ -135,6 +155,18 @@ export default function ConfiguracoesForm({ tenant }: { tenant: Tenant }) {
               placeholder="Ex: Maria Leilões"
             />
             <p className="text-xs text-gray-500">Este é o nome que aparecerá no celular do cliente quando ele instalar o app.</p>
+          </div>
+
+          <div className="space-y-2 md:col-span-2">
+            <label className="text-sm font-medium text-gray-700">Subtítulo da Vitrine / Catálogo</label>
+            <input
+              type="text"
+              value={lojaSubtitulo}
+              onChange={e => setLojaSubtitulo(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-rosa-500/20 focus:border-rosa-500 transition-colors"
+              placeholder="Ex: Catálogo & Venda Direta"
+            />
+            <p className="text-xs text-gray-500">Texto exibido abaixo do nome da loja no topo da página de roupas (vitrine).</p>
           </div>
         </div>
       </section>

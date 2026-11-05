@@ -62,7 +62,10 @@ export async function POST(req: Request) {
 
     if (pedErr || !novoPedido) {
       console.error('Erro ao gravar pedido:', pedErr)
-      return NextResponse.json({ erro: 'Falha ao registrar pedido' }, { status: 500 })
+      return NextResponse.json(
+        { erro: `Falha ao registrar pedido: ${pedErr?.message || 'Erro no banco'}` },
+        { status: 500 }
+      )
     }
 
     // 5. Inserir Itens do Pedido
@@ -84,7 +87,10 @@ export async function POST(req: Request) {
       console.error('Erro ao gravar itens do pedido:', itensErr)
       // Rollback manual do pedido
       await supabaseAdmin.from('pedidos').delete().eq('id', novoPedido.id)
-      return NextResponse.json({ erro: 'Falha ao registrar itens do pedido' }, { status: 500 })
+      return NextResponse.json(
+        { erro: `Falha ao registrar itens do pedido: ${itensErr?.message || 'Erro no banco'}` },
+        { status: 500 }
+      )
     }
 
     // 6. Gerar mensagem e link wa.me

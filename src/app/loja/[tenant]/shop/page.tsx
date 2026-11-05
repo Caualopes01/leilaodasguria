@@ -29,6 +29,7 @@ export default function LojaVitrinePage() {
 
   const [tenantNome, setTenantNome] = useState('')
   const [tenantLogo, setTenantLogo] = useState('')
+  const [tenantSubtitulo, setTenantSubtitulo] = useState('Catálogo & Venda Direta')
   const [tenantId, setTenantId] = useState<string | null>(null)
   const [produtos, setProdutos] = useState<LojaProduto[]>([])
   const [categorias, setCategorias] = useState<LojaCategoria[]>([])
@@ -50,7 +51,7 @@ export default function LojaVitrinePage() {
       // 1. Tenant
       const { data: tenant, error: tenantErr } = await supabase
         .from('tenants')
-        .select('id, nome, logo_url')
+        .select('*')
         .eq('slug', tenantSlug)
         .single()
 
@@ -63,6 +64,7 @@ export default function LojaVitrinePage() {
       setTenantId(tenant.id)
       setTenantNome(tenant.nome)
       if (tenant.logo_url) setTenantLogo(tenant.logo_url)
+      if ((tenant as any).loja_subtitulo) setTenantSubtitulo((tenant as any).loja_subtitulo)
 
       // 2. Categorias
       const { data: cats } = await supabase
@@ -135,7 +137,7 @@ export default function LojaVitrinePage() {
                 {tenantNome || 'Leilão das Gurias'}
               </h1>
               <p className="text-[11px] font-semibold text-rosa-600 uppercase tracking-wider">
-                Catálogo & Venda Direta
+                {tenantSubtitulo || 'Catálogo & Venda Direta'}
               </p>
             </div>
           </Link>
