@@ -20,6 +20,12 @@ import {
   Loader2,
   Package,
   Calendar,
+  Truck,
+  Store,
+  CreditCard,
+  Banknote,
+  QrCode,
+  MapPin,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -137,6 +143,30 @@ export default function LojaPedidoDetalhePublicoPage() {
           color: 'bg-gray-100 text-gray-800 border-gray-200',
           icon: Clock,
         }
+    }
+  }
+
+  function getEntregaInfo(metodo?: string | null) {
+    switch (metodo) {
+      case 'tele_entrega':
+        return { label: 'Tele-entrega', icon: Truck, desc: 'Entrega por motoboy' }
+      case 'correios':
+        return { label: 'Correios', icon: Package, desc: 'Envio via PAC / Sedex' }
+      case 'retirar_loja':
+      default:
+        return { label: 'Retirar na Loja', icon: Store, desc: 'Retirada no balcão' }
+    }
+  }
+
+  function getPagamentoInfo(forma?: string | null) {
+    switch (forma) {
+      case 'cartao_credito':
+        return { label: 'Cartão de Crédito', icon: CreditCard }
+      case 'dinheiro':
+        return { label: 'Dinheiro', icon: Banknote }
+      case 'pix':
+      default:
+        return { label: 'PIX', icon: QrCode }
     }
   }
 
@@ -274,6 +304,71 @@ export default function LojaPedidoDetalhePublicoPage() {
               </p>
             </div>
           )}
+        </div>
+
+        {/* Card Entrega e Pagamento */}
+        <div className="bg-white rounded-2xl border border-rosa-100 p-5 shadow-xs space-y-3">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-gray-500 flex items-center gap-1.5">
+            <Truck className="w-3.5 h-3.5 text-rosa-600" />
+            <span>Entrega & Pagamento</span>
+          </h2>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+            {/* Entrega */}
+            <div className="bg-gray-50 rounded-xl p-3 space-y-1">
+              <span className="text-xs text-gray-400 block mb-0.5">Forma de Recebimento</span>
+              {(() => {
+                const info = getEntregaInfo(pedido.metodo_entrega)
+                const Icon = info.icon
+                return (
+                  <div className="flex items-center gap-2">
+                    <div className="w-7 h-7 rounded-lg bg-rosa-100 text-rosa-700 flex items-center justify-center shrink-0">
+                      <Icon className="w-3.5 h-3.5" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-gray-900 block text-xs sm:text-sm">
+                        {info.label}
+                      </span>
+                      <span className="text-[11px] text-gray-500 block">
+                        {info.desc}
+                      </span>
+                    </div>
+                  </div>
+                )
+              })()}
+
+              {pedido.endereco && (
+                <div className="pt-2 border-t border-gray-200/60 mt-2 flex items-start gap-1.5 text-xs text-gray-700">
+                  <MapPin className="w-3.5 h-3.5 text-rosa-600 shrink-0 mt-0.5" />
+                  <span className="font-medium">{pedido.endereco}</span>
+                </div>
+              )}
+            </div>
+
+            {/* Pagamento */}
+            <div className="bg-gray-50 rounded-xl p-3 flex flex-col justify-between">
+              <div>
+                <span className="text-xs text-gray-400 block mb-0.5">Forma de Pagamento</span>
+                {(() => {
+                  const info = getPagamentoInfo(pedido.forma_pagamento)
+                  const Icon = info.icon
+                  return (
+                    <div className="flex items-center gap-2 mt-1">
+                      <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center shrink-0">
+                        <Icon className="w-3.5 h-3.5" />
+                      </div>
+                      <span className="font-bold text-gray-900 text-xs sm:text-sm">
+                        {info.label}
+                      </span>
+                    </div>
+                  )
+                })()}
+              </div>
+              <p className="text-[11px] text-gray-400 mt-2">
+                Valores e comprovantes alinhados via WhatsApp
+              </p>
+            </div>
+          </div>
         </div>
 
         {/* Card Itens Escolhidos */}

@@ -25,8 +25,37 @@ import {
   FileText,
   DollarSign,
   TrendingUp,
+  Store,
+  CreditCard,
+  Banknote,
+  QrCode,
+  MapPin,
 } from 'lucide-react'
 import { toast } from 'sonner'
+
+function getEntregaBadge(metodo?: string | null) {
+  switch (metodo) {
+    case 'tele_entrega':
+      return { label: 'Tele-entrega', bg: 'bg-indigo-50', text: 'text-indigo-700', border: 'border-indigo-200', icon: Truck }
+    case 'correios':
+      return { label: 'Correios', bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', icon: Package }
+    case 'retirar_loja':
+    default:
+      return { label: 'Retirar Loja', bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: Store }
+  }
+}
+
+function getPagamentoBadge(forma?: string | null) {
+  switch (forma) {
+    case 'cartao_credito':
+      return { label: 'Cartão', bg: 'bg-purple-50', text: 'text-purple-700', border: 'border-purple-200', icon: CreditCard }
+    case 'dinheiro':
+      return { label: 'Dinheiro', bg: 'bg-green-50', text: 'text-green-700', border: 'border-green-200', icon: Banknote }
+    case 'pix':
+    default:
+      return { label: 'PIX', bg: 'bg-teal-50', text: 'text-teal-700', border: 'border-teal-200', icon: QrCode }
+  }
+}
 
 const STATUS_CONFIG: Record<
   StatusPedido,
@@ -322,6 +351,10 @@ export default function AdminLojaPedidosPage() {
             const cfg = STATUS_CONFIG[pedido.status] || STATUS_CONFIG.novo
             const StatusIcon = cfg.icon
             const totalItens = (pedido.itens || []).reduce((acc, it) => acc + it.quantidade, 0)
+            const entregaBadge = getEntregaBadge(pedido.metodo_entrega)
+            const EntregaIcon = entregaBadge.icon
+            const pagamentoBadge = getPagamentoBadge(pedido.forma_pagamento)
+            const PagamentoIcon = pagamentoBadge.icon
 
             // Link WhatsApp para falar com a cliente
             const whatsLink = getWhatsAppLink(
@@ -361,6 +394,18 @@ export default function AdminLojaPedidosPage() {
                         >
                           <StatusIcon className="w-3 h-3" />
                           {cfg.label}
+                        </span>
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border ${entregaBadge.bg} ${entregaBadge.text} ${entregaBadge.border}`}
+                        >
+                          <EntregaIcon className="w-3 h-3" />
+                          {entregaBadge.label}
+                        </span>
+                        <span
+                          className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[11px] font-semibold border ${pagamentoBadge.bg} ${pagamentoBadge.text} ${pagamentoBadge.border}`}
+                        >
+                          <PagamentoIcon className="w-3 h-3" />
+                          {pagamentoBadge.label}
                         </span>
                         <span className="text-xs text-gray-400">
                           {formatDate(pedido.criado_em)}
@@ -467,6 +512,47 @@ export default function AdminLojaPedidosPage() {
                             </span>
                           </div>
                         ))}
+                      </div>
+                    </div>
+
+                    {/* Informações de Entrega & Pagamento */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="p-3 bg-white border border-gray-200/70 rounded-xl space-y-1">
+                        <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
+                          <EntregaIcon className="w-3.5 h-3.5 text-rosa-600" />
+                          <span>Recebimento: {entregaBadge.label}</span>
+                        </div>
+                        {pedido.endereco ? (
+                          <div className="flex items-start gap-1.5 text-xs text-gray-600 mt-1">
+                            <MapPin className="w-3.5 h-3.5 text-rosa-500 shrink-0 mt-0.5" />
+                            <span className="font-medium text-gray-800">{pedido.endereco}</span>
+                          </div>
+                        ) : (
+                          <p className="text-xs text-gray-400">Retirada direta no balcão da loja.</p>
+                        )}
+                      </div>
+
+                      <div className="p-3 bg-white border border-gray-200/70 rounded-xl flex items-center justify-between gap-3">
+                        <div>
+                          <div className="flex items-center gap-1.5 text-xs font-bold text-gray-800">
+                            <PagamentoIcon className="w-3.5 h-3.5 text-emerald-600" />
+                            <span>Pagamento: {pagamentoBadge.label}</span>
+                          </div>
+                          <p className="text-[11px] text-gray-400 mt-0.5">
+                            Confirmar comprovante no WhatsApp
+                          </p>
+                        </div>
+
+                        <a
+                          href={`/loja/${tenantSlug}/shop/pedido/${pedido.id}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="flex items-center gap-1 text-[11px] font-bold text-rosa-600 hover:text-rosa-700 bg-rosa-50 px-2.5 py-1.5 rounded-lg border border-rosa-100 transition-colors shrink-0"
+                          title="Abrir página pública do pedido"
+                        >
+                          <span>Ver Página</span>
+                          <ExternalLink className="w-3 h-3" />
+                        </a>
                       </div>
                     </div>
 

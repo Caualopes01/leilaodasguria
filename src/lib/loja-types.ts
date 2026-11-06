@@ -28,6 +28,8 @@ export type LojaProduto = {
 }
 
 export type StatusPedido = 'novo' | 'pago' | 'enviado' | 'entregue' | 'cancelado'
+export type MetodoEntrega = 'retirar_loja' | 'tele_entrega' | 'correios'
+export type FormaPagamento = 'pix' | 'cartao_credito' | 'dinheiro'
 
 export type Pedido = {
   id: string
@@ -36,6 +38,9 @@ export type Pedido = {
   cliente_nome: string
   cliente_whatsapp: string
   observacao: string | null
+  metodo_entrega?: MetodoEntrega | string | null
+  endereco?: string | null
+  forma_pagamento?: FormaPagamento | string | null
   total: number
   status: StatusPedido
   criado_em: string

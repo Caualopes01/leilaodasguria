@@ -22,8 +22,15 @@ import {
   FileText,
   User,
   Heart,
+  Store,
+  Truck,
+  MapPin,
+  CreditCard,
+  Banknote,
+  QrCode,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import { MetodoEntrega, FormaPagamento } from '@/lib/loja-types'
 
 export default function LojaCarrinhoPage() {
   const params = useParams()
@@ -44,6 +51,9 @@ export default function LojaCarrinhoPage() {
   const [nome, setNome] = useState('')
   const [whatsapp, setWhatsapp] = useState('')
   const [observacao, setObservacao] = useState('')
+  const [metodoEntrega, setMetodoEntrega] = useState<MetodoEntrega>('retirar_loja')
+  const [endereco, setEndereco] = useState('')
+  const [formaPagamento, setFormaPagamento] = useState<FormaPagamento>('pix')
   const [enviando, setEnviando] = useState(false)
 
   // Recuperar dados persistidos do cliente
@@ -51,8 +61,10 @@ export default function LojaCarrinhoPage() {
     try {
       const savedNome = localStorage.getItem('loja_cliente_nome') || ''
       const savedWhats = localStorage.getItem('loja_cliente_whatsapp') || ''
+      const savedEnd = localStorage.getItem('loja_cliente_endereco') || ''
       if (savedNome) setNome(savedNome)
       if (savedWhats) setWhatsapp(savedWhats)
+      if (savedEnd) setEndereco(savedEnd)
     } catch {}
   }, [])
 
@@ -73,12 +85,20 @@ export default function LojaCarrinhoPage() {
       return
     }
 
+    if ((metodoEntrega === 'tele_entrega' || metodoEntrega === 'correios') && endereco.trim().length < 5) {
+      toast.error('Por favor, informe seu endereço completo de entrega')
+      return
+    }
+
     setEnviando(true)
 
     // Salvar dados no localStorage para próximas compras
     try {
       localStorage.setItem('loja_cliente_nome', nome.trim())
       localStorage.setItem('loja_cliente_whatsapp', cleanWhats)
+      if (endereco.trim()) {
+        localStorage.setItem('loja_cliente_endereco', endereco.trim())
+      }
     } catch {}
 
     try {
@@ -89,6 +109,9 @@ export default function LojaCarrinhoPage() {
           cliente_nome: nome.trim(),
           cliente_whatsapp: cleanWhats,
           observacao: observacao.trim() || undefined,
+          metodo_entrega: metodoEntrega,
+          endereco: (metodoEntrega === 'tele_entrega' || metodoEntrega === 'correios') ? endereco.trim() : undefined,
+          forma_pagamento: formaPagamento,
           itens: itens.map(it => ({
             produtoId: it.produtoId,
             tamanho: it.tamanho,
@@ -320,7 +343,7 @@ export default function LojaCarrinhoPage() {
             <div className="bg-white rounded-3xl border border-rosa-100/80 p-4 sm:p-5 shadow-xs space-y-4">
               <div>
                 <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500">
-                  Seus Dados para Envio
+                  1. Seus Dados de Contato
                 </h3>
                 <p className="text-xs text-gray-400 mt-0.5">
                   Preencha para enviarmos o resumo pronto para seu atendimento no WhatsApp.
@@ -349,10 +372,248 @@ export default function LojaCarrinhoPage() {
                 </label>
                 <PhoneInput value={whatsapp} onChange={setWhatsapp} />
               </div>
+            </div>
 
+            {/* Como deseja receber o pedido? */}
+            <div className="bg-white rounded-3xl border border-rosa-100/80 p-4 sm:p-5 shadow-xs space-y-4">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                  2. Forma de Recebimento *
+                </h3>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Escolha como prefere receber seus produtos.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {/* Opção Retirar na Loja */}
+                <button
+                  type="button"
+                  onClick={() => setMetodoEntrega('retirar_loja')}
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                    metodoEntrega === 'retirar_loja'
+                      ? 'border-rosa-500 bg-rosa-50/50 ring-2 ring-rosa-500/20'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                        metodoEntrega === 'retirar_loja'
+                          ? 'bg-rosa-500 text-white'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      <Store className="w-4 h-4" />
+                    </div>
+                    {metodoEntrega === 'retirar_loja' && (
+                      <CheckCircle2 className="w-4 h-4 text-rosa-600" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs sm:text-sm font-bold text-gray-900">Retirar na Loja</p>
+                    <p className="text-[11px] text-gray-500 mt-0.5">Sem taxa de entrega</p>
+                  </div>
+                </button>
+
+                {/* Opção Tele-entrega */}
+                <button
+                  type="button"
+                  onClick={() => setMetodoEntrega('tele_entrega')}
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                    metodoEntrega === 'tele_entrega'
+                      ? 'border-rosa-500 bg-rosa-50/50 ring-2 ring-rosa-500/20'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                        metodoEntrega === 'tele_entrega'
+                          ? 'bg-rosa-500 text-white'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      <Truck className="w-4 h-4" />
+                    </div>
+                    {metodoEntrega === 'tele_entrega' && (
+                      <CheckCircle2 className="w-4 h-4 text-rosa-600" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs sm:text-sm font-bold text-gray-900">Tele-entrega</p>
+                    <p className="text-[11px] text-gray-500 mt-0.5">Motoboy na sua cidade</p>
+                  </div>
+                </button>
+
+                {/* Opção Correios */}
+                <button
+                  type="button"
+                  onClick={() => setMetodoEntrega('correios')}
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                    metodoEntrega === 'correios'
+                      ? 'border-rosa-500 bg-rosa-50/50 ring-2 ring-rosa-500/20'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                        metodoEntrega === 'correios'
+                          ? 'bg-rosa-500 text-white'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      <Package className="w-4 h-4" />
+                    </div>
+                    {metodoEntrega === 'correios' && (
+                      <CheckCircle2 className="w-4 h-4 text-rosa-600" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs sm:text-sm font-bold text-gray-900">Correios</p>
+                    <p className="text-[11px] text-gray-500 mt-0.5">Envio PAC / Sedex</p>
+                  </div>
+                </button>
+              </div>
+
+              {/* Campo de Endereço se Tele-entrega ou Correios */}
+              {(metodoEntrega === 'tele_entrega' || metodoEntrega === 'correios') && (
+                <div className="pt-2 border-t border-gray-100 space-y-1.5 animate-in fade-in-50 duration-200">
+                  <label className="block text-xs font-bold uppercase tracking-wider text-gray-700">
+                    Endereço Completo para Entrega *
+                  </label>
+                  <div className="relative">
+                    <MapPin className="w-4 h-4 text-rosa-500 absolute left-3.5 top-3" />
+                    <textarea
+                      value={endereco}
+                      onChange={e => setEndereco(e.target.value)}
+                      rows={2}
+                      placeholder="Rua, número, complemento/apartamento, bairro e cidade"
+                      className="w-full pl-10 pr-4 py-2.5 border border-rosa-200 bg-rosa-50/20 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-rosa-500/20 focus:border-rosa-500 transition-all resize-none text-gray-800"
+                    />
+                  </div>
+                  <p className="text-[11px] text-gray-400">
+                    A taxa de envio será combinada com a loja pelo WhatsApp.
+                  </p>
+                </div>
+              )}
+            </div>
+
+            {/* Forma de Pagamento */}
+            <div className="bg-white rounded-3xl border border-rosa-100/80 p-4 sm:p-5 shadow-xs space-y-4">
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-gray-500">
+                  3. Forma de Pagamento *
+                </h3>
+                <p className="text-xs text-gray-400 mt-0.5">
+                  Como você prefere realizar o pagamento?
+                </p>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {/* PIX */}
+                <button
+                  type="button"
+                  onClick={() => setFormaPagamento('pix')}
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                    formaPagamento === 'pix'
+                      ? 'border-emerald-500 bg-emerald-50/40 ring-2 ring-emerald-500/20'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                        formaPagamento === 'pix'
+                          ? 'bg-emerald-600 text-white'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      <QrCode className="w-4 h-4" />
+                    </div>
+                    {formaPagamento === 'pix' && (
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+                    )}
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <p className="text-xs sm:text-sm font-bold text-gray-900">PIX</p>
+                      <span className="px-1.5 py-0.2 bg-emerald-100 text-emerald-700 text-[10px] font-bold rounded">
+                        Rápido
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-gray-500 mt-0.5">Chave enviada no WhatsApp</p>
+                  </div>
+                </button>
+
+                {/* Cartão de Crédito */}
+                <button
+                  type="button"
+                  onClick={() => setFormaPagamento('cartao_credito')}
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                    formaPagamento === 'cartao_credito'
+                      ? 'border-rosa-500 bg-rosa-50/50 ring-2 ring-rosa-500/20'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                        formaPagamento === 'cartao_credito'
+                          ? 'bg-rosa-500 text-white'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      <CreditCard className="w-4 h-4" />
+                    </div>
+                    {formaPagamento === 'cartao_credito' && (
+                      <CheckCircle2 className="w-4 h-4 text-rosa-600" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs sm:text-sm font-bold text-gray-900">Cartão de Crédito</p>
+                    <p className="text-[11px] text-gray-500 mt-0.5">Link de pagamento ou maquininha</p>
+                  </div>
+                </button>
+
+                {/* Dinheiro */}
+                <button
+                  type="button"
+                  onClick={() => setFormaPagamento('dinheiro')}
+                  className={`p-3.5 rounded-2xl border text-left transition-all flex flex-col justify-between ${
+                    formaPagamento === 'dinheiro'
+                      ? 'border-rosa-500 bg-rosa-50/50 ring-2 ring-rosa-500/20'
+                      : 'border-gray-200 hover:border-gray-300 bg-white'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div
+                      className={`w-8 h-8 rounded-xl flex items-center justify-center ${
+                        formaPagamento === 'dinheiro'
+                          ? 'bg-rosa-500 text-white'
+                          : 'bg-gray-100 text-gray-600'
+                      }`}
+                    >
+                      <Banknote className="w-4 h-4" />
+                    </div>
+                    {formaPagamento === 'dinheiro' && (
+                      <CheckCircle2 className="w-4 h-4 text-rosa-600" />
+                    )}
+                  </div>
+                  <div>
+                    <p className="text-xs sm:text-sm font-bold text-gray-900">Dinheiro</p>
+                    <p className="text-[11px] text-gray-500 mt-0.5">Pagamento presencial</p>
+                  </div>
+                </button>
+              </div>
+            </div>
+
+            {/* Observações Opcionais */}
+            <div className="bg-white rounded-3xl border border-rosa-100/80 p-4 sm:p-5 shadow-xs space-y-4">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-1.5">
-                  Observações ou Dúvidas <span className="text-gray-400 font-normal">(Opcional)</span>
+                  4. Observações <span className="text-gray-400 font-normal">(Opcional)</span>
                 </label>
                 <div className="relative">
                   <FileText className="w-4 h-4 text-gray-400 absolute left-3.5 top-3" />
@@ -360,7 +621,7 @@ export default function LojaCarrinhoPage() {
                     value={observacao}
                     onChange={e => setObservacao(e.target.value)}
                     rows={2}
-                    placeholder="Ex: Retiro na loja, prefiro entrega no período da tarde..."
+                    placeholder="Ex: Prefiro receber no período da tarde, embalagem para presente..."
                     className="w-full pl-10 pr-4 py-2.5 border border-gray-200 rounded-xl text-xs sm:text-sm focus:outline-none focus:ring-2 focus:ring-rosa-500/20 focus:border-rosa-500 transition-all resize-none"
                   />
                 </div>

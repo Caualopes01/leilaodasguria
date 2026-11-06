@@ -11,6 +11,9 @@ export interface PedidoPayload {
   cliente_nome: string
   cliente_whatsapp: string
   observacao?: string | null
+  metodo_entrega?: 'retirar_loja' | 'tele_entrega' | 'correios' | string
+  endereco?: string | null
+  forma_pagamento?: 'pix' | 'cartao_credito' | 'dinheiro' | string
   itens: ItemPayload[]
 }
 
@@ -18,6 +21,9 @@ export interface ResultadoValidacao {
   valido: boolean
   erro?: string
   totalCalculado?: number
+  metodo_entrega?: string
+  endereco?: string | null
+  forma_pagamento?: string
   itensProcessados?: Array<{
     produto_id: string
     titulo: string
@@ -45,6 +51,22 @@ export function validarPayloadPedido(
   if (cleanWhats.length < 10 || cleanWhats.length > 13) {
     return { valido: false, erro: 'Informe um número de WhatsApp válido com DDD' }
   }
+
+  const metodo_entrega = payload.metodo_entrega === 'tele_entrega' || payload.metodo_entrega === 'correios'
+    ? payload.metodo_entrega
+    : 'retirar_loja'
+
+  const endereco = payload.endereco ? String(payload.endereco).trim() : ''
+  if ((metodo_entrega === 'tele_entrega' || metodo_entrega === 'correios') && endereco.length < 5) {
+    return {
+      valido: false,
+      erro: 'Informe o endereço completo para entrega (rua, número, bairro, cidade)',
+    }
+  }
+
+  const forma_pagamento = payload.forma_pagamento === 'cartao_credito' || payload.forma_pagamento === 'dinheiro'
+    ? payload.forma_pagamento
+    : 'pix'
 
   if (!Array.isArray(payload.itens) || payload.itens.length === 0) {
     return { valido: false, erro: 'Sua sacola está vazia' }
@@ -105,6 +127,9 @@ export function validarPayloadPedido(
   return {
     valido: true,
     totalCalculado: Number(total.toFixed(2)),
+    metodo_entrega,
+    endereco: endereco || null,
+    forma_pagamento,
     itensProcessados,
   }
 }

@@ -10,10 +10,37 @@ export interface ItemParaMensagem {
 export interface PedidoParaMensagem {
   numero: number
   cliente_nome: string
+  metodo_entrega?: string | null
+  endereco?: string | null
+  forma_pagamento?: string | null
   observacao?: string | null
   itens: ItemParaMensagem[]
   total: number
   linkPedido?: string | null
+}
+
+export function formatarMetodoEntrega(metodo?: string | null, endereco?: string | null): string {
+  switch (metodo) {
+    case 'tele_entrega':
+      return `📦 Entrega: Tele-entrega${endereco ? ` — ${endereco}` : ''}`
+    case 'correios':
+      return `📦 Entrega: Correios${endereco ? ` — ${endereco}` : ''}`
+    case 'retirar_loja':
+    default:
+      return '📦 Entrega: Retirar na Loja'
+  }
+}
+
+export function formatarFormaPagamento(forma?: string | null): string {
+  switch (forma) {
+    case 'cartao_credito':
+      return '💳 Pagamento: Cartão de Crédito'
+    case 'dinheiro':
+      return '💵 Pagamento: Dinheiro'
+    case 'pix':
+    default:
+      return '🔑 Pagamento: PIX'
+  }
 }
 
 function formatarMoeda(valor: number): string {
@@ -33,6 +60,13 @@ export function gerarMensagemPedido(pedido: PedidoParaMensagem): string {
 
   linhas.push(`\nTotal: ${formatarMoeda(pedido.total)}`)
   linhas.push(`Nome: ${pedido.cliente_nome}`)
+
+  if (pedido.metodo_entrega) {
+    linhas.push(formatarMetodoEntrega(pedido.metodo_entrega, pedido.endereco))
+  }
+  if (pedido.forma_pagamento) {
+    linhas.push(formatarFormaPagamento(pedido.forma_pagamento))
+  }
 
   if (pedido.observacao && pedido.observacao.trim()) {
     linhas.push(`Obs: ${pedido.observacao.trim()}`)

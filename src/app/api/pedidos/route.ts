@@ -47,18 +47,63 @@ export async function POST(req: Request) {
     }
 
     // 4. Inserir Pedido no Supabase
-    const { data: novoPedido, error: pedErr } = await supabaseAdmin
+    const metodoEntrega = validacao.metodo_entrega || 'retirar_loja'
+    const endereco = validacao.endereco || null
+    const formaPagamento = validacao.forma_pagamento || 'pix'
+    const obsOriginal = payload.observacao?.trim() || null
+
+    let insertPayload: any = {
+      tenant_id: tenant.id,
+      cliente_nome: payload.cliente_nome.trim(),
+      cliente_whatsapp: String(payload.cliente_whatsapp).replace(/\D/g, ''),
+      observacao: obsOriginal,
+      metodo_entrega: metodoEntrega,
+      endereco: endereco,
+      forma_pagamento: formaPagamento,
+      total: validacao.totalCalculado,
+      status: 'novo',
+    }
+
+    let { data: novoPedido, error: pedErr } = await supabaseAdmin
       .from('pedidos')
-      .insert({
+      .insert(insertPayload)
+      .select('id, numero')
+      .single()
+
+    // Se as novas colunas ainda não existirem no Supabase, fazer fallback seguro
+    if (
+      pedErr &&
+      (pedErr.message?.includes('column') ||
+        pedErr.code === 'PGRST204' ||
+        pedErr.message?.includes('schema cache'))
+    ) {
+      console.warn('Colunas de entrega/pagamento ausentes em pedidos. Usando fallback no campo observacao.')
+
+      const entregaTxt =
+        metodoEntrega === 'retirar_loja'
+          ? '[Entrega: Retirar na Loja]'
+          : `[Entrega: ${metodoEntrega === 'tele_entrega' ? 'Tele-entrega' : 'Correios'} - ${endereco || 'Sem endereço'}]`
+      const pagTxt = `[Pagamento: ${formaPagamento.toUpperCase()}]`
+      const obsComDetalhes = [entregaTxt, pagTxt, obsOriginal].filter(Boolean).join('\n')
+
+      const fallbackInsert = {
         tenant_id: tenant.id,
         cliente_nome: payload.cliente_nome.trim(),
         cliente_whatsapp: String(payload.cliente_whatsapp).replace(/\D/g, ''),
-        observacao: payload.observacao?.trim() || null,
+        observacao: obsComDetalhes,
         total: validacao.totalCalculado,
         status: 'novo',
-      })
-      .select('id, numero')
-      .single()
+      }
+
+      const retryRes = await supabaseAdmin
+        .from('pedidos')
+        .insert(fallbackInsert)
+        .select('id, numero')
+        .single()
+
+      novoPedido = retryRes.data
+      pedErr = retryRes.error
+    }
 
     if (pedErr || !novoPedido) {
       console.error('Erro ao gravar pedido:', pedErr)
@@ -103,6 +148,9 @@ export async function POST(req: Request) {
     const mensagem = gerarMensagemPedido({
       numero: novoPedido.numero,
       cliente_nome: payload.cliente_nome.trim(),
+      metodo_entrega: metodoEntrega,
+      endereco: endereco,
+      forma_pagamento: formaPagamento,
       observacao: payload.observacao?.trim() || null,
       total: validacao.totalCalculado,
       itens: validacao.itensProcessados,
