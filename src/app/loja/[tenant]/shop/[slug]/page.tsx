@@ -8,6 +8,8 @@ import { LojaProduto } from '@/lib/loja-types'
 import { useCarrinho } from '@/lib/loja/useCarrinho'
 import { formatCurrency } from '@/lib/utils'
 import { calcularPercentualDesconto, obterPrecoFinal } from '@/lib/loja/precos'
+import TenantFooterNav from '@/components/TenantFooterNav'
+import LojaCarrinhoDrawer from '@/components/LojaCarrinhoDrawer'
 import {
   ArrowLeft,
   ShoppingBag,
@@ -41,6 +43,14 @@ export default function LojaProdutoDetalhePage() {
   const [tamanhoSelecionado, setTamanhoSelecionado] = useState<string | null>(null)
   const [quantidade, setQuantidade] = useState(1)
   const [adicionando, setAdicionando] = useState(false)
+  const [drawerAberto, setDrawerAberto] = useState(false)
+  const [ultimoAdicionado, setUltimoAdicionado] = useState<{
+    titulo: string
+    tamanho?: string | null
+    preco: number
+    imagem?: string | null
+    quantidade: number
+  } | null>(null)
 
   useEffect(() => {
     if (tenantSlug && produtoSlug) {
@@ -116,6 +126,14 @@ export default function LojaProdutoDetalhePage() {
 
     const precoFinal = obterPrecoFinal(produto.preco, produto.preco_promocional)
 
+    setUltimoAdicionado({
+      titulo: produto.titulo,
+      tamanho: tamanhoSelecionado,
+      preco: precoFinal,
+      imagem: produto.imagens?.[0] || null,
+      quantidade,
+    })
+
     adicionarItem({
       produtoId: produto.id,
       slug: produto.slug,
@@ -126,14 +144,10 @@ export default function LojaProdutoDetalhePage() {
       quantidade,
     })
 
-    toast.success(`${quantidade}x "${produto.titulo}" adicionado à sacola!`, {
-      action: {
-        label: 'Ver Sacola 🛍️',
-        onClick: () => router.push(`/loja/${tenantSlug}/shop/carrinho`),
-      },
-    })
+    // Abrir imediatamente o carrinho lateral estilo e-commerce
+    setDrawerAberto(true)
 
-    setTimeout(() => setAdicionando(false), 500)
+    setTimeout(() => setAdicionando(false), 400)
   }
 
   if (loading) {
@@ -175,7 +189,7 @@ export default function LojaProdutoDetalhePage() {
   const precoFinal = obterPrecoFinal(produto.preco, produto.preco_promocional)
 
   return (
-    <div className="min-h-screen bg-pink-50/20 pb-36">
+    <div className="min-h-screen bg-pink-50/20 pb-52">
       {/* Top Bar de Navegação */}
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-rosa-100 shadow-xs">
         <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -200,18 +214,23 @@ export default function LojaProdutoDetalhePage() {
               <Share2 className="w-4 h-4" />
             </button>
 
-            <Link
-              href={`/loja/${tenantSlug}/shop/carrinho`}
-              className="relative p-2 rounded-xl text-rosa-600 hover:bg-rosa-50 transition-colors"
-              title="Ver sacola"
+            {/* Botão de Sacola em Destaque no Topo */}
+            <button
+              type="button"
+              onClick={() => setDrawerAberto(true)}
+              className="relative flex items-center gap-1.5 px-3 py-1.5 bg-rosa-600 hover:bg-rosa-700 active:scale-95 text-white rounded-xl shadow-md shadow-rosa-200 transition-all font-bold text-xs"
+              title="Abrir sacola de compras"
             >
-              <ShoppingBag className="w-5 h-5" />
-              {totalItens > 0 && (
-                <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-rosa-600 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+              <ShoppingBag className="w-4 h-4" />
+              <span>Sacola</span>
+              {totalItens > 0 ? (
+                <span className="min-w-5 h-5 px-1 bg-amber-400 text-gray-900 text-[11px] font-black rounded-full flex items-center justify-center shadow-xs animate-bounce">
                   {totalItens}
                 </span>
+              ) : (
+                <span className="text-[11px] opacity-80">(0)</span>
               )}
-            </Link>
+            </button>
           </div>
         </div>
       </header>
@@ -398,7 +417,7 @@ export default function LojaProdutoDetalhePage() {
       </main>
 
       {/* Barra Fixa Inferior: Subtotal & Botão Adicionar à Sacola */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-rosa-100 p-3.5 shadow-lg">
+      <div className="fixed bottom-[56px] left-0 right-0 z-30 bg-white/95 backdrop-blur-md border-t border-rosa-100 p-3 sm:p-3.5 shadow-lg">
         <div className="max-w-3xl mx-auto flex items-center justify-between gap-4">
           <div className="min-w-0">
             <span className="text-[10px] text-gray-400 font-bold uppercase tracking-wider block">
@@ -424,6 +443,17 @@ export default function LojaProdutoDetalhePage() {
           </button>
         </div>
       </div>
+
+      {/* Menu do Rodapé */}
+      <TenantFooterNav />
+
+      {/* Drawer Estilo E-commerce */}
+      <LojaCarrinhoDrawer
+        aberto={drawerAberto}
+        onFechar={() => setDrawerAberto(false)}
+        tenantSlug={tenantSlug}
+        ultimoItemAdicionado={ultimoAdicionado}
+      />
     </div>
   )
 }

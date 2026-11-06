@@ -8,6 +8,7 @@ import { LojaProduto, LojaCategoria } from '@/lib/loja-types'
 import { useCarrinho } from '@/lib/loja/useCarrinho'
 import LojaProdutoCard from '@/components/LojaProdutoCard'
 import TenantFooterNav from '@/components/TenantFooterNav'
+import LojaCarrinhoDrawer from '@/components/LojaCarrinhoDrawer'
 import {
   ShoppingBag,
   Search,
@@ -34,6 +35,7 @@ export default function LojaVitrinePage() {
   const [produtos, setProdutos] = useState<LojaProduto[]>([])
   const [categorias, setCategorias] = useState<LojaCategoria[]>([])
   const [loading, setLoading] = useState(true)
+  const [drawerAberto, setDrawerAberto] = useState(false)
 
   // Filtros
   const [busca, setBusca] = useState('')
@@ -152,10 +154,11 @@ export default function LojaVitrinePage() {
               <span>Ver Leilões</span>
             </Link>
 
-            <Link
-              href={`/loja/${tenantSlug}/shop/carrinho`}
-              className="relative p-2.5 bg-rosa-600 hover:bg-rosa-700 text-white rounded-xl shadow-sm transition-transform active:scale-95 flex items-center justify-center"
-              title="Ver sacola de compras"
+            <button
+              type="button"
+              onClick={() => setDrawerAberto(true)}
+              className="relative p-2.5 bg-rosa-600 hover:bg-rosa-700 active:scale-95 text-white rounded-xl shadow-sm transition-all flex items-center justify-center"
+              title="Abrir sacola de compras"
             >
               <ShoppingBag className="w-5 h-5" />
               {totalItens > 0 && (
@@ -163,7 +166,7 @@ export default function LojaVitrinePage() {
                   {totalItens}
                 </span>
               )}
-            </Link>
+            </button>
           </div>
         </div>
 
@@ -303,6 +306,13 @@ export default function LojaVitrinePage() {
 
       {/* Barra de Navegação Inferior (Mobile/Desktop) */}
       <TenantFooterNav />
+
+      {/* Drawer Estilo E-commerce */}
+      <LojaCarrinhoDrawer
+        aberto={drawerAberto}
+        onFechar={() => setDrawerAberto(false)}
+        tenantSlug={tenantSlug}
+      />
     </div>
   )
 }

@@ -3,10 +3,11 @@
 import Link from 'next/link'
 import { usePathname, useRouter, useParams } from 'next/navigation'
 import { useEffect, useState } from 'react'
-import { ShoppingBag, Bell, Gavel, Shirt } from 'lucide-react'
+import { ShoppingBag, Bell, Gavel, Shirt, Sparkles } from 'lucide-react'
 import { createClient } from '@/lib/supabase'
 import { toast } from 'sonner'
 import { LOJA_TENANT_SLUG } from '@/lib/loja-types'
+import { useCarrinho } from '@/lib/loja/useCarrinho'
 
 export default function TenantFooterNav() {
   const pathname = usePathname()
@@ -115,26 +116,35 @@ export default function TenantFooterNav() {
     }
   }, [tenantSlug])
 
+  const { totalItens } = useCarrinho()
+
   const basePath = `/loja/${tenantSlug}`
   const isLojaEcommerce = tenantSlug === LOJA_TENANT_SLUG
 
   const tabs = [
-    {
-      href: `${basePath}/leiloes`,
-      label: 'Leilões',
-      icon: ShoppingBag,
-      active: pathname === `${basePath}/leiloes` || pathname.startsWith(`${basePath}/leilao`),
-    },
     ...(isLojaEcommerce
       ? [
           {
             href: `${basePath}/shop`,
             label: 'Loja',
             icon: Shirt,
-            active: pathname.startsWith(`${basePath}/shop`),
+            active: pathname === `${basePath}/shop` || (pathname.startsWith(`${basePath}/shop/`) && !pathname.includes('/carrinho')),
+          },
+          {
+            href: `${basePath}/shop/carrinho`,
+            label: 'Sacola',
+            icon: ShoppingBag,
+            active: pathname === `${basePath}/shop/carrinho`,
+            badge: totalItens > 0 ? totalItens : null,
           },
         ]
       : []),
+    {
+      href: `${basePath}/leiloes`,
+      label: 'Leilões',
+      icon: Gavel,
+      active: pathname === `${basePath}/leiloes` || pathname.startsWith(`${basePath}/leilao`),
+    },
     {
       href: `${basePath}/meus-lances`,
       label: 'Meus Lances',
@@ -144,7 +154,7 @@ export default function TenantFooterNav() {
     {
       href: `${basePath}/novidades`,
       label: 'Novidades',
-      icon: Gavel,
+      icon: Sparkles,
       active: pathname === `${basePath}/novidades`,
       badge: notifCount > 0 ? notifCount : null,
     },

@@ -6,6 +6,7 @@ import Link from 'next/link'
 import { useCarrinho } from '@/lib/loja/useCarrinho'
 import { formatCurrency } from '@/lib/utils'
 import PhoneInput from '@/components/PhoneInput'
+import TenantFooterNav from '@/components/TenantFooterNav'
 import {
   ShoppingBag,
   ArrowLeft,
@@ -132,7 +133,7 @@ export default function LojaCarrinhoPage() {
   }
 
   return (
-    <div className="min-h-screen bg-pink-50/20 pb-20">
+    <div className="min-h-screen bg-pink-50/20 pb-32">
       {/* Top Header */}
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-rosa-100 shadow-xs">
         <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
@@ -395,6 +396,9 @@ export default function LojaCarrinhoPage() {
           </>
         )}
       </main>
+
+      {/* Menu do Rodapé */}
+      <TenantFooterNav />
     </div>
   )
 }
