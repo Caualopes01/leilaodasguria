@@ -17,14 +17,43 @@ export async function generateMetadata(
     }
   }
 
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://guriaschiques.vercel.app'
+  const imagemUrl = tenant.app_icone_url || tenant.logo_url || `${siteUrl}/icon.png`
+  const titulo = tenant.app_titulo || tenant.nome
+  const descricao = tenant.loja_subtitulo || `Catálogo e compras online da ${tenant.nome}`
+
   return {
-    title: tenant.app_titulo || tenant.nome,
-    description: `Leilões online da ${tenant.nome}`,
+    title: titulo,
+    description: descricao,
     icons: tenant.app_icone_url ? {
       icon: tenant.app_icone_url,
       apple: tenant.app_icone_url,
-    } : undefined,
+    } : {
+      icon: '/icon.png',
+      apple: '/icon.png',
+    },
     manifest: `/api/manifest/${tenant.slug}`,
+    openGraph: {
+      title: titulo,
+      description: descricao,
+      type: 'website',
+      url: `${siteUrl}/loja/${tenant.slug}/shop`,
+      siteName: tenant.nome,
+      images: [
+        {
+          url: imagemUrl,
+          width: 1200,
+          height: 1200,
+          alt: titulo,
+        },
+      ],
+    },
+    twitter: {
+      card: 'summary',
+      title: titulo,
+      description: descricao,
+      images: [imagemUrl],
+    },
   }
 }
 

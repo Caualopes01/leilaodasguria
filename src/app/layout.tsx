@@ -16,21 +16,37 @@ const dmSans = DM_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'Leilão das Gurias',
-  description: 'Leilão online - Dê seu lance e garanta o seu!',
-  applicationName: 'Leilão GC',
+  metadataBase: new URL('https://guriaschiques.vercel.app'),
+  title: 'Gurias Chiques | Catálogo & Loja',
+  description: 'Catálogo de moda feminina e compras online - Gurias Chiques',
+  applicationName: 'Gurias Chiques',
   appleWebApp: {
-    title: 'Leilão GC',
+    title: 'Gurias Chiques',
     statusBarStyle: 'default',
   },
   icons: {
-    icon: '/favicon.jpg',
-    apple: '/favicon.jpg',
+    icon: '/icon.png',
+    shortcut: '/favicon.jpg',
+    apple: '/icon.png',
   },
   openGraph: {
-    title: 'Leilão das Gurias',
-    description: 'Leilão online - Dê seu lance e garanta o seu!',
+    title: 'Gurias Chiques | Catálogo & Loja',
+    description: 'Catálogo de moda feminina e compras online - Gurias Chiques',
     type: 'website',
+    images: [
+      {
+        url: '/icon.png',
+        width: 1200,
+        height: 1200,
+        alt: 'Gurias Chiques',
+      },
+    ],
+  },
+  twitter: {
+    card: 'summary',
+    title: 'Gurias Chiques | Catálogo & Loja',
+    description: 'Catálogo de moda feminina e compras online - Gurias Chiques',
+    images: ['/icon.png'],
   },
 }
 
